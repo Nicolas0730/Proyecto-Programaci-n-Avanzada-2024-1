@@ -16,7 +16,7 @@ public class Usuario implements Serializable {
 
     @Id
     @EqualsAndHashCode.Include
-    private Integer id;
+    private String id;
     private String nickname;
     private String urlFotoPerfil;
     private String direccion;
