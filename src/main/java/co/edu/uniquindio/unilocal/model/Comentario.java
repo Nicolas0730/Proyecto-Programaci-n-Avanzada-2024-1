@@ -17,11 +17,11 @@ public class Comentario implements Serializable {
 
     @Id
     @EqualsAndHashCode.Include
-    private Integer id;
+    private String id;
     private String descripcion;
-    private Integer califacion; //Califican del 1 al 5
-    private Usuario idUsuario;
-    private Negocio idNegocio;
+    private int califacion; //Califican del 1 al 5
+    private String idUsuario;
+    private String idNegocio;
     private String respuesta;
     private List<String> imagenes; // para la funcionalidad propuesta
 

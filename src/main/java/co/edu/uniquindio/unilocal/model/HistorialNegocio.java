@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class HistorialNegocio {
 
-    private int id;
+    private String id;
     private String descripcion;
     private LocalDateTime fecha;
     private EstadoRegistro estadoNegocio;
