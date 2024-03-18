@@ -9,10 +9,9 @@ import java.io.Serializable;
 @Document("Usuario")
 @Getter
 @Setter
-@NoArgsConstructor
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Usuario implements Serializable {
+public class Usuario extends Cuenta implements Serializable {
 
     @Id
     @EqualsAndHashCode.Include
@@ -21,6 +20,9 @@ public class Usuario implements Serializable {
     private String urlFotoPerfil;
     private String direccion;
 
-
+    @Builder
+    public Usuario(String nombre, String correo, String contrasenia, EstadoCuenta estadoCuenta, Ciudad ciudad) {
+        super(nombre, correo, contrasenia, estadoCuenta, ciudad);
+    }
 
 }

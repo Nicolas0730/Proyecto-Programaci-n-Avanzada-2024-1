@@ -17,13 +17,14 @@ public class Negocio implements Serializable {
 
     @Id
     @EqualsAndHashCode.Include
-    private Integer id;
+    private String id;
+
     private String nombre;
     private String descripcion;
     private List<String> listaImagenes;
     private List<String> listaTelefonos;
     private Ubicacion ubicacion;
-    private Usuario idUsuario;
+    private String idUsuario;
     private HorarioNegocio horario;
     private TipoNegocio tipoNegocio;
     private List<HistorialNegocio> historialNegocio;

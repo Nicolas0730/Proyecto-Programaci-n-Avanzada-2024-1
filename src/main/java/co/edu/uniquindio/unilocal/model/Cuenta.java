@@ -12,7 +12,7 @@ public class Cuenta {
 
     private String nombre;
     private String correo;
-    private String contraseña;
+    private String contrasenia;
     private EstadoCuenta estadoCuenta;
     private Ciudad ciudad;
 }
