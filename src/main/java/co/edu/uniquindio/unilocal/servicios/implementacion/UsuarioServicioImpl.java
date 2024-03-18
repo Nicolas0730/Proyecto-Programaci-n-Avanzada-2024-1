@@ -1,15 +1,21 @@
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.ModificarNegocioDTO;
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.NegocioDTO;
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.RegistroUsuarioDTO;
 import co.edu.uniquindio.unilocal.model.EstadoCuenta;
 import co.edu.uniquindio.unilocal.model.EstadoRegistro;
+import co.edu.uniquindio.unilocal.model.Ubicacion;
 import co.edu.uniquindio.unilocal.model.Usuario;
 import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
 import co.edu.uniquindio.unilocal.servicios.interfaces.UsuarioServicio;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +24,8 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Getter
+@Setter
 public class UsuarioServicioImpl implements UsuarioServicio {
 
     private UsuarioRepo usuarioRepo;
@@ -36,11 +44,11 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
         Usuario usuario = new Usuario();
         //Seteamos todos los atributos que se necesitan para registrar el usuario
-        usuario.setcorreo
+        usuario.setCorreo(registroClienteDTO.correo());
         usuario.setDireccion(registroClienteDTO.direccion());
         usuario.setUrlFotoPerfil(registroClienteDTO.urlFotoPerfil());
         //La información que no está en el dto debemos asignarla nosotros, como el estado
-        usuario.setEstado(EstadoCuenta.ACTIVO);
+        usuario.setEstadoCuenta(EstadoCuenta.ACTIVO);
 
         Usuario usuarioGuardado = usuarioRepo.save(usuario);
 
@@ -75,5 +83,85 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     @Override
     public List<ItemUsuarioDTO> listarClientes() {
         return null;
+    }
+
+    @Override
+    public void recuperarContrasenia() {
+
+    }
+
+    @Override
+    public void listarNegociosPropios() {
+
+    }
+
+    @Override
+    public void registrarNegocio(RegistroNegocioDTO registroNegocioDTO) {
+
+    }
+
+    @Override
+    public void modificarNegocio(String idNegocio, ModificarNegocioDTO negocioDTO) {
+
+    }
+
+    @Override
+    public void eliminarNegocio(String idNegocio) {
+
+    }
+
+    @Override
+    public void eliminarCuenta() {
+
+    }
+
+    @Override
+    public void comentarPublicacion(String comentario, String idNegocio) {
+
+    }
+
+    @Override
+    public void contestarComentario(String comentario, String idComentario, String idNegocio) {
+
+    }
+
+    @Override
+    public void calificarNegocio(int calificacion, String idNegocio) {
+
+    }
+
+    @Override
+    public void agregarNegocioFavorito(String idNegocio) {
+
+    }
+
+    @Override
+    public void eliminarNegocioFavorito(String idNegocio) {
+
+    }
+
+    @Override
+    public NegocioDTO buscarNegocioPorNombre(String nombreNegocio) {
+        return null;
+    }
+
+    @Override
+    public NegocioDTO buscarNegocioPorTipo(String tipoNegocio) {
+        return null;
+    }
+
+    @Override
+    public NegocioDTO buscarNegocioPorDistancia(int rangoNegocio) {
+        return null;
+    }
+
+    @Override
+    public String solicitarRuta(Ubicacion ubicacionOrigen, Ubicacion ubicacionDestino) {
+        return null;
+    }
+
+    @Override
+    public void recomendarLugares() {
+
     }
 }

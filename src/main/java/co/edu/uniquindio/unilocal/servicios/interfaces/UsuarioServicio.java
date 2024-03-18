@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface UsuarioServicio {
 
-    void registrarse(RegistroUsuarioDTO registroClienteDTO);
+    String registrarse(RegistroUsuarioDTO registroClienteDTO) throws Exception;
 
     void actualizarCliente(ActualizarUsuarioDTO actualizarUsuarioDTO);
 
