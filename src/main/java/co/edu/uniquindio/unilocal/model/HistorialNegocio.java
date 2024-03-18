@@ -14,5 +14,5 @@ public class HistorialNegocio {
     private String descripcion;
     private LocalDateTime fecha;
     private EstadoRegistro estadoNegocio;
-    private Moderador idModerador;
+    private String idModerador;
 }

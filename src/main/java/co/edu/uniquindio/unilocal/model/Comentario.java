@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Document("Comentario")
@@ -23,6 +24,7 @@ public class Comentario implements Serializable {
     private String idUsuario;
     private String idNegocio;
     private String respuesta;
-    private List<String> imagenes; // para la funcionalidad propuesta
+    private List<String> imagenes; // par la funcionalidad propuesta
+    private LocalDateTime fechaComentario;
 
 }
