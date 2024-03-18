@@ -11,7 +11,7 @@ import co.edu.uniquindio.unilocal.model.Ubicacion;
 
 import java.util.List;
 
-public interface UsuarioServicio extends CuentaServicio{
+public interface UsuarioServicio {
 
     void registrarse(RegistroUsuarioDTO registroClienteDTO);
 

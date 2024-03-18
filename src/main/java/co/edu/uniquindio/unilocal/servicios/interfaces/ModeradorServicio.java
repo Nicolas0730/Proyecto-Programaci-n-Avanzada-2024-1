@@ -1,6 +1,6 @@
 package co.edu.uniquindio.unilocal.servicios.interfaces;
 
-public interface ModeradorServicio extends CuentaServicio{
+public interface ModeradorServicio {
 
     /**
      * Método que verifica que un negocio se pueda autorizar o rechazar
