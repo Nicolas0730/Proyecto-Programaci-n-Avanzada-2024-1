@@ -22,8 +22,8 @@ public class Usuario extends Cuenta implements Serializable {
     private String direccion;
 
     @Builder
-    public Usuario(String nombre, String correo, String contrasenia, EstadoCuenta estadoCuenta, Ciudad ciudad) {
-        super(nombre, correo, contrasenia, estadoCuenta, ciudad);
+    public Usuario(String nombre, String correo, String contrasenia, EstadoRegistro estadoRegistro, Ciudad ciudad) {
+        super(nombre, correo, contrasenia, estadoRegistro, ciudad);
     }
 
 }

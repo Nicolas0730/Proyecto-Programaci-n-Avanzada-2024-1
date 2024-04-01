@@ -12,9 +12,7 @@ import co.edu.uniquindio.unilocal.model.*;
 import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
 import co.edu.uniquindio.unilocal.servicios.interfaces.UsuarioServicio;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +21,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class UsuarioServicioImpl implements UsuarioServicio {
 
-    @Autowired
     private final UsuarioRepo usuarioRepo; //variable para poder invocar sus métodos de acceso a la bd.
 
     @Override
@@ -58,7 +54,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         }else {
             usuario.setContrasenia(registroUsuarioDTO.contrasenia());
         }
-        usuario.setEstadoCuenta(EstadoCuenta.ACTIVO);
+        usuario.setEstadoRegistro(EstadoRegistro.ACTIVO);
         usuario.setDireccion(registroUsuarioDTO.direccion());
 
         //Se guarda en la base de datos y obtenemos el objeto registrado
@@ -130,10 +126,10 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
         //Obtenemos el usuario que se quiere eliminar y le asignamos el estado inactivo
         Usuario usuario = optionalUsuario.get();
-        if (usuario.getEstadoCuenta().equals(EstadoCuenta.INACTIVO)){
+        if (usuario.getEstadoRegistro().equals(EstadoRegistro.INACTIVO)){
             throw new Exception("La cuenta ya se encuentra eliminada");
         }
-        usuario.setEstadoCuenta(EstadoCuenta.INACTIVO);
+        usuario.setEstadoRegistro(EstadoRegistro.INACTIVO);
         //Como el objeto usuario ya se encuentra en la BD, actualiza el que ya existe con el nuevo estado
         usuarioRepo.save(usuario);
     }

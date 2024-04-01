@@ -1,7 +1,5 @@
 package co.edu.uniquindio.unilocal.model;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +13,6 @@ public class Cuenta {
     private String nombre;
     private String correo;
     private String contrasenia;
-    private EstadoCuenta estadoCuenta;
+    private EstadoRegistro estadoRegistro;
     private Ciudad ciudad;
 }
