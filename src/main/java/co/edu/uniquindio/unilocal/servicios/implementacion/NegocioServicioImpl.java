@@ -1,27 +1,24 @@
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.DetalleNegocioDTO;
-import co.edu.uniquindio.unilocal.dto.NegocioDTO.NegocioDTO;
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroRevisionDTO;
 import co.edu.uniquindio.unilocal.exception.ResourceNotFoundException;
-import co.edu.uniquindio.unilocal.model.EstadoRegistro;
-import co.edu.uniquindio.unilocal.model.Negocio;
-import co.edu.uniquindio.unilocal.model.Usuario;
+import co.edu.uniquindio.unilocal.model.*;
 import co.edu.uniquindio.unilocal.repositorio.NegocioRepo;
 import co.edu.uniquindio.unilocal.servicios.interfaces.NegocioServicio;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
+@Service
+@RequiredArgsConstructor
 public class NegocioServicioImpl implements NegocioServicio {
 
-    //@Autowired
     private final NegocioRepo negocioRepo;
-
-    public NegocioServicioImpl(NegocioRepo negocioRepo) {
-        this.negocioRepo = negocioRepo;
-    }
-
 
     @Override
     public String crearNegocio(RegistroNegocioDTO registroNegocioDTO) throws Exception {
@@ -35,8 +32,10 @@ public class NegocioServicioImpl implements NegocioServicio {
         negocio.setIdUsuario(registroNegocioDTO.idUsuario());
         negocio.setHorario(registroNegocioDTO.horarioNegocio());
         negocio.setTipoNegocio(registroNegocioDTO.tipoNegocio());
-        negocio.setHistorialNegocio(null); //Puedo Setear un null? o debo llenar en el List la creación del negocio
-        negocio.setEstadoRegistro(EstadoRegistro.EN_ESPERA);
+        negocio.setHistorialNegocio(
+                List.of( new HistorialNegocio( LocalDateTime.now(), EstadoNegocio.EN_ESPERA) )
+        );
+        negocio.setEstadoRegistro(EstadoRegistro.ACTIVO);
         negocio.setCiudad(registroNegocioDTO.ciudad());
         negocio.setUbicacion(registroNegocioDTO.ubicacion());
 
@@ -64,10 +63,10 @@ public class NegocioServicioImpl implements NegocioServicio {
         Optional<Negocio> optionalNegocio = validarNegocioExiste(idNegocio);
 
         Negocio negocio = optionalNegocio.get();
-        if (negocio.getEstadoRegistro().equals(EstadoRegistro.RECHAZADO)){
+        if (negocio.getEstadoRegistro().equals(EstadoRegistro.INACTIVO)){
             throw new Exception("No fue posible eliminar el Negocio.");
         }
-        negocio.setEstadoRegistro(EstadoRegistro.RECHAZADO); // Si se eliminaria así un negocio? 31/03 ************************
+        negocio.setEstadoRegistro(EstadoRegistro.INACTIVO); // Si se eliminaria así un negocio? 31/03 ************************
         negocioRepo.save(negocio);
     }
 
@@ -91,33 +90,52 @@ public class NegocioServicioImpl implements NegocioServicio {
 
 
     @Override
-    public void aprobarNegocio(DetalleNegocioDTO detalleNegocioDTO) throws Exception {
+    public void aprobarNegocio(RegistroRevisionDTO revisionDTO) throws Exception {
 
-        Optional<Negocio> optionalNegocio = validarNegocioExiste(detalleNegocioDTO.id());
+        Optional<Negocio> optionalNegocio = validarNegocioExiste(revisionDTO.idNegocio());
         Negocio negocio = optionalNegocio.get();
 
-        if (negocio.getEstadoRegistro().equals(EstadoRegistro.RECHAZADO)){
+        if (negocio.getEstadoRegistro().equals(EstadoNegocio.RECHAZADO)){
             throw new Exception("No fue posible aprobar el Negocio. Verifica su estado previo.");
         }
-        negocio.setEstadoRegistro(EstadoRegistro.APROBADO);
+
+        negocio.getHistorialNegocio().add( new HistorialNegocio(
+                revisionDTO.motivo(),
+                LocalDateTime.now(),
+                EstadoNegocio.APROBADO,
+                revisionDTO.idModerador()
+        ) );
+
         negocioRepo.save(negocio);
     }
 
     @Override
-    public void rechazarNegocio(DetalleNegocioDTO detalleNegocioDTO) throws Exception {
+    public void rechazarNegocio(RegistroRevisionDTO revisionDTO) throws Exception {
 
-        Optional<Negocio> optionalNegocio = validarNegocioExiste(detalleNegocioDTO.id());
+        Optional<Negocio> optionalNegocio = validarNegocioExiste(revisionDTO.idNegocio());
 
         Negocio negocio = optionalNegocio.get();
-        if (negocio.getEstadoRegistro().equals(EstadoRegistro.RECHAZADO)){
+        if (negocio.getEstadoRegistro().equals(EstadoNegocio.RECHAZADO)){
             throw new Exception("No fue posible rechazar el Negocio. Verifica su estado previo.");
         }
-        negocio.setEstadoRegistro(EstadoRegistro.RECHAZADO);
+        negocio.getHistorialNegocio().add( new HistorialNegocio(
+                revisionDTO.motivo(),
+                LocalDateTime.now(),
+                EstadoNegocio.RECHAZADO,
+                revisionDTO.idModerador()
+        ) );
         negocioRepo.save(negocio);
     }
 
+
+    /**
+     * Método usado al momento de realizar una busqueda de negocios pero filtrando
+     * por los estados que un negocio puede tener
+     * @param estadoNegocio  APROBADO/EN_ESPERA/RECHAZADO
+     * @throws Exception
+     */
     @Override
-    public void filtrarPorEstado(EstadoRegistro estadoRegistro) throws Exception {
+    public void filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception {
         /**
          * Crear consulta que filtre dado el estado que llegue por parametro
          */
