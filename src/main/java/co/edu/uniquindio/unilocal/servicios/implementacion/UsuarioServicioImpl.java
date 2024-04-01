@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 public class UsuarioServicioImpl implements UsuarioServicio {
 
     @Autowired
-    private final UsuarioRepo usuarioRepo; //para poder invocar sus métodos de acceso a la bd.
+    private final UsuarioRepo usuarioRepo; //variable para poder invocar sus métodos de acceso a la bd.
 
     @Override
     public String registrarUsuario(RegistroUsuarioDTO registroUsuarioDTO) throws Exception {
