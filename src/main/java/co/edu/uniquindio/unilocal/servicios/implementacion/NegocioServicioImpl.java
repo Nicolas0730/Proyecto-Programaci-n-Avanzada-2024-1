@@ -117,10 +117,12 @@ public class NegocioServicioImpl implements NegocioServicio {
     }
 
 
+    @Override
     public void filtrarPorEstado(EstadoRegistro estadoRegistro) throws Exception {
         /**
          * Crear consulta que filtre dado el estado que llegue por parametro
          */
+        negocioRepo.findByEstadoRegistro(estadoRegistro);
         
     }
 }

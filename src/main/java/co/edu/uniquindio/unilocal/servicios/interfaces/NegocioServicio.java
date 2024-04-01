@@ -3,6 +3,7 @@ package co.edu.uniquindio.unilocal.servicios.interfaces;
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.DetalleNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.NegocioDTO;
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
+import co.edu.uniquindio.unilocal.model.EstadoRegistro;
 
 public interface NegocioServicio {
 
@@ -17,5 +18,5 @@ public interface NegocioServicio {
     void rechazarNegocio(DetalleNegocioDTO negocioDTO) throws Exception;
     //-----------------------------------------------------------------------------------------
 
-    void filtrarPorEstado() throws Exception;
+    void filtrarPorEstado(EstadoRegistro estadoRegistro) throws Exception;
 }
