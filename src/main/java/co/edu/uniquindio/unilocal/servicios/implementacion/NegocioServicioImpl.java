@@ -116,7 +116,7 @@ public class NegocioServicioImpl implements NegocioServicio {
         negocioRepo.save(negocio);
     }
 
-    @Override
+
     public void filtrarPorEstado(EstadoRegistro estadoRegistro) throws Exception {
         /**
          * Crear consulta que filtre dado el estado que llegue por parametro
