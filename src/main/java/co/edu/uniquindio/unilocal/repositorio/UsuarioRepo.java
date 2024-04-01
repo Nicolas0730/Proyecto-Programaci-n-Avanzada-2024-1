@@ -19,9 +19,8 @@ public interface UsuarioRepo extends MongoRepository<Usuario,String> {
 
     //Aun mas sencillo se podria hacer:
     Optional<Usuario> findByCorreo(String correo);
-
-
     Optional<Usuario> findByNickname(String nickname);
+    Optional<Usuario> findById(String contrasenia);
 
 
     @Query("{ 'mail':?0, 'password' :  ?1}")

@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Negocio implements Serializable {
@@ -30,8 +31,26 @@ public class Negocio implements Serializable {
     private List<HistorialNegocio> historialNegocio;
     private EstadoRegistro estadoRegistro;
     private Ciudad ciudad;
-    private String direccion;
+    private String direccion; //Por que tiene direccion si hay un atributo ubicacion que me indica donde se encuentra? 31/03
 
+//    @Builder
+//    public Negocio(String nombre,String descripcion,List<String> listaImagenes,List<String> listaTelefonos,
+//                   Ubicacion ubicacion,String idUsuario,HorarioNegocio horario,TipoNegocio tipoNegocio,List<HistorialNegocio> historialNegocio,
+//                   EstadoRegistro estadoRegistro,Ciudad ciudad,String direccion){
+//        //super(nombre,descripcion,listaImagenes,listaTelefonos,ubicacion,idUsuario,horario,tipoNegocio,historialNegocio,estadoRegistro,ciudad,direccion);
+//        this.nombre=nombre;
+//        this.descripcion=descripcion;
+//        this.listaImagenes=listaImagenes;
+//        this.listaTelefonos=listaTelefonos;
+//        this.ubicacion=ubicacion;
+//        this.idUsuario=idUsuario;
+//        this.horario=horario;
+//        this.tipoNegocio=tipoNegocio;
+//        this.historialNegocio=historialNegocio;
+//        this.estadoRegistro=estadoRegistro;
+//        this.ciudad=ciudad;
+//        this.direccion=direccion;
+//    }
 
 
 }

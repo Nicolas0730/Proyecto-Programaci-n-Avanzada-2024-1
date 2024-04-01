@@ -24,7 +24,7 @@ public class Comentario implements Serializable {
     private String idUsuario;
     private String idNegocio;
     private String respuesta;
-    private List<String> imagenes; // par la funcionalidad propuesta
+    private List<String> imagenes; // para la funcionalidad propuesta
     private LocalDateTime fechaComentario;
 
 }

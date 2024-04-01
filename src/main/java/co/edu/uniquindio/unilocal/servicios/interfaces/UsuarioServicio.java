@@ -7,35 +7,42 @@ import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.RegistroUsuarioDTO;
+import co.edu.uniquindio.unilocal.model.TipoNegocio;
 import co.edu.uniquindio.unilocal.model.Ubicacion;
 
 import java.util.List;
 
 public interface UsuarioServicio {
 
-    void registrarse(RegistroUsuarioDTO registroClienteDTO);
+    String registrarUsuario(RegistroUsuarioDTO registroClienteDTO) throws Exception;
 
-    void actualizarCliente(ActualizarUsuarioDTO actualizarUsuarioDTO);
+    void actualizarUsuario(ActualizarUsuarioDTO actualizarUsuarioDTO) throws Exception;
 
-    DetalleUsuarioDTO obtenerCliente(String idCuenta) throws Exception;
-    List<ItemUsuarioDTO> listarClientes();
+    void eliminarUsuario(String idUsuario) throws Exception;
 
-    void recuperarContrasenia();
-    void listarNegociosPropios();
-    void registrarNegocio(RegistroNegocioDTO registroNegocioDTO);
-    void modificarNegocio(String idNegocio, ModificarNegocioDTO negocioDTO);
-    void eliminarNegocio(String idNegocio);
-    void eliminarCuenta();
+    DetalleUsuarioDTO obtenerUsuario(String idCuenta) throws Exception;
+    List<ItemUsuarioDTO> listarUsuarios();
+    String recuperarContrasenia();
+    List<NegocioDTO> listarNegociosPropios();
+
+
+
+    //Este seria un servicio del usuario o del Negocio ?
+    String registrarNegocio(RegistroNegocioDTO registroNegocioDTO);
+
+
+    void actualizarNegocio(String idNegocio, ModificarNegocioDTO negocioDTO);
+    String eliminarNegocio(String idNegocio); //Que retorne el id de la cuenta eliminada
+    String eliminarCuentaUsuario(); //Que retorne el id de la cuenta eliminada
     void comentarPublicacion(String comentario,String idNegocio);
     void contestarComentario(String comentario,String idComentario,String idNegocio);
-    void calificarNegocio(int calificacion,String idNegocio);
+    int calificarNegocio(int calificacion,String idNegocio); //Se califa del 1 al 5
+    String agregarNegocioFavorito(String idNegocio);//Guardaria solo la referencia del negocio? 17/03 2:12pm
 
-    void agregarNegocioFavorito(String idNegocio);//Guardaria solo la referencia del negocio? 17/03 2:12pm
-
-    void eliminarNegocioFavorito(String idNegocio);
+    String eliminarNegocioFavorito(String idNegocio); //Retorna el id del negocio
 
     NegocioDTO buscarNegocioPorNombre(String nombreNegocio);
-    NegocioDTO buscarNegocioPorTipo(String tipoNegocio);  //Parametro como enumeración?
+    NegocioDTO buscarNegocioPorTipo(TipoNegocio tipoNegocio);
     NegocioDTO buscarNegocioPorDistancia(int rangoNegocio);
     String solicitarRuta(Ubicacion ubicacionOrigen, Ubicacion ubicacionDestino);
 
