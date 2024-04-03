@@ -12,6 +12,7 @@ import co.edu.uniquindio.unilocal.model.*;
 import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
 import co.edu.uniquindio.unilocal.servicios.interfaces.UsuarioServicio;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -54,6 +55,12 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         }else {
             usuario.setContrasenia(registroUsuarioDTO.contrasenia());
         }
+
+        //Encriptación
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String passwordEncriptada = passwordEncoder.encode( registroUsuarioDTO.contrasenia() );
+        usuario.setContrasenia( passwordEncriptada );
+
         usuario.setEstadoRegistro(EstadoRegistro.ACTIVO);
         usuario.setDireccion(registroUsuarioDTO.direccion());
 
