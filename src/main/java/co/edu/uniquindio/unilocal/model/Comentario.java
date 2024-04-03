@@ -23,7 +23,7 @@ public class Comentario implements Serializable {
     private int califacion; //Califican del 1 al 5
     private String idUsuario;
     private String idNegocio;
-    private String respuesta;
+    //private String respuesta;
     private List<String> imagenes; // para la funcionalidad propuesta
     private LocalDateTime fechaComentario;
 

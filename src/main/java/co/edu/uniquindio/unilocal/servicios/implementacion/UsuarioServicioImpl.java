@@ -1,7 +1,6 @@
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
-import co.edu.uniquindio.unilocal.dto.NegocioDTO.ModificarNegocioDTO;
-import co.edu.uniquindio.unilocal.dto.NegocioDTO.NegocioDTO;
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.DetalleNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
@@ -194,40 +193,43 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return null;
     }
 
-    @Override
-    public List<NegocioDTO> listarNegociosPropios() {
-        return null;
-    }
+//    @Override
+//    public List<DetalleNegocioDTO> listarNegociosPropios() {
+//        return null;
+//    }
+
+//    @Override
+//    public String registrarNegocio(RegistroNegocioDTO registroNegocioDTO) {
+//        return null;
+//    }
+
+
+//    @Override
+//    public String eliminarNegocio(String idNegocio) {
+//        //Se encuentra en NegocioServicioImpl
+//        return null;
+//    }
 
     @Override
-    public String registrarNegocio(RegistroNegocioDTO registroNegocioDTO) {
-        return null;
+    public String eliminarCuentaUsuario(String idUsuario) throws ResourceNotFoundException {
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+
+        //Obtenemos el cliente
+        Usuario usuario = optionalUsuario.get();
+        usuario.setEstadoRegistro(EstadoRegistro.INACTIVO);
+        usuarioRepo.save(usuario);
+        return usuario.getId();
     }
 
-    @Override
-    public void actualizarNegocio(String idNegocio, ModificarNegocioDTO negocioDTO) {
+//    @Override
+//    public void comentarPublicacion(String comentario, String idNegocio) {
+//
+//    }
 
-    }
-
-    @Override
-    public String eliminarNegocio(String idNegocio) {
-        return null;
-    }
-
-    @Override
-    public String eliminarCuentaUsuario() {
-        return null;
-    }
-
-    @Override
-    public void comentarPublicacion(String comentario, String idNegocio) {
-
-    }
-
-    @Override
-    public void contestarComentario(String comentario, String idComentario, String idNegocio) {
-
-    }
+//    @Override
+//    public void contestarComentario(String comentario, String idComentario, String idNegocio) {
+//
+//    }
 
     @Override
     public int calificarNegocio(int calificacion, String idNegocio) {
@@ -245,21 +247,6 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     }
 
     @Override
-    public NegocioDTO buscarNegocioPorNombre(String nombreNegocio) {
-        return null;
-    }
-
-    @Override
-    public NegocioDTO buscarNegocioPorTipo(TipoNegocio tipoNegocio) {
-        return null;
-    }
-
-    @Override
-    public NegocioDTO buscarNegocioPorDistancia(int rangoNegocio) {
-        return null;
-    }
-
-    @Override
     public String solicitarRuta(Ubicacion ubicacionOrigen, Ubicacion ubicacionDestino) {
         return null;
     }
@@ -268,46 +255,6 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     public void recomendarLugares() {
 
     }
-
-   /* @Override
-    public String registrarse(RegistroUsuarioDTO registroClienteDTO) throws Exception {
-
-        // Si fueramos a validar que el correo no esté en uso por otra persona debemos programarlo nosotros debido a que no hay una anotación en lombok para esto
-        if(existeCorreo(registroClienteDTO.correo())){
-            throw new Exception("El correo ya está en uso por otra persona");
-        }
-        //Se haría lo mismo para el nickname
-        if(existeNickname(registroClienteDTO.nickname())){
-            throw new Exception("El correo ya está en uso por otra persona");
-        }
-
-        Usuario usuario = new Usuario();
-        //Seteamos todos los atributos que se necesitan para registrar el usuario
-        usuario.setcorreo
-        usuario.setDireccion(registroClienteDTO.direccion());
-        usuario.setUrlFotoPerfil(registroClienteDTO.urlFotoPerfil());
-        //La información que no está en el dto debemos asignarla nosotros, como el estado
-        usuario.setEstado(EstadoCuenta.ACTIVO);
-
-        Usuario usuarioGuardado = usuarioRepo.save(usuario);
-
-        return usuarioGuardado.getId();
-    }*/
-
-//    private boolean existeCorreo(String mail){
-//
-//        // ESTO NO ES OPTIMO
-//        //List<Usuario> usuarioList = usuarioRepo.findAll();
-//
-//        //for (Usuario usuario : usuarioList){
-//        //    if (usuario.getCorreo().equals(mail)){
-//                return true;
-//        //    }
-//        //}
-//        //
-//
-//        //Usuario usuario = usuarioRepo.findByCorreo(mail);
-//    }
 
 
 }
