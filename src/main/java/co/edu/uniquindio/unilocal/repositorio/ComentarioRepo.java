@@ -18,5 +18,7 @@ public interface ComentarioRepo extends MongoRepository<Comentario,String> {
     //Hacer una consulta que traiga todos los comentarios con idNegocio indicado por parámetro
     Optional<Negocio> findByIdNegocio(String idNegocio);
 
+    @Query(value = "{ 'idNegocio' : ?0 }")
+    List<Comentario> listarComentario (String idNegocio);
 
 }
