@@ -31,7 +31,7 @@ public class Negocio implements Serializable {
     private List<HistorialNegocio> historialNegocio;
     private EstadoRegistro estadoRegistro;
     private Ciudad ciudad;
-    private String direccion; //Por que tiene direccion si hay un atributo ubicacion que me indica donde se encuentra? 31/03
+    private String direccion;
 
 //    @Builder
 //    public Negocio(String nombre,String descripcion,List<String> listaImagenes,List<String> listaTelefonos,
