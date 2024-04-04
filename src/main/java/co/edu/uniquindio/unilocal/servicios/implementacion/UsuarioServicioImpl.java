@@ -111,6 +111,11 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return usuarioRepo.findByCorreo(correo).isPresent();
     }
 
+    /**
+     * Método que actualiza datos de un usuario ya registrado en la BD
+     * @param actualizarUsuarioDTO contiene los campos que se pueden actualizar en un usuario
+     * @throws Exception
+     */
     @Override
     public void actualizarUsuario(ActualizarUsuarioDTO actualizarUsuarioDTO) throws Exception {
 
@@ -138,6 +143,12 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
     }
 
+    /**
+     * Método que elimina logicamente un usuario dado el id del mismo
+     * el usuario debe existir para que este pueda eliminarse
+     * @param idUsuario usuario a eliminar
+     * @throws Exception
+     */
     @Override
     public void eliminarUsuario(String idUsuario) throws Exception{
 
@@ -153,6 +164,12 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuarioRepo.save(usuario);
     }
 
+    /**
+     * Método que obtiene un usuario de la BD dado su id
+     * @param idUsuario
+     * @return
+     * @throws Exception
+     */
     @Override
     public DetalleUsuarioDTO obtenerUsuario(String idUsuario) throws Exception {
 
@@ -184,6 +201,10 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return optionalUsuario;
     }
 
+    /**
+     * Método que devuelve todos los usuarios de la BD con estado ACTIVO
+     * @return Lista de usuarios activos
+     */
     @Override
     public List<ItemUsuarioDTO> listarUsuarios() {
 
