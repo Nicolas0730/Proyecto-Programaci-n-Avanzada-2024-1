@@ -3,6 +3,7 @@ package co.edu.uniquindio.unilocal.repositorio;
 import co.edu.uniquindio.unilocal.model.Negocio;
 import co.edu.uniquindio.unilocal.model.TipoNegocio;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.RepositoryDefinition;
 import org.springframework.stereotype.Repository;
 
