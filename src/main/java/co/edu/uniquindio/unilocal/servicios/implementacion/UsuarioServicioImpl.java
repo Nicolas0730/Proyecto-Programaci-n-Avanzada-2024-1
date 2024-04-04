@@ -24,14 +24,21 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class UsuarioServicioImpl implements UsuarioServicio {
 
-    private final UsuarioRepo usuarioRepo; //variable para poder invocar sus métodos de acceso a la bd.
+    //variable para poder invocar sus métodos de acceso a la bd.
+    private final UsuarioRepo usuarioRepo;
 
+    /**
+     * Método que almacena un nuevo usuario en la base de datos
+     * @param registroUsuarioDTO
+     * @return idDelUsuarioRegistrado
+     * @throws Exception
+     */
     @Override
     public String registrarUsuario(RegistroUsuarioDTO registroUsuarioDTO) throws Exception {
         //Se crea el objeto usuario
         Usuario usuario = new Usuario();
 
-        //Se le asignan sus campos
+        //Se le asigna al usuario la información que trae registroDTO
         usuario.setNombre( registroUsuarioDTO.nombre() );
 
         if (existeNickname(registroUsuarioDTO.nickname()) ){
@@ -59,7 +66,6 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String passwordEncriptada = passwordEncoder.encode( registroUsuarioDTO.contrasenia() );
         usuario.setContrasenia( passwordEncriptada );
-
         usuario.setEstadoRegistro(EstadoRegistro.ACTIVO);
         usuario.setDireccion(registroUsuarioDTO.direccion());
 
@@ -70,6 +76,12 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return usuarioGuardado.getId();
     }
 
+    /**
+     * Método auxiliar que se encarga de verificcar que una contraseña cumpla una
+     * expresión regular previamente definida para que esta sea segura
+     * @param contrasenia
+     * @return
+     */
     private boolean validarPatronContrasenia(String contrasenia) {
         // Patrón para validar la contraseña
         String patron = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
@@ -83,14 +95,15 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     }
 
     /**
-     * Método para verificar si existe un usuario ya está registrado con ese nickname
-     * @param nickname
+     * Método para verificar si existe un usuario registrado en la BD con ese nickname
+     * @param nickname a verificar si ya está en uso
+     * @return true si existe, false de lo contrario
      */
     private boolean existeNickname(String nickname) {
         return usuarioRepo.findByNickname(nickname).isPresent();
     }
     /**
-     * Método para verificar si existe un usuario ya está registrado con ese correo
+     * Método para verificar si existe un usuario registrado en la BD con ese correo
      * @param correo
      * @return
      */
@@ -210,8 +223,15 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 //        return null;
 //    }
 
+    /**
+     * Método que se encarga de eliminar logicamente un Usuario cambiando su estado a inactivo
+     * @param idUsuario usuario que se desea eliminar
+     * @return Id usuario eliminado
+     * @throws ResourceNotFoundException
+     */
     @Override
     public String eliminarCuentaUsuario(String idUsuario) throws ResourceNotFoundException {
+
         Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
 
         //Obtenemos el cliente
@@ -238,6 +258,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
     @Override
     public String agregarNegocioFavorito(String idNegocio) {
+
         return null;
     }
 

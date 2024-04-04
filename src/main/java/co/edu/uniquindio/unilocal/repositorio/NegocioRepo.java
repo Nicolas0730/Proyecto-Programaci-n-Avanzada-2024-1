@@ -19,7 +19,9 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
     Optional<Negocio> finByTipoNegocio(TipoNegocio tipoNegocio);
 
     //Toca construir una consulta que busque y devuelva un Optional<Negocio> en base una distancia
-    //indicada por parámetro (int)
+    //indicada por parámetro (int) en kilómetros alrededor
+
+
 
 
 }
