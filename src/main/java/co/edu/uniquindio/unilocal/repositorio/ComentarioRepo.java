@@ -21,4 +21,7 @@ public interface ComentarioRepo extends MongoRepository<Comentario,String> {
     @Query(value = "{ 'idNegocio' : ?0 }")
     List<Comentario> listarComentario (String idNegocio);
 
+    @Query (value = "{'idUsuario': ?0}")
+    List<Comentario> listarComentarioUsuario (String idUsuario);
+
 }
