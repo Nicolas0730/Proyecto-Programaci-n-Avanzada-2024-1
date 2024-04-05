@@ -44,6 +44,6 @@ public interface UsuarioRepo extends MongoRepository<Usuario,String> {
     @Query(value = "{ 'cuenta.estadoRegistro' :'ACTIVO' }")
     List<Usuario> listarEstadoActivo ();
 
-
+///asdajsdkajg
 
 }
