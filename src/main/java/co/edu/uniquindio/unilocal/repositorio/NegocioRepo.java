@@ -43,4 +43,7 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
 
     @Query (value = "{'idUsuario' :  ?0}" )
     List<Negocio> listarNegocioUsuario (String idUsuario);
+
+    @Query(value = "{ '_id' : { $in : ?0 } }") // Realizar pregunta si la consulta, va en negocio o en usuario
+    List<Negocio> ListarFavoritos (List<String> idNeogcio);
 }
