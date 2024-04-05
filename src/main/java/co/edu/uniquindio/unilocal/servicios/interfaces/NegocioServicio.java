@@ -27,4 +27,6 @@ public interface NegocioServicio {
     List<DetalleNegocioDTO> buscarNegociosPorDistancia(int rangoNegocio) throws Exception;
 
     void filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception;
+
+    List<ItemNegocioDTO> listarNegociosDeUsuario(String idUsuario) throws Exception;
 }

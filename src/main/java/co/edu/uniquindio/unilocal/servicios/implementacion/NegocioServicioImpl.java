@@ -5,7 +5,9 @@ import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.exception.ResourceNotFoundException;
 import co.edu.uniquindio.unilocal.model.*;
 import co.edu.uniquindio.unilocal.repositorio.NegocioRepo;
+import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
 import co.edu.uniquindio.unilocal.servicios.interfaces.NegocioServicio;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +22,16 @@ import java.util.Optional;
 public class NegocioServicioImpl implements NegocioServicio {
 
     private final NegocioRepo negocioRepo;
+    private final UsuarioRepo usuarioRepo;
 
+    /**
+     * Método utilizado por un usuario para registrar un negocio
+     * este por defecto se crea con estado en espera mientras el
+     * administrador valida el mismo
+     * @param registroNegocioDTO
+     * @return
+     * @throws Exception
+     */
     @Override
     public String crearNegocio(RegistroNegocioDTO registroNegocioDTO) throws Exception {
         //Se crea un objeto negocio que va a contener todos los datos de registroNegocioDTO
@@ -30,6 +41,11 @@ public class NegocioServicioImpl implements NegocioServicio {
         negocio.setListaImagenes(registroNegocioDTO.listaImagenes());
         negocio.setListaTelefonos(registroNegocioDTO.listaTelefonos());
         negocio.setUbicacion(registroNegocioDTO.ubicacion());
+
+        if(!validarEstadoRegistroUsuario(registroNegocioDTO.idUsuario())){
+            throw new Exception("No se pudo crear el negocio, el estado del usuario es inválido");
+        }
+
         negocio.setIdUsuario(registroNegocioDTO.idUsuario());
         if (!esHorarioValido(registroNegocioDTO.horarioNegocio())) {
             throw new Exception("El horario del negocio no es válido. Debe estar entre las 7:00 am y las 10:00 pm.");
@@ -50,6 +66,33 @@ public class NegocioServicioImpl implements NegocioServicio {
         return negocioGuardado.getId();
     }
 
+    /**
+     * Método auxiliar que verifica que el estado de registro de un usuario
+     * sea activo para poder permitir que un negocio sea creado por este
+     * @param idUsuario a verificar su estado de registro
+     * @return false si el estado del registro es inactivo, true si es activo
+     */
+    private boolean validarEstadoRegistroUsuario(String idUsuario) throws ResourceNotFoundException {
+        boolean aux = true;
+
+        if (!usuarioRepo.findById(idUsuario).isPresent()){
+            throw new ResourceNotFoundException("El usuario no ha sido encontrado en la base de datos.");
+        }
+        Optional<Usuario> optionalUsuario = usuarioRepo.findById(idUsuario);
+        Usuario usuario = optionalUsuario.get();
+
+        if (usuario.getEstadoRegistro().equals(EstadoRegistro.INACTIVO)){
+            aux=false;
+        }
+        return aux;
+    }
+
+    /**
+     * Método que busca un negocio en la BD dado su id
+     * @param idNegocio
+     * @return
+     * @throws Exception
+     */
     @Override
     public DetalleNegocioDTO buscarNegocios(String idNegocio) throws Exception {
 
@@ -62,6 +105,12 @@ public class NegocioServicioImpl implements NegocioServicio {
                 negocio.getTipoNegocio(),negocio.getHistorialNegocio(),negocio.getCiudad(),negocio.getDireccion());
     }
 
+    /**
+     * Método usado por un administrador para eliminar un negocio
+     * la eliminación al ser lógica solo cambia su estado a Inactivo
+     * @param idNegocio
+     * @throws Exception
+     */
     @Override
     public void eliminarNegocio(String idNegocio) throws Exception {
         Optional<Negocio> optionalNegocio = validarNegocioExiste(idNegocio);
@@ -93,6 +142,12 @@ public class NegocioServicioImpl implements NegocioServicio {
     }
 
 
+    /**
+     * Método usado por un administrador para aprobar un negocio que se encuentra en
+     *      * espera
+     * @param revisionDTO
+     * @throws Exception
+     */
     @Override
     public void aprobarNegocio(RegistroRevisionDTO revisionDTO) throws Exception {
 
@@ -113,6 +168,12 @@ public class NegocioServicioImpl implements NegocioServicio {
         negocioRepo.save(negocio);
     }
 
+    /**
+     * Método usado por un administrador para rechazar un negocio que se encuentra en
+     * espera
+     * @param revisionDTO
+     * @throws Exception
+     */
     @Override
     public void rechazarNegocio(RegistroRevisionDTO revisionDTO) throws Exception {
 
@@ -153,7 +214,6 @@ public class NegocioServicioImpl implements NegocioServicio {
         negocio.setHorario(actualizarNegocioDTO.horarioNegocio());
 
         negocioRepo.save(negocio);
-
     }
 
     /**
@@ -190,7 +250,7 @@ public class NegocioServicioImpl implements NegocioServicio {
      * @return true si existe, false de lo contrario
      */
     private boolean validarNombreNegocio(String nombre) {
-        return negocioRepo.findByNombre(nombre).isPresent();
+        return negocioRepo.existsByNombre(nombre);
     }
 
 
@@ -228,10 +288,10 @@ public class NegocioServicioImpl implements NegocioServicio {
     @Override
     public List<ItemNegocioDTO> buscarNegociosPorTipo(TipoNegocio tipoNegocio) throws ResourceNotFoundException {
 
-        List<Negocio> listaNegocios = negocioRepo.findAll(); //Ajustar la consulta para que retorne solo los negocios de tipoNegocio
+        List<Negocio> listaNegocios = negocioRepo.finByTipoNegocio(tipoNegocio);
 
         if (listaNegocios.isEmpty()){
-            throw new ResourceNotFoundException("Error al momento de buscar negocios de tipo "+tipoNegocio);
+            throw new ResourceNotFoundException("Error al momento de filtrar negocios por el tipo "+tipoNegocio);
         }
 
         List<ItemNegocioDTO> items = new ArrayList<>();
@@ -250,9 +310,9 @@ public class NegocioServicioImpl implements NegocioServicio {
      */
     @Override
     public List<DetalleNegocioDTO> buscarNegociosPorDistancia(int distanciaAlrededor) {
+        //Falta construir la consulta
         return null;
     }
-
 
     /**
      * Método usado al momento de realizar una busqueda de negocios pero filtrando
@@ -265,6 +325,30 @@ public class NegocioServicioImpl implements NegocioServicio {
         /**
          * Crear consulta que filtre dado el estado que llegue por parametro
          */
-        
+    }
+
+    /**
+     * Método que se encarga de devolver todos los negocios asociados a un usuario
+     * Se realiza una consulta a la base de datos donde se obtienen todos los negocios
+     * que tiene idUsuario = al que llega por parámetro
+     * @param idUsuario al que se le buscarán sus negocios
+     * @return La lista de negocios relacionada al usuario
+     * @throws ResourceNotFoundException
+     */
+    @Override
+    public List<ItemNegocioDTO> listarNegociosDeUsuario(String idUsuario) throws ResourceNotFoundException {
+
+        List<Negocio> listaNegocios = negocioRepo.findAll(); //Hacer consulta que traiga todos los negocios del usuario indicado por parámetro
+
+        if (listaNegocios.isEmpty()){
+            throw new ResourceNotFoundException("Error al momento de obtener los negocios relacionados al usuario "+idUsuario);
+        }
+
+        List<ItemNegocioDTO> items = new ArrayList<>();
+
+        for(Negocio negocio : listaNegocios){
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+        }
+        return items;
     }
 }

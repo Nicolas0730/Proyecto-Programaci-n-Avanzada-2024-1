@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.List;
+
 public record RegistroUsuarioDTO(
 
         @NotBlank @Length(max = 100) String nombre,
@@ -19,6 +21,6 @@ public record RegistroUsuarioDTO(
         @NotBlank String urlFotoPerfil,
         @NotBlank String nickname,
         @NotBlank Ciudad ciudadResidencia,
-        @NotBlank String direccion
-) {
+        @NotBlank String direccion,
+        List<String> negociosFavoritos) {
 }

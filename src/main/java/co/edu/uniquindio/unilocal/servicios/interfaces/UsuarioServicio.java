@@ -32,10 +32,10 @@ public interface UsuarioServicio {
     //void contestarComentario(String comentario,String idComentario,String idNegocio);
 
 
-    int calificarNegocio(int calificacion,String idNegocio); //Se califa del 1 al 5
-    String agregarNegocioFavorito(String idNegocio);//Guardaria solo la referencia del negocio? 17/03 2:12pm
+    //int calificarNegocio(int calificacion,String idNegocio); //Se califa del 1 al 5
+    String agregarNegocioFavorito(String idUsuario,String idNegocio) throws Exception;
 
-    String eliminarNegocioFavorito(String idNegocio); //Retorna el id del negocio
+    String eliminarNegocioFavorito(String idUsuario,String idNegocio) throws ResourceNotFoundException;
 
     String solicitarRuta(Ubicacion ubicacionOrigen, Ubicacion ubicacionDestino);
 

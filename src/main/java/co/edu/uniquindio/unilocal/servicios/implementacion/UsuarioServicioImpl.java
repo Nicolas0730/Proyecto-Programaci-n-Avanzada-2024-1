@@ -1,13 +1,12 @@
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
-import co.edu.uniquindio.unilocal.dto.NegocioDTO.DetalleNegocioDTO;
-import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.RegistroUsuarioDTO;
 import co.edu.uniquindio.unilocal.exception.ResourceNotFoundException;
 import co.edu.uniquindio.unilocal.model.*;
+import co.edu.uniquindio.unilocal.repositorio.NegocioRepo;
 import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
 import co.edu.uniquindio.unilocal.servicios.interfaces.UsuarioServicio;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +25,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
     //variable para poder invocar sus métodos de acceso a la bd.
     private final UsuarioRepo usuarioRepo;
+    private final NegocioRepo negocioRepo;
 
     /**
      * Método que almacena un nuevo usuario en la base de datos
@@ -68,6 +68,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuario.setContrasenia( passwordEncriptada );
         usuario.setEstadoRegistro(EstadoRegistro.ACTIVO);
         usuario.setDireccion(registroUsuarioDTO.direccion());
+        usuario.setNegociosFavoritos(registroUsuarioDTO.negociosFavoritos()); //va a ser null al momento del registro
 
         //Se guarda en la base de datos y obtenemos el objeto registrado
         Usuario usuarioGuardado = usuarioRepo.save(usuario);
@@ -100,7 +101,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
      * @return true si existe, false de lo contrario
      */
     private boolean existeNickname(String nickname) {
-        return usuarioRepo.findByNickname(nickname).isPresent();
+        return usuarioRepo.existsByNickname(nickname);
     }
     /**
      * Método para verificar si existe un usuario registrado en la BD con ese correo
@@ -108,7 +109,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
      * @return
      */
     private boolean existeEmail(String correo) {
-        return usuarioRepo.findByCorreo(correo).isPresent();
+        return usuarioRepo.existsByCorreo(correo);
     }
 
     /**
@@ -180,7 +181,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
         //Retornamos el usuario en formato DTO
         return new DetalleUsuarioDTO( usuario.getId(), usuario.getNombre(), usuario.getUrlFotoPerfil(),
-                usuario.getNickname(), usuario.getCorreo(), usuario.getCiudad());
+                usuario.getNickname(), usuario.getCorreo(), usuario.getCiudad(),usuario.getNegociosFavoritos());
     }
 
     /**
@@ -217,7 +218,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         //Recorremos la lista de clientes y por cada uno creamos un DTO y lo agregamos a la lista
         for (Usuario usuario : usuarioList) {
             items.add(new ItemUsuarioDTO(usuario.getId(), usuario.getNombre(),
-                    usuario.getCorreo(), usuario.getUrlFotoPerfil(), usuario.getNickname()));
+                    usuario.getCorreo(), usuario.getUrlFotoPerfil(), usuario.getNickname(), usuario.getNegociosFavoritos()));
         }
         return items;
     }
@@ -226,23 +227,6 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     public String recuperarContrasenia() {
         return null;
     }
-
-//    @Override
-//    public List<DetalleNegocioDTO> listarNegociosPropios() {
-//        return null;
-//    }
-
-//    @Override
-//    public String registrarNegocio(RegistroNegocioDTO registroNegocioDTO) {
-//        return null;
-//    }
-
-
-//    @Override
-//    public String eliminarNegocio(String idNegocio) {
-//        //Se encuentra en NegocioServicioImpl
-//        return null;
-//    }
 
     /**
      * Método que se encarga de eliminar logicamente un Usuario cambiando su estado a inactivo
@@ -262,30 +246,29 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return usuario.getId();
     }
 
-//    @Override
-//    public void comentarPublicacion(String comentario, String idNegocio) {
-//
-//    }
-
-//    @Override
-//    public void contestarComentario(String comentario, String idComentario, String idNegocio) {
-//
-//    }
-
     @Override
-    public int calificarNegocio(int calificacion, String idNegocio) {
-        return 0;
+    public String agregarNegocioFavorito(String idUsuario,String idNegocio) throws Exception {
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+        Usuario usuario = optionalUsuario.get();
+        if (idNegocio==null||idNegocio.isEmpty()){
+            throw new Exception("Ocurrió un error al momento de agregar el negocio "+idNegocio+" a la lista de favoritos del usuario "+idUsuario);
+        }
+        usuario.getNegociosFavoritos().add(idNegocio);
+        usuarioRepo.save(usuario);
+
+        return idNegocio;
     }
 
     @Override
-    public String agregarNegocioFavorito(String idNegocio) {
+    public String eliminarNegocioFavorito(String idUsuario,String idNegocio) throws ResourceNotFoundException {
 
-        return null;
-    }
-
-    @Override
-    public String eliminarNegocioFavorito(String idNegocio) {
-        return null;
+        if (!negocioRepo.existsById(idNegocio)){
+            throw new ResourceNotFoundException("El negocio que desea eliminar de la lista de favoritos no se encuentra registrado en la base de datos.");
+        }
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+        Usuario usuario = optionalUsuario.get();
+        usuario.getNegociosFavoritos().remove(idNegocio);
+        return idNegocio;
     }
 
     @Override

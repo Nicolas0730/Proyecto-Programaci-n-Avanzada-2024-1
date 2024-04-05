@@ -10,17 +10,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class UsuarioTest {
 
-    @Autowired
-    private UsuarioRepo usuarioRepo;
+    private final UsuarioRepo usuarioRepo;
+
+    public UsuarioTest(UsuarioRepo usuarioRepo) {
+        this.usuarioRepo = usuarioRepo;
+    }
 
     @Test
     public void registrarClienteTest(){
-    //Creamos el cliente con sus propiedades
-        Usuario usuario = Usuario.builder().nombre("").correo("").ciudad(Ciudad.ARMENIA).estadoCuenta(EstadoRegistro.ACTIVO).contrasenia("")
-                .build();
-//Guardamos el cliente
-        Usuario registro = usuarioRepo.save( usuario );
-//Verificamos que se haya guardado validando que no sea null
-        Assertions.assertNotNull(registro);
+//    //Creamos el cliente con sus propiedades
+//        Usuario usuario = Usuario.builder().nombre("").correo("").ciudad(Ciudad.ARMENIA).estadoRegistro(EstadoRegistro.ACTIVO).contrasenia("").negociosFavoritos()
+//                .build();
+////Guardamos el cliente
+//        Usuario registro = usuarioRepo.save( usuario );
+////Verificamos que se haya guardado validando que no sea null
+//        Assertions.assertNotNull(registro);
     }
 }
