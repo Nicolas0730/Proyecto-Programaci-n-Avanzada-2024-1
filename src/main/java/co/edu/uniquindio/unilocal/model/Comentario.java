@@ -1,3 +1,4 @@
+
 package co.edu.uniquindio.unilocal.model;
 
 import lombok.*;
@@ -23,8 +24,8 @@ public class Comentario implements Serializable {
     private int califacion; //Califican del 1 al 5
     private String idUsuario;
     private String idNegocio;
-    private String respuesta;
-    private List<String> imagenes; // par la funcionalidad propuesta
+    //private String respuesta;
+    private List<String> imagenes; // para la funcionalidad propuesta
     private LocalDateTime fechaComentario;
 
 }

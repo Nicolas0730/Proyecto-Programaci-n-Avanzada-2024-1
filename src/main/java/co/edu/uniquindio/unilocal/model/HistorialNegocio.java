@@ -11,9 +11,13 @@ import lombok.Setter;
 @Setter
 public class HistorialNegocio {
 
-    private String id;
     private String descripcion;
     private LocalDateTime fecha;
-    private EstadoRegistro estadoNegocio;
+    private EstadoNegocio estadoNegocio;
     private String idModerador;
+
+    public HistorialNegocio(LocalDateTime fecha, EstadoNegocio estadoNegocio) {
+        this.fecha = fecha;
+        this.estadoNegocio = estadoNegocio;
+    }
 }
