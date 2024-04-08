@@ -1,6 +1,5 @@
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
-
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
