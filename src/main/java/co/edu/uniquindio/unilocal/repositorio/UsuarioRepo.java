@@ -14,29 +14,17 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepo extends MongoRepository<Usuario,String> {
 
-    @Query("db.usuarios.find({'email': ?0})")   //?0 hace referencia al parámetro  ?0 ... ?1 ... ?2
-    Usuario buscarPorCorreo(String mail);
-
-    @Query("{'email': ?0}")   //Se puede omitir la primera parte y Java entiende
-    Usuario buscarPorCorreo2(String mail);
-
     //Aun mas sencillo se podria hacer:
     Optional<Usuario> findByCorreo(String correo);
 
-
-
-    Optional<Usuario> findByNickname(String nickname);
     Optional<Usuario> findById(String contrasenia);
 
     boolean existsByCorreo(String correo);
     boolean existsByNickname(String nickname);
 
-    @Query("{ 'mail':?0, 'password' :  ?1}")
-    Usuario buscarPorCorreoyContrasenia(String correo, String contrasenia);
+  //  @Query("{ 'mail':?0, 'password' :  ?1}")
+ //   Usuario buscarPorCorreoyContrasenia(String correo, String contrasenia);
 
-    Usuario findByCorreoAndContrasenia(String correo);
-
-    List<Usuario> findByNombreContains(String letra);
 
 
 
