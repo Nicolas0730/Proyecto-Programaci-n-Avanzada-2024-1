@@ -326,6 +326,7 @@ public class NegocioServicioImpl implements NegocioServicio {
         /**
          * Crear consulta que filtre dado el estado que llegue por parametro
          */
+
     }
 
     /**
