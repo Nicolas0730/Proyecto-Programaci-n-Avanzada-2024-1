@@ -288,7 +288,7 @@ public class NegocioServicioImpl implements NegocioServicio {
     @Override
     public List<ItemNegocioDTO> buscarNegociosPorTipo(TipoNegocio tipoNegocio) throws ResourceNotFoundException {
 
-        List<Negocio> listaNegocios = negocioRepo.finByTipoNegocio(tipoNegocio);
+        List<Negocio> listaNegocios = negocioRepo.findByTipoNegocio(tipoNegocio);
 
         if (listaNegocios.isEmpty()){
             throw new ResourceNotFoundException("Error al momento de filtrar negocios por el tipo "+tipoNegocio);

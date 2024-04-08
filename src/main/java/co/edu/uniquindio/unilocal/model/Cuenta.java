@@ -8,7 +8,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
 public class Cuenta {
 
     private String nombre;

@@ -20,7 +20,7 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
 
     boolean existsByNombre(String nombreNegocio);
 
-    List<Negocio> finByTipoNegocio(TipoNegocio tipoNegocio);
+    List<Negocio> findByTipoNegocio(TipoNegocio tipoNegocio);
 
     //Toca construir una consulta que busque y devuelva un Optional<Negocio> en base una distancia
     //indicada por parámetro (int) en kilómetros alrededor
