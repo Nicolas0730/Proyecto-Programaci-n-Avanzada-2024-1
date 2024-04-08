@@ -144,26 +144,6 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
     }
 
-    /**
-     * Método que elimina logicamente un usuario dado el id del mismo
-     * el usuario debe existir para que este pueda eliminarse
-     * @param idUsuario usuario a eliminar
-     * @throws Exception
-     */
-    @Override
-    public void eliminarUsuario(String idUsuario) throws Exception{
-
-        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
-
-        //Obtenemos el usuario que se quiere eliminar y le asignamos el estado inactivo
-        Usuario usuario = optionalUsuario.get();
-        if (usuario.getEstadoRegistro().equals(EstadoRegistro.INACTIVO)){
-            throw new Exception("La cuenta ya se encuentra eliminada");
-        }
-        usuario.setEstadoRegistro(EstadoRegistro.INACTIVO);
-        //Como el objeto usuario ya se encuentra en la BD, actualiza el que ya existe con el nuevo estado
-        usuarioRepo.save(usuario);
-    }
 
     /**
      * Método que obtiene un usuario de la BD dado su id
@@ -207,11 +187,13 @@ public class UsuarioServicioImpl implements UsuarioServicio {
      * @return Lista de usuarios activos
      */
     @Override
-    public List<ItemUsuarioDTO> listarUsuarios() {
+    public List<ItemUsuarioDTO> listarUsuarios() throws Exception {
 
         //Obtenemos todos los clientes de la base de datos
         List<Usuario> usuarioList = usuarioRepo.findAll();  //HAY QUE MEJORAR LA CONSULTA PARA QUE NO TRAIGA TODOS LOS USUARIOS SINO UNICAMENTE LOS QUE TIENEN ESTADO ACTIVO 30/03
-
+        if (usuarioList.isEmpty()){ //Hacer la validación
+            throw new Exception("Error al momento de recuperar la lista de los usuarios");
+        }
         //Creamos una lista de DTOs de clientes
         List<ItemUsuarioDTO> items = new ArrayList<>();
 

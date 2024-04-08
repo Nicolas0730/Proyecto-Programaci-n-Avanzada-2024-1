@@ -17,10 +17,8 @@ public interface UsuarioServicio {
 
     void actualizarUsuario(ActualizarUsuarioDTO actualizarUsuarioDTO) throws Exception;
 
-    void eliminarUsuario(String idUsuario) throws Exception;
-
     DetalleUsuarioDTO obtenerUsuario(String idCuenta) throws Exception;
-    List<ItemUsuarioDTO> listarUsuarios();
+    List<ItemUsuarioDTO> listarUsuarios() throws Exception;
     String recuperarContrasenia();
 
     //List<NegocioDTO> listarNegociosPropios();
