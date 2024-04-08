@@ -3,6 +3,7 @@ package co.edu.uniquindio.unilocal.repositorio;
 import co.edu.uniquindio.unilocal.model.EstadoNegocio;
 import co.edu.uniquindio.unilocal.model.Negocio;
 import co.edu.uniquindio.unilocal.model.TipoNegocio;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.RepositoryDefinition;
@@ -20,7 +21,8 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
 
     boolean existsByNombre(String nombreNegocio);
 
-    List<Negocio> findByTipoNegocio(TipoNegocio tipoNegocio);
+    @Query (value = "{tipoNegocio :  ?0}")
+    List<Negocio> buscarNegocioPorTipo(TipoNegocio tipoNegocio);
 
     @Query (value = "{'historialNegocio.estadoNegocio' : ?0 }")
     List<Negocio> ListarNegocioEstado(EstadoNegocio Estado);
@@ -31,4 +33,9 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
 
     @Query(value = "{ '_id' : { $in : ?0 } }") // Realizar pregunta si la consulta, va en negocio o en usuario
     List<Negocio> ListarFavoritos (List<String> idNeogcio);
+
+    @Query (value = "{ 'nombre' : { $regex : ?0, $options: 'i' } }" )
+    List<Negocio> busquedaNombresSimilares (String nombre);
+
+
 }
