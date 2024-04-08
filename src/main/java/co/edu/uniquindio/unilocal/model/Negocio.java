@@ -52,5 +52,4 @@ public class Negocio implements Serializable {
 //        this.direccion=direccion;
 //    }
 
-
 }

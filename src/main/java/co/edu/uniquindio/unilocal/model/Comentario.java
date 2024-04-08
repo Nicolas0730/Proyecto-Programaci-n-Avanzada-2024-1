@@ -1,3 +1,4 @@
+
 package co.edu.uniquindio.unilocal.model;
 
 import lombok.*;

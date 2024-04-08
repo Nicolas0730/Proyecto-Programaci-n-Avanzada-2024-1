@@ -1,5 +1,6 @@
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
@@ -9,7 +10,9 @@ import co.edu.uniquindio.unilocal.model.*;
 import co.edu.uniquindio.unilocal.repositorio.NegocioRepo;
 import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
 import co.edu.uniquindio.unilocal.servicios.interfaces.UsuarioServicio;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,8 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
+@Getter
+@Setter
 public class UsuarioServicioImpl implements UsuarioServicio {
 
     //variable para poder invocar sus métodos de acceso a la bd.
@@ -280,6 +285,4 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     public void recomendarLugares() {
 
     }
-
-
 }

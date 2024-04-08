@@ -12,11 +12,7 @@ import java.util.Optional;
 public interface ComentarioRepo extends MongoRepository<Comentario,String> {
 
     //Se puede hacer la consulta para que devuelva directamente el promedio??
-    int calcularCalificacionNegocio(String idNegocio);
-
-
-    //Hacer una consulta que traiga todos los comentarios con idNegocio indicado por parámetro
-    Optional<Negocio> findByIdNegocio(String idNegocio);
+    //int calcularCalificacionNegocio(String idNegocio);
 
     @Query(value = "{ 'idNegocio' : ?0 }")
     List<Comentario> listarComentario (String idNegocio);

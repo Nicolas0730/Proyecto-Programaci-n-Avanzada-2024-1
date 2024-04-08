@@ -1,3 +1,4 @@
+
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.*;
@@ -94,7 +95,7 @@ public class NegocioServicioImpl implements NegocioServicio {
      * @throws Exception
      */
     @Override
-    public DetalleNegocioDTO buscarNegocios(String idNegocio) throws Exception {
+    public DetalleNegocioDTO buscarNegocio(String idNegocio) throws Exception {
 
         Optional<Negocio> optionalNegocio = validarNegocioExiste(idNegocio);
 
@@ -288,7 +289,7 @@ public class NegocioServicioImpl implements NegocioServicio {
     @Override
     public List<ItemNegocioDTO> buscarNegociosPorTipo(TipoNegocio tipoNegocio) throws ResourceNotFoundException {
 
-        List<Negocio> listaNegocios = negocioRepo.finByTipoNegocio(tipoNegocio);
+        List<Negocio> listaNegocios = negocioRepo.findByTipoNegocio(tipoNegocio);
 
         if (listaNegocios.isEmpty()){
             throw new ResourceNotFoundException("Error al momento de filtrar negocios por el tipo "+tipoNegocio);
@@ -352,3 +353,4 @@ public class NegocioServicioImpl implements NegocioServicio {
         return items;
     }
 }
+

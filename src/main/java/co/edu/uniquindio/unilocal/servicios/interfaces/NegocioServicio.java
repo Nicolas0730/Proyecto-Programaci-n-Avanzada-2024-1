@@ -1,7 +1,6 @@
 package co.edu.uniquindio.unilocal.servicios.interfaces;
 
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.*;
-import co.edu.uniquindio.unilocal.exception.ResourceNotFoundException;
 import co.edu.uniquindio.unilocal.model.EstadoNegocio;
 import co.edu.uniquindio.unilocal.model.TipoNegocio;
 
@@ -10,7 +9,7 @@ import java.util.List;
 public interface NegocioServicio {
 
     String crearNegocio(RegistroNegocioDTO registroNegocioDTO) throws Exception;
-    DetalleNegocioDTO buscarNegocios(String idNegocio) throws Exception;
+    DetalleNegocioDTO buscarNegocio(String idNegocio) throws Exception;
     void eliminarNegocio(String idNegocio) throws Exception;
 
 
