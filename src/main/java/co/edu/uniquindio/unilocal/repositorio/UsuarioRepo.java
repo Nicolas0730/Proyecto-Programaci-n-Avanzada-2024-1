@@ -1,3 +1,4 @@
+
 package co.edu.uniquindio.unilocal.repositorio;
 
 import co.edu.uniquindio.unilocal.model.Cuenta;
@@ -35,15 +36,10 @@ public interface UsuarioRepo extends MongoRepository<Usuario,String> {
 
     Usuario findByCorreoAndContrasenia(String correo);
 
-
-
     List<Usuario> findByNombreContains(String letra);
 
 
 
-    @Query(value = "{ 'cuenta.estadoRegistro' :'ACTIVO' }")
-    List<Usuario> listarEstadoActivo ();
-
-
 
 }
+
