@@ -38,8 +38,6 @@ public interface UsuarioRepo extends MongoRepository<Usuario,String> {
 
     List<Usuario> findByNombreContains(String letra);
 
-    @Query(value = "{ 'cuenta.estadoRegistro' :'ACTIVO' }")
-    List<Usuario> listarEstadoActivo ();
 
 
 

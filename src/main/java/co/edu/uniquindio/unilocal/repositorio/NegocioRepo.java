@@ -22,24 +22,9 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
 
     List<Negocio> findByTipoNegocio(TipoNegocio tipoNegocio);
 
-    //Toca construir una consulta que busque y devuelva un Optional<Negocio> en base una distancia
-    //indicada por parámetro (int) en kilómetros alrededor
-
-
-
-
-    @Query(value = "{ 'historialNegocio.estadoNegocio' : 'EN_ESPERA' }")
-    List<Negocio> listarEstdoEspera ();
-
-
     @Query (value = "{'historialNegocio.estadoNegocio' : ?0 }")
-    List<Negocio> ListarNegocioEstado(String Estado);
+    List<Negocio> ListarNegocioEstado(EstadoNegocio Estado);
 
-    @Query (value = "{'historialNegocio.estadoNegocio' :  'APROBADO', 'historialNegocio.idModerador' : ?0}")
-    List<Negocio> listarPorAutorizadosModerador (String idAdmin);
-
-    @Query (value = "{'historialNegocio.estadoNegocio' : 'RECHAZADO', 'historialNegocio.idModerador' :  ?0}")
-    List<Negocio> listarPorRechazadoModerador (String idAdmin);
 
     @Query (value = "{'idUsuario' :  ?0}" )
     List<Negocio> listarNegocioUsuario (String idUsuario);
