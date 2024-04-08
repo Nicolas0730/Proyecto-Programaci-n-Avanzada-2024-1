@@ -1,5 +1,6 @@
 package co.edu.uniquindio.unilocal.servicios.interfaces;
 
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.ItemNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
@@ -20,7 +21,7 @@ public interface UsuarioServicio {
     void eliminarUsuario(String idUsuario) throws Exception;
 
     DetalleUsuarioDTO obtenerUsuario(String idCuenta) throws Exception;
-    List<ItemUsuarioDTO> listarUsuarios();
+    //List<ItemUsuarioDTO> listarUsuarios(); --No es necesario en el proyecto
     String recuperarContrasenia();
 
     //List<NegocioDTO> listarNegociosPropios();
@@ -43,4 +44,6 @@ public interface UsuarioServicio {
 
     //Recomendar lugares en función de las búsquedas que realiza.
     void recomendarLugares();
+
+    List<ItemNegocioDTO> listarNegociosFavoritos(List<String> negociosFavoritos) throws Exception;
 }

@@ -1,18 +1,9 @@
 package co.edu.uniquindio.unilocal.servicios.interfaces;
 
+import co.edu.uniquindio.unilocal.model.Moderador;
+
 public interface ModeradorServicio {
 
-    /**
-     * Método que verifica que un negocio se pueda autorizar o rechazar
-     * verificando que este no exista ya
-     * @param idNegocio
-     */
-    void validarNegocio(String idNegocio);
-
-    void autorizarNegocio();
-
-    void rechazarNegocio();
-
-    void eliminarNegocio();
+    Moderador obtenerDatosModerador(String idModerador);
 
 }

@@ -17,7 +17,7 @@ public interface ComentarioServicio {
 
     ComentarioDTO buscarComentario(String idComentario) throws Exception;
 
-    String eliminarComentario(String idComentario) throws Exception;
+    //String eliminarComentario(String idComentario) throws Exception;
 
     List<ItemComentariODTO> listarComentarios(String id) throws Exception;
 

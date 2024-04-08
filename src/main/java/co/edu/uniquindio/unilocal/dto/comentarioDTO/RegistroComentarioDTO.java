@@ -9,6 +9,6 @@ public record RegistroComentarioDTO(@NotBlank String descripcion,
                                     @NotBlank int calificacion,
                                     @NotBlank String idUsuario,
                                     @NotBlank String idNegocio,
-                                    //String respuesta,
+                                    String respuesta,
                                     List<String> imagenes) {
 }

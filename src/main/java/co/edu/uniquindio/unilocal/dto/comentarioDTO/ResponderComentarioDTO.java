@@ -14,7 +14,7 @@ import java.util.List;
 public record ResponderComentarioDTO(@NotBlank String descripcion,
                                      int calificacion,
                                      @NotBlank String idUsuario,
-                                     @NotBlank String idComentario, //Como es un comentario respondiendo a otro, se indica a cual comentario se le está contestando y este ya tiene por dentro el negocio al que se asocia
-                                     //@NotBlank String respuesta,
+                                     @NotBlank String idComentario,
+                                     @NotBlank String respuesta,
                                      List<String> imagenes) {
 }

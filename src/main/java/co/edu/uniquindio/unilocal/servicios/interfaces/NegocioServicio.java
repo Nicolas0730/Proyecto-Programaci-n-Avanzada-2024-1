@@ -10,6 +10,7 @@ public interface NegocioServicio {
 
     String crearNegocio(RegistroNegocioDTO registroNegocioDTO) throws Exception;
     DetalleNegocioDTO buscarNegocio(String idNegocio) throws Exception;
+    List<ItemNegocioDTO> busquedaPorNombre(String nombre) throws Exception;
     void eliminarNegocio(String idNegocio) throws Exception;
 
 
@@ -25,7 +26,7 @@ public interface NegocioServicio {
     List<ItemNegocioDTO> buscarNegociosPorTipo(TipoNegocio tipoNegocio) throws Exception;
     List<DetalleNegocioDTO> buscarNegociosPorDistancia(int rangoNegocio) throws Exception;
 
-    void filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception;
+    List<ItemNegocioDTO> filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception;
 
     List<ItemNegocioDTO> listarNegociosDeUsuario(String idUsuario) throws Exception;
 }

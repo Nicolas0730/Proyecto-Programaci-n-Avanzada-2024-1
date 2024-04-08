@@ -9,5 +9,6 @@ public record ItemComentariODTO(@NotBlank String id,
                                 @NotBlank String descripcion,
                                 @NotBlank String idUsuario,
                                 @NotBlank int calificacion,
+                                String respuesta,
                                 @NotBlank String idNegocio) {
 }

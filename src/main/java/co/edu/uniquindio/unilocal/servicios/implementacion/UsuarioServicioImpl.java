@@ -1,5 +1,6 @@
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.ItemNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
@@ -211,22 +212,22 @@ public class UsuarioServicioImpl implements UsuarioServicio {
      * Método que devuelve todos los usuarios de la BD con estado ACTIVO
      * @return Lista de usuarios activos
      */
-    @Override
-    public List<ItemUsuarioDTO> listarUsuarios() {
-
-        //Obtenemos todos los clientes de la base de datos
-        List<Usuario> usuarioList = usuarioRepo.findAll();  //HAY QUE MEJORAR LA CONSULTA PARA QUE NO TRAIGA TODOS LOS USUARIOS SINO UNICAMENTE LOS QUE TIENEN ESTADO ACTIVO 30/03
-
-        //Creamos una lista de DTOs de clientes
-        List<ItemUsuarioDTO> items = new ArrayList<>();
-
-        //Recorremos la lista de clientes y por cada uno creamos un DTO y lo agregamos a la lista
-        for (Usuario usuario : usuarioList) {
-            items.add(new ItemUsuarioDTO(usuario.getId(), usuario.getNombre(),
-                    usuario.getCorreo(), usuario.getUrlFotoPerfil(), usuario.getNickname(), usuario.getNegociosFavoritos()));
-        }
-        return items;
-    }
+//    @Override
+//    public List<ItemUsuarioDTO> listarUsuarios() {
+//
+//        //Obtenemos todos los clientes de la base de datos
+//        List<Usuario> usuarioList = usuarioRepo.findAll();  //HAY QUE MEJORAR LA CONSULTA PARA QUE NO TRAIGA TODOS LOS USUARIOS SINO UNICAMENTE LOS QUE TIENEN ESTADO ACTIVO 30/03
+//
+//        //Creamos una lista de DTOs de clientes
+//        List<ItemUsuarioDTO> items = new ArrayList<>();
+//
+//        //Recorremos la lista de clientes y por cada uno creamos un DTO y lo agregamos a la lista
+//        for (Usuario usuario : usuarioList) {
+//            items.add(new ItemUsuarioDTO(usuario.getId(), usuario.getNombre(),
+//                    usuario.getCorreo(), usuario.getUrlFotoPerfil(), usuario.getNickname(), usuario.getNegociosFavoritos()));
+//        }
+//        return items;
+//    }
 
     @Override
     public String recuperarContrasenia() {
@@ -283,6 +284,27 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
     @Override
     public void recomendarLugares() {
+        //Se recomienda en base a las busquedas de los usuarios
+        //De donde se encuentran las busquedas?
+    }
 
+    /**
+     * Este metodo iria aqui o en NegocioRepo?
+     * Método que lista todos los negocios que el usuario tiene como favoritos en una lista
+     * @param negociosFavoritos Lista con los ids de los negocios que voy a buscar en la BD
+     * @return Lista de ItemNegocio
+     * @throws Exception
+     */
+    @Override
+    public List<ItemNegocioDTO> listarNegociosFavoritos(List<String> negociosFavoritos) throws Exception{
+        List<Negocio> listaNegocios = negocioRepo.ListarFavoritos(negociosFavoritos);
+        if (listaNegocios.isEmpty()){
+            throw new ResourceNotFoundException("Error al momento de obtener los negocio favoritos ");
+        }
+        List<ItemNegocioDTO> items = new ArrayList<>();
+        for (Negocio negocio: listaNegocios){
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+        }
+        return  items;
     }
 }

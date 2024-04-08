@@ -2,6 +2,7 @@
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.*;
+import co.edu.uniquindio.unilocal.dto.comentarioDTO.ItemComentariODTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.exception.ResourceNotFoundException;
 import co.edu.uniquindio.unilocal.model.*;
@@ -104,6 +105,25 @@ public class NegocioServicioImpl implements NegocioServicio {
         return new DetalleNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getDescripcion(),negocio.getListaImagenes(),
                 negocio.getListaTelefonos(),negocio.getUbicacion(),negocio.getIdUsuario(),negocio.getHorario(),
                 negocio.getTipoNegocio(),negocio.getHistorialNegocio(),negocio.getCiudad(),negocio.getDireccion());
+    }
+
+    /**
+     * Método que busca todos los negocios que tengan un nombre indicado por parámetro
+     * @param nombre que se va a buscar en los negocios
+     * @return Lista de los negocios que tienen el nombre por parámetro
+     * @throws Exception
+     */
+    @Override
+    public List<ItemNegocioDTO> busquedaPorNombre(String nombre) throws Exception{
+        List<Negocio> listaNegocios = negocioRepo.busquedaNombresSimilares(nombre);
+        if (listaNegocios.isEmpty()){
+            throw new ResourceNotFoundException("Error al momento de obtener los negocio que contienen el nombre "+nombre);
+        }
+        List<ItemNegocioDTO> items = new ArrayList<>();
+        for (Negocio negocio: listaNegocios){
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+        }
+        return  items;
     }
 
     /**
@@ -289,7 +309,7 @@ public class NegocioServicioImpl implements NegocioServicio {
     @Override
     public List<ItemNegocioDTO> buscarNegociosPorTipo(TipoNegocio tipoNegocio) throws ResourceNotFoundException {
 
-        List<Negocio> listaNegocios = negocioRepo.findByTipoNegocio(tipoNegocio);
+        List<Negocio> listaNegocios = negocioRepo.buscarNegociosPorTipo(tipoNegocio);
 
         if (listaNegocios.isEmpty()){
             throw new ResourceNotFoundException("Error al momento de filtrar negocios por el tipo "+tipoNegocio);
@@ -322,10 +342,16 @@ public class NegocioServicioImpl implements NegocioServicio {
      * @throws Exception
      */
     @Override
-    public void filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception {
-        /**
-         * Crear consulta que filtre dado el estado que llegue por parametro
-         */
+    public List<ItemNegocioDTO> filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception {
+        List<Negocio> listaNegocios = negocioRepo.ListarNegocioEstado(estadoNegocio);
+        if (listaNegocios.isEmpty()){
+            throw new ResourceNotFoundException("Error al momento de obtener los negocio con el estado "+estadoNegocio);
+        }
+        List<ItemNegocioDTO> items = new ArrayList<>();
+        for (Negocio negocio: listaNegocios){
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+        }
+        return  items;
 
     }
 
@@ -340,7 +366,7 @@ public class NegocioServicioImpl implements NegocioServicio {
     @Override
     public List<ItemNegocioDTO> listarNegociosDeUsuario(String idUsuario) throws ResourceNotFoundException {
 
-        List<Negocio> listaNegocios = negocioRepo.findAll(); //Hacer consulta que traiga todos los negocios del usuario indicado por parámetro
+        List<Negocio> listaNegocios = negocioRepo.listarNegocioUsuario(idUsuario); //Hacer consulta que traiga todos los negocios del usuario indicado por parámetro
 
         if (listaNegocios.isEmpty()){
             throw new ResourceNotFoundException("Error al momento de obtener los negocios relacionados al usuario "+idUsuario);
