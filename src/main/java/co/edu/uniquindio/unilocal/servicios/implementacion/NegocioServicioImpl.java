@@ -94,7 +94,7 @@ public class NegocioServicioImpl implements NegocioServicio {
      * @throws Exception
      */
     @Override
-    public DetalleNegocioDTO buscarNegocios(String idNegocio) throws Exception {
+    public DetalleNegocioDTO buscarNegocio(String idNegocio) throws Exception {
 
         Optional<Negocio> optionalNegocio = validarNegocioExiste(idNegocio);
 
