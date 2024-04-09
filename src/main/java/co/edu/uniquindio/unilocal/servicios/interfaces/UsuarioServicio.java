@@ -32,8 +32,6 @@ public interface UsuarioServicio {
     //void comentarPublicacion(String comentario,String idNegocio);
     //void contestarComentario(String comentario,String idComentario,String idNegocio);
 
-
-    //int calificarNegocio(int calificacion,String idNegocio); //Se califa del 1 al 5
     String agregarNegocioFavorito(String idUsuario,String idNegocio) throws Exception;
 
     String eliminarNegocioFavorito(String idUsuario,String idNegocio) throws ResourceNotFoundException;
@@ -43,7 +41,8 @@ public interface UsuarioServicio {
 
 
     //Recomendar lugares en función de las búsquedas que realiza.
-    void recomendarLugares();
+    List<ItemNegocioDTO> recomendarLugares(String idUsuario) throws Exception;
 
     List<ItemNegocioDTO> listarNegociosFavoritos(List<String> negociosFavoritos) throws Exception;
+
 }

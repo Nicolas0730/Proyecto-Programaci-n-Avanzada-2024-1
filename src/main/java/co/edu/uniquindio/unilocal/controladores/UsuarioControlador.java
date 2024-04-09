@@ -35,12 +35,12 @@ public class UsuarioControlador {
                 usuarioServicio.obtenerUsuario(idCuenta) ) );
     }
 
-    @GetMapping("/obtener-lista-usuarios")
-    public ResponseEntity<MensajeDTO<List<ItemUsuarioDTO>>> listarUsuarios() throws Exception{
-
-        return ResponseEntity.ok().body( new MensajeDTO<>(false,
-                usuarioServicio.listarUsuarios()));
-    }
+//    @GetMapping("/obtener-lista-usuarios")
+//    public ResponseEntity<MensajeDTO<List<ItemUsuarioDTO>>> listarUsuarios() throws Exception{
+//
+//        return ResponseEntity.ok().body( new MensajeDTO<>(false,
+//                usuarioServicio.listarUsuarios()));
+//    }
 
     @PutMapping("/recuperar-contrasenia-usuario")
     public ResponseEntity<MensajeDTO<String>> recuperarContrasenia(){
@@ -75,8 +75,8 @@ public class UsuarioControlador {
 
     @GetMapping("/recomendar-lugares")
     //Recomendar lugares en función de las búsquedas que realiza.
-    public void recomendarLugares(){
-        usuarioServicio.recomendarLugares();
+    public void recomendarLugares(String idUsuario) throws Exception {
+        usuarioServicio.recomendarLugares(idUsuario);
     }
 
 }

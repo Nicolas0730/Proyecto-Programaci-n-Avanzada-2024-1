@@ -48,10 +48,10 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuario.setNombre( registroUsuarioDTO.nombre() );
 
         if (existeNickname(registroUsuarioDTO.nickname()) ){
-            throw new Exception("El correo ya se encuentra registrado");
-        }else {
+            throw new Exception("El nickname ya se encuentra registrado");
+        }else
             usuario.setNickname( registroUsuarioDTO.nickname() );
-        }
+
 
         usuario.setCiudad( registroUsuarioDTO.ciudadResidencia() );
         usuario.setUrlFotoPerfil( registroUsuarioDTO.urlFotoPerfil() );
@@ -72,8 +72,10 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String passwordEncriptada = passwordEncoder.encode( registroUsuarioDTO.contrasenia() );
         usuario.setContrasenia( passwordEncriptada );
+
         usuario.setEstadoRegistro(EstadoRegistro.ACTIVO);
         usuario.setDireccion(registroUsuarioDTO.direccion());
+        usuario.setRegistroBusquedas(registroUsuarioDTO.registroBusquedas());//va a ser null al momento del registro
         usuario.setNegociosFavoritos(registroUsuarioDTO.negociosFavoritos()); //va a ser null al momento del registro
 
         //Se guarda en la base de datos y obtenemos el objeto registrado
@@ -109,6 +111,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     private boolean existeNickname(String nickname) {
         return usuarioRepo.existsByNickname(nickname);
     }
+
     /**
      * Método para verificar si existe un usuario registrado en la BD con ese correo
      * @param correo
@@ -127,14 +130,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     public void actualizarUsuario(ActualizarUsuarioDTO actualizarUsuarioDTO) throws Exception {
 
         Optional<Usuario> optionalUsuario = validarUsuarioExiste(actualizarUsuarioDTO.idUsuario());
-//        //Buscamos el cliente que se quiere actualizar
-//        Optional<Usuario> optionalUsuario = usuarioRepo.findById( actualizarUsuarioDTO.idUsuario() );
-//
-//        //Si no se encontró el usuario, lanzamos una excepción
-//        if(optionalUsuario.isEmpty()){
-//            throw new Exception("No se encontró el usuario a actualizar");
-//        }
-        //Obtenemos el usuario que se quiere actualizar y le asignamos los nuevos valores (el nickname no se puede cambiar)
+
         Usuario usuario = optionalUsuario.get();
         usuario.setNombre( actualizarUsuarioDTO.nombre() );
         usuario.setUrlFotoPerfil( actualizarUsuarioDTO.fotoPerfil() );
@@ -184,6 +180,10 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
         //Obtenemos el cliente
         Usuario usuario = optionalUsuario.get();
+
+        if (usuario.getEstadoRegistro().equals(EstadoRegistro.INACTIVO)){
+            throw new Exception("El usuario solicitado tiene un estado de registro inválido");
+        }
 
         //Retornamos el usuario en formato DTO
         return new DetalleUsuarioDTO( usuario.getId(), usuario.getNombre(), usuario.getUrlFotoPerfil(),
@@ -260,9 +260,28 @@ public class UsuarioServicioImpl implements UsuarioServicio {
             throw new Exception("Ocurrió un error al momento de agregar el negocio "+idNegocio+" a la lista de favoritos del usuario "+idUsuario);
         }
         usuario.getNegociosFavoritos().add(idNegocio);
+        usuario.getRegistroBusquedas().add(obtenerNombreNegocioById(idNegocio));
         usuarioRepo.save(usuario);
 
         return idNegocio;
+    }
+
+    /**
+     * Método que obtiene el nombre de un negocio dado su id
+     * este método será usado en agregar negocio favoritos para obtener
+     * el nombre del negocio y agregarlo a la lista de registro de busquedas del usuario
+     * @param idNegocio
+     * @return
+     * @throws Exception
+     */
+    private String obtenerNombreNegocioById(String idNegocio) throws Exception {
+
+        Optional<Negocio> negocioOptional = negocioRepo.findById(idNegocio);
+        if (negocioOptional.isEmpty()){
+            throw new Exception("Error al obtener el negocio con el id "+idNegocio);
+        }
+        Negocio negocio = negocioOptional.get();
+        return negocio.getNombre();
     }
 
     @Override
@@ -282,11 +301,50 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return null;
     }
 
+
+    /**
+     * Método que recomienda lugares (negocios) en base a las busquedas que un usuario
+     * ha realizado. Estas busquedas se encuentran en la lista de registro de busquedas
+     * @param idUsuario
+     * @return Lista de negocios a recomendar
+     * @throws Exception
+     */
     @Override
-    public void recomendarLugares() {
-        //Se recomienda en base a las busquedas de los usuarios
-        //De donde se encuentran las busquedas?
+    public List<ItemNegocioDTO> recomendarLugares(String idUsuario) throws Exception {
+        Optional<Usuario> usuarioOptional = usuarioRepo.findById(idUsuario);
+        if (usuarioOptional.isEmpty()){
+            throw new Exception("Error al buscar el usuario con el id "+idUsuario);
+        }
+        Usuario usuario = usuarioOptional.get();
+        //Obtenemos las busquedas del usuario
+        List<String> listaLugares = usuario.getRegistroBusquedas();
+        return obtenerLugaresRecomendados(listaLugares);
     }
+
+    /**
+     * Método que obtiene los lugares a recomendar de un usuario
+     * recibe la lista de lugares que el usuario ha buscado y en base a estos
+     * busca en la base de datos un negocio que su nombre sea similar al que
+     * se encuentra en listaLugares. una vez obtenida la lista de negocios
+     * se crea un List<itemNegocioDTO> y se transforma para retornarse
+     * @param listaLugares lista con nombres de lugares que el usuario ha buscado
+     * @return lista de itemNegocio de lugares que pueden interesarle al usuario
+     */
+    private List<ItemNegocioDTO> obtenerLugaresRecomendados(List<String> listaLugares) throws ResourceNotFoundException {
+
+        List<Negocio> listaNegocios = new ArrayList<>();
+        for (String lugar: listaLugares) {
+            if (!listaNegocios.contains(negocioRepo.busquedaNombresSimilares(lugar).get(0))) {
+                //El negocio no está en la lista, por lo tanto se agrega
+                listaNegocios.add(negocioRepo.busquedaNombresSimilares(lugar).get(0));}
+            }
+
+            List<ItemNegocioDTO> itemNegocioDTOList = new ArrayList<>();
+            for (Negocio negocio : listaNegocios) {
+                itemNegocioDTOList.add(new ItemNegocioDTO(negocio.getId(), negocio.getNombre(), negocio.getListaImagenes(), negocio.getTipoNegocio(), negocio.getDireccion()));
+            }
+            return itemNegocioDTOList;
+        }
 
     /**
      * Este metodo iria aqui o en NegocioRepo?
@@ -299,7 +357,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     public List<ItemNegocioDTO> listarNegociosFavoritos(List<String> negociosFavoritos) throws Exception{
         List<Negocio> listaNegocios = negocioRepo.ListarFavoritos(negociosFavoritos);
         if (listaNegocios.isEmpty()){
-            throw new ResourceNotFoundException("Error al momento de obtener los negocio favoritos ");
+            throw new ResourceNotFoundException("Error al momento de obtener los negocios favoritos ");
         }
         List<ItemNegocioDTO> items = new ArrayList<>();
         for (Negocio negocio: listaNegocios){
@@ -307,4 +365,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         }
         return  items;
     }
-}
+
+
+
+    }

@@ -1,6 +1,7 @@
 package co.edu.uniquindio.unilocal.repositorio;
 
 import co.edu.uniquindio.unilocal.model.EstadoNegocio;
+import co.edu.uniquindio.unilocal.model.EstadoRegistro;
 import co.edu.uniquindio.unilocal.model.Negocio;
 import co.edu.uniquindio.unilocal.model.TipoNegocio;
 import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
@@ -27,11 +28,12 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
     @Query (value = "{'historialNegocio.estadoNegocio' : ?0 }")
     List<Negocio> ListarNegocioEstado(EstadoNegocio Estado);
 
+    List<Negocio> ListarNegocioPorEstadoRegistro(EstadoRegistro estadoRegistro);
 
     @Query (value = "{'idUsuario' :  ?0}" )
     List<Negocio> listarNegocioUsuario (String idUsuario);
 
-    @Query(value = "{ '_id' : { $in : ?0 } }") // Realizar pregunta si la consulta, va en negocio o en usuario
+    @Query(value = "{ '_id' : { $in : ?0 } }")
     List<Negocio> ListarFavoritos (List<String> idNeogcio);
 
     @Query (value = "{ 'nombre' : { $regex : ?0, $options: 'i' } }" )

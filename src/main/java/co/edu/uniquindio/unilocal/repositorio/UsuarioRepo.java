@@ -17,7 +17,7 @@ public interface UsuarioRepo extends MongoRepository<Usuario,String> {
     //Aun mas sencillo se podria hacer:
     Optional<Usuario> findByCorreo(String correo);
 
-    Optional<Usuario> findById(String contrasenia);
+    Optional<Usuario> findById(String idUsuario);
 
     boolean existsByCorreo(String correo);
     boolean existsByNickname(String nickname);

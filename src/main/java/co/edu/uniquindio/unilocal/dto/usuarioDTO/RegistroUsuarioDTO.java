@@ -22,5 +22,6 @@ public record RegistroUsuarioDTO(
         @NotBlank String nickname,
         @NotBlank Ciudad ciudadResidencia,
         @NotBlank String direccion,
+        List<String> registroBusquedas,
         List<String> negociosFavoritos) {
 }

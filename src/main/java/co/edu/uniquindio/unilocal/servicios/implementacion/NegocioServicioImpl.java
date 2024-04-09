@@ -92,19 +92,39 @@ public class NegocioServicioImpl implements NegocioServicio {
     /**
      * Método que busca un negocio en la BD dado su id
      * @param idNegocio
-     * @return
+     * @return DetalleNegocioDTO si se encuentra el negocio
      * @throws Exception
      */
     @Override
-    public DetalleNegocioDTO buscarNegocio(String idNegocio) throws Exception {
+    public DetalleNegocioDTO buscarNegocio(String idNegocio, String idUsuario) throws Exception {
 
         Optional<Negocio> optionalNegocio = validarNegocioExiste(idNegocio);
-
         Negocio negocio = optionalNegocio.get();
+
+        //Una vez se valida que el negocio existe lo agregamos a las busquedas del usuario
+        //que realiza la busqueda
+        agregarNegocioRegistroBusquedasUsuario(idUsuario,negocio.getNombre());
 
         return new DetalleNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getDescripcion(),negocio.getListaImagenes(),
                 negocio.getListaTelefonos(),negocio.getUbicacion(),negocio.getIdUsuario(),negocio.getHorario(),
                 negocio.getTipoNegocio(),negocio.getHistorialNegocio(),negocio.getCiudad(),negocio.getDireccion());
+    }
+
+    /**
+     * Método auxiliar que busca un usuario dado su id y le agrega el nombre de un negocio
+     * a los registro de busqueda del usuario
+     * @param idUsuario usuario al que se modificará el registroBusqeudas
+     * @param nombreNegocio negocio que se agregará a registroBusquedas
+     * @throws Exception
+     */
+    private void agregarNegocioRegistroBusquedasUsuario(String idUsuario,String nombreNegocio) throws Exception {
+        Optional<Usuario> usuarioOptional = usuarioRepo.findById(idUsuario);
+        if (usuarioOptional.isEmpty()){
+            throw new Exception("Error al buscar el usuario con el id "+idUsuario);
+        }
+        Usuario usuario = usuarioOptional.get();
+        usuario.getRegistroBusquedas().add(nombreNegocio);
+        usuarioRepo.save(usuario);
     }
 
     /**
@@ -114,11 +134,13 @@ public class NegocioServicioImpl implements NegocioServicio {
      * @throws Exception
      */
     @Override
-    public List<ItemNegocioDTO> busquedaPorNombre(String nombre) throws Exception{
+    public List<ItemNegocioDTO> busquedaPorNombre(String nombre,String idUsuario) throws Exception{
         List<Negocio> listaNegocios = negocioRepo.busquedaNombresSimilares(nombre);
         if (listaNegocios.isEmpty()){
             throw new ResourceNotFoundException("Error al momento de obtener los negocio que contienen el nombre "+nombre);
         }
+        agregarNegocioRegistroBusquedasUsuario(idUsuario,nombre);
+
         List<ItemNegocioDTO> items = new ArrayList<>();
         for (Negocio negocio: listaNegocios){
             items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
@@ -185,7 +207,6 @@ public class NegocioServicioImpl implements NegocioServicio {
                 EstadoNegocio.APROBADO,
                 revisionDTO.idModerador()
         ) );
-
         negocioRepo.save(negocio);
     }
 
@@ -309,7 +330,7 @@ public class NegocioServicioImpl implements NegocioServicio {
     @Override
     public List<ItemNegocioDTO> buscarNegociosPorTipo(TipoNegocio tipoNegocio) throws ResourceNotFoundException {
 
-        List<Negocio> listaNegocios = negocioRepo.buscarNegociosPorTipo(tipoNegocio);
+        List<Negocio> listaNegocios = negocioRepo.buscarNegocioPorTipo(tipoNegocio);
 
         if (listaNegocios.isEmpty()){
             throw new ResourceNotFoundException("Error al momento de filtrar negocios por el tipo "+tipoNegocio);
@@ -324,15 +345,67 @@ public class NegocioServicioImpl implements NegocioServicio {
     }
 
     /**
-     * Método que busca en la BD negocios en un rango de distancia indicado por parámetro
-     * <DetalleNegocioDTO> el cual contiene todos los atributos del negocio
+     * Método que dada una ubicación, busca en la BD negocios en un rango de distancia indicado por parámetro
+     * y devuelve una lista de <DetalleNegocioDTO> el cual contiene todos los atributos del negocio
+     * @param idNegocio el cual tiene la ubicacion desde donde se va a calcular los otros negocios cercanos
      * @param distanciaAlrededor
      * @return Lista de negocios en el rango indicado
      */
     @Override
-    public List<DetalleNegocioDTO> buscarNegociosPorDistancia(int distanciaAlrededor) {
-        //Falta construir la consulta
-        return null;
+    public List<ItemNegocioDTO> buscarNegociosPorDistancia(String idNegocio,int distanciaAlrededor) throws ResourceNotFoundException {
+        List<ItemNegocioDTO> negociosEnRango = new ArrayList<>();
+        List<Negocio> listNegocios = negocioRepo.ListarNegocioPorEstadoRegistro(EstadoRegistro.ACTIVO);
+
+        Optional<Negocio> optionalNegocio = validarNegocioExiste(idNegocio);
+        Negocio negocio = optionalNegocio.get();
+
+        double latitud = negocio.getUbicacion().getLatitud();
+        double longitud = negocio.getUbicacion().getLongitud();
+
+        for (Negocio nego: listNegocios){
+
+            double distancia = distanciaEntreDosPuntos(latitud, longitud, nego.getUbicacion().getLatitud(), nego.getUbicacion().getLongitud());
+
+            // Si la distancia es menor o igual a la distancia máxima permitida, agregar el negocio a la lista de resultados
+            if (distancia <= distanciaAlrededor) {
+                negociosEnRango.add(new ItemNegocioDTO(nego.getId(),nego.getNombre(),nego.getListaImagenes(),nego.getTipoNegocio(),nego.getDireccion()));
+            }
+        }
+        return negociosEnRango;
+    }
+
+    /**
+     * Método para calcular la distancia entre dos puntos utilizando la fórmula de la
+     * distancia haversine
+     * Método hecho con chatGPT
+     * @param latitudUsuario
+     * @param longitudUsuario
+     * @param latitudNegocio
+     * @param longitudNegocio
+     * @return
+     */
+    private double distanciaEntreDosPuntos(double latitudUsuario, double longitudUsuario, double latitudNegocio, double longitudNegocio) {
+        // Radio de la Tierra en kilómetros
+        final int RADIO_TIERRA = 6371;
+
+        // Convertir las latitudes y longitudes de grados a radianes
+        double latitudUsuarioRad = Math.toRadians(latitudUsuario);
+        double longitudUsuarioRad = Math.toRadians(longitudUsuario);
+        double latitudNegocioRad = Math.toRadians(latitudNegocio);
+        double longitudNegocioRad = Math.toRadians(longitudNegocio);
+
+        // Calcular la diferencia de latitudes y longitudes
+        double diferenciaLatitud = latitudNegocioRad - latitudUsuarioRad;
+        double diferenciaLongitud = longitudNegocioRad - longitudUsuarioRad;
+
+        // Calcular la distancia utilizando la fórmula de la distancia haversine
+        double a = Math.pow(Math.sin(diferenciaLatitud / 2), 2)
+                + Math.cos(latitudUsuarioRad) * Math.cos(latitudNegocioRad)
+                * Math.pow(Math.sin(diferenciaLongitud / 2), 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distancia = RADIO_TIERRA * c;
+
+        return distancia;
     }
 
     /**

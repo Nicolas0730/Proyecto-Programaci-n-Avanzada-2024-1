@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-//Se descartan campos como la contraseña ya que son privados
+//Se descartan campos como la contraseña y registro de busqueda ya que son privados
 public record DetalleUsuarioDTO(
         @NotBlank String id,
         @NotBlank String nombre,

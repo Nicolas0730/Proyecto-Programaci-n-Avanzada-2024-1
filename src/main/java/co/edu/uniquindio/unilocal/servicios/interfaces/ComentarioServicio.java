@@ -23,4 +23,5 @@ public interface ComentarioServicio {
 
     List<ItemComentariODTO> encontrarTop5() throws Exception; //Esta es una funcionalidad propuesta
 
+    //int calificarNegocio(int calificacion,String idNegocio); //Se califa del 1 al 5
 }

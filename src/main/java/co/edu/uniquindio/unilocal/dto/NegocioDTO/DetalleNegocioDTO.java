@@ -21,7 +21,7 @@ import java.util.List;
  * @param ciudad
  * @param direccion
  */
-public record DetalleNegocioDTO(String id,
+public record DetalleNegocioDTO(@NotBlank String id,
                                 @NotBlank String nombre,
                                 @NotBlank @Length(max = 100) String descripcion,
                                 @NotBlank List<String> listaImagenes,
