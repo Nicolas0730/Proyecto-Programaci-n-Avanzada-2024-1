@@ -20,9 +20,8 @@ public class Usuario extends Cuenta implements Serializable {
     private String id;
     private String nickname;
     private String urlFotoPerfil;
-    private String direccion;
+    private Ubicacion ubicacion;
     private List<String> registroBusquedas;
-
     private List<String> negociosFavoritos;
 
     @Builder

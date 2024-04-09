@@ -1,6 +1,7 @@
 package co.edu.uniquindio.unilocal.dto.usuarioDTO;
 
 import co.edu.uniquindio.unilocal.model.Ciudad;
+import co.edu.uniquindio.unilocal.model.Ubicacion;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public record DetalleUsuarioDTO(
         @NotBlank String nickname,
         @NotBlank String email,
         @NotBlank Ciudad ciudadResidencia,
+        @NotBlank Ubicacion ubicacion,
         @NotBlank List<String> negociosFavoritos
 ) {
 }

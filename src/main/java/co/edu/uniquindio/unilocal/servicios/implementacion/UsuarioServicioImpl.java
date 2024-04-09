@@ -1,15 +1,17 @@
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
+import co.edu.uniquindio.unilocal.dto.CambiarPasswordDTO;
+import co.edu.uniquindio.unilocal.dto.EmailDTO;
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.ItemNegocioDTO;
-import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
-import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.RegistroUsuarioDTO;
 import co.edu.uniquindio.unilocal.exception.ResourceNotFoundException;
 import co.edu.uniquindio.unilocal.model.*;
+import co.edu.uniquindio.unilocal.repositorio.ComentarioRepo;
 import co.edu.uniquindio.unilocal.repositorio.NegocioRepo;
 import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
+import co.edu.uniquindio.unilocal.servicios.interfaces.EmailServicio;
 import co.edu.uniquindio.unilocal.servicios.interfaces.UsuarioServicio;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import lombok.Setter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,7 +77,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuario.setContrasenia( passwordEncriptada );
 
         usuario.setEstadoRegistro(EstadoRegistro.ACTIVO);
-        usuario.setDireccion(registroUsuarioDTO.direccion());
+        usuario.setUbicacion(registroUsuarioDTO.ubicacion());
         usuario.setRegistroBusquedas(registroUsuarioDTO.registroBusquedas());//va a ser null al momento del registro
         usuario.setNegociosFavoritos(registroUsuarioDTO.negociosFavoritos()); //va a ser null al momento del registro
 
@@ -135,7 +138,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuario.setNombre( actualizarUsuarioDTO.nombre() );
         usuario.setUrlFotoPerfil( actualizarUsuarioDTO.fotoPerfil() );
         usuario.setCiudad( actualizarUsuarioDTO.ciudadReidencia() );
-        usuario.setDireccion(actualizarUsuarioDTO.direccion());
+        usuario.setUbicacion(actualizarUsuarioDTO.ubicacion());
         if( existeEmail(actualizarUsuarioDTO.correo()) ){
             throw new Exception("El correo ya se encuentra registrado");
         }else {
@@ -187,7 +190,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
         //Retornamos el usuario en formato DTO
         return new DetalleUsuarioDTO( usuario.getId(), usuario.getNombre(), usuario.getUrlFotoPerfil(),
-                usuario.getNickname(), usuario.getCorreo(), usuario.getCiudad(),usuario.getNegociosFavoritos());
+                usuario.getNickname(), usuario.getCorreo(), usuario.getCiudad(),usuario.getUbicacion(),usuario.getNegociosFavoritos());
     }
 
     /**
@@ -229,9 +232,74 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 //        return items;
 //    }
 
+    /**
+     * Método que recupera la contraseña de un usuario dado su id
+     * @param idUsuario
+     * @return
+     * @throws Exception
+     */
     @Override
-    public String recuperarContrasenia() {
-        return null;
+    public CambiarPasswordDTO recuperarContrasenia(String idUsuario) throws Exception {
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+        String nuevaContra=generarNuevaContrasenia();
+
+        //Obtenemos el usuario que se quiere recuperar la contraseña y verifica su estado
+        Usuario usuario = optionalUsuario.get();
+        if (usuario.getEstadoRegistro().equals(EstadoRegistro.INACTIVO)){
+            throw new Exception("CUENTA CON ESTADO INVÁLIDO");
+        }
+        usuario.setContrasenia(nuevaContra);
+        usuarioRepo.save(usuario);
+        CambiarPasswordDTO cambiarPasswordDTO = new CambiarPasswordDTO(idUsuario,nuevaContra,usuario.getCorreo());
+        enviarCorreoRecuperacion(cambiarPasswordDTO);
+        return cambiarPasswordDTO;
+    }
+
+    private void enviarCorreoRecuperacion(CambiarPasswordDTO cambiarPasswordDTO) throws Exception {
+        //PREGUNTAR EN LA PRÓXIMA CLASE CÓMO HACER PARA USAR EL SERVICIO enviarCorreo
+        final EmailServicio emailServicio = null;
+        emailServicio.enviarCorreo(new EmailDTO("RECUPERACIÓN DE CONTRASEÑA", "Su nueva contraseña es: "+cambiarPasswordDTO.passwordNueva(), cambiarPasswordDTO.email()));
+
+    }
+
+    /**
+     * Método que genera un String que servirá como contraseña, este contiene al menos 8
+     * caracteres, incluyendo al menos una letra mayúscula, una letra minúscula, un número
+     * y un carácter especial
+     * @return contraseña generada aleatoriamente
+     */
+    private String generarNuevaContrasenia() {
+        String CARACTERES_PERMITIDOS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$!%*?&";
+        SecureRandom RANDOM = new SecureRandom();
+        StringBuilder contrasenia = new StringBuilder();
+
+        // Agregar al menos una letra mayúscula
+        contrasenia.append((char) (RANDOM.nextInt(26) + 'A'));
+
+        // Agregar al menos una letra minúscula
+        contrasenia.append((char) (RANDOM.nextInt(26) + 'a'));
+
+        // Agregar al menos un número
+        contrasenia.append((char) (RANDOM.nextInt(10) + '0'));
+
+        // Agregar al menos un carácter especial
+        contrasenia.append(CARACTERES_PERMITIDOS.charAt(RANDOM.nextInt(CARACTERES_PERMITIDOS.length())));
+
+        // Completar la contraseña hasta alcanzar la longitud mínima
+        while (contrasenia.length() < 8) {
+            contrasenia.append(CARACTERES_PERMITIDOS.charAt(RANDOM.nextInt(CARACTERES_PERMITIDOS.length())));
+        }
+
+        // Mezclar la contraseña para que los caracteres estén en orden aleatorio
+        char[] contraseniaMezclada = contrasenia.toString().toCharArray();
+        for (int i = 0; i < contrasenia.length(); i++) {
+            int indiceAleatorio = RANDOM.nextInt(contrasenia.length());
+            char temp = contraseniaMezclada[i];
+            contraseniaMezclada[i] = contraseniaMezclada[indiceAleatorio];
+            contraseniaMezclada[indiceAleatorio] = temp;
+        }
+
+        return new String(contraseniaMezclada);
     }
 
     /**
@@ -296,9 +364,56 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return idNegocio;
     }
 
+    /**
+     * Este método calculará la distancia en línea recta entre dos puntos geográficos utilizando
+     * la fórmula de la distancia haversine. Esto no es una ruta real, sino la
+     * distancia entre los dos puntos en una línea directa.
+     * Cuando se tenga la api de los mapas se reescribirá el método
+     * @param idUsuario
+     * @param ubicacionDestino
+     * @return
+     */
     @Override
-    public String solicitarRuta(Ubicacion ubicacionOrigen, Ubicacion ubicacionDestino) {
-        return null;
+    public double solicitarRuta(String idUsuario, Ubicacion ubicacionDestino) throws ResourceNotFoundException {
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+        Usuario usuario = optionalUsuario.get();
+        double distancia = distanciaEntreDosPuntos(usuario.getUbicacion().getLatitud(),
+                usuario.getUbicacion().getLongitud(),ubicacionDestino.getLatitud(),
+                ubicacionDestino.getLongitud());
+        return distancia;
+    }
+
+    /*** Método auxiliar para calcular la distancia entre dos puntos utilizando la fórmula de la
+     * distancia haversine
+     * Método hecho con chatGPT
+     * @param latitudUsuario
+     * @param longitudUsuario
+     * @param latitudNegocio
+     * @param longitudNegocio
+     * @return
+             */
+    private double distanciaEntreDosPuntos(double latitudUsuario, double longitudUsuario, double latitudNegocio, double longitudNegocio) {
+        // Radio de la Tierra en kilómetros
+        final int RADIO_TIERRA = 6371;
+
+        // Convertir las latitudes y longitudes de grados a radianes
+        double latitudUsuarioRad = Math.toRadians(latitudUsuario);
+        double longitudUsuarioRad = Math.toRadians(longitudUsuario);
+        double latitudNegocioRad = Math.toRadians(latitudNegocio);
+        double longitudNegocioRad = Math.toRadians(longitudNegocio);
+
+        // Calcular la diferencia de latitudes y longitudes
+        double diferenciaLatitud = latitudNegocioRad - latitudUsuarioRad;
+        double diferenciaLongitud = longitudNegocioRad - longitudUsuarioRad;
+
+        // Calcular la distancia utilizando la fórmula de la distancia haversine
+        double a = Math.pow(Math.sin(diferenciaLatitud / 2), 2)
+                + Math.cos(latitudUsuarioRad) * Math.cos(latitudNegocioRad)
+                * Math.pow(Math.sin(diferenciaLongitud / 2), 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distancia = RADIO_TIERRA * c;
+
+        return distancia;
     }
 
 

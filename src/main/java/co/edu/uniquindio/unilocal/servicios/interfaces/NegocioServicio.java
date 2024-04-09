@@ -28,4 +28,6 @@ public interface NegocioServicio {
     List<ItemNegocioDTO> filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception;
 
     List<ItemNegocioDTO> listarNegociosDeUsuario(String idUsuario) throws Exception;
+
+    List<ItemNegocioDTO> encontrarTop5() throws Exception; // FUNCIONALIDAD PROPUESTA
 }

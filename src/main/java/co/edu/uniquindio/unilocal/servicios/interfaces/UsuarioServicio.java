@@ -1,5 +1,6 @@
 package co.edu.uniquindio.unilocal.servicios.interfaces;
 
+import co.edu.uniquindio.unilocal.dto.CambiarPasswordDTO;
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.ItemNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
@@ -22,7 +23,7 @@ public interface UsuarioServicio {
 
     DetalleUsuarioDTO obtenerUsuario(String idCuenta) throws Exception;
     //List<ItemUsuarioDTO> listarUsuarios(); --No es necesario en el proyecto
-    String recuperarContrasenia();
+    CambiarPasswordDTO recuperarContrasenia(String idUsuario) throws Exception;
 
     //List<NegocioDTO> listarNegociosPropios();
 
@@ -36,7 +37,7 @@ public interface UsuarioServicio {
 
     String eliminarNegocioFavorito(String idUsuario,String idNegocio) throws ResourceNotFoundException;
 
-    String solicitarRuta(Ubicacion ubicacionOrigen, Ubicacion ubicacionDestino);
+    double solicitarRuta(String idUsuario, Ubicacion ubicacionDestino) throws ResourceNotFoundException;
 
 
 

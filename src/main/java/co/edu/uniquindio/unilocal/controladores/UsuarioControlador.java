@@ -1,5 +1,6 @@
 package co.edu.uniquindio.unilocal.controladores;
 
+import co.edu.uniquindio.unilocal.dto.CambiarPasswordDTO;
 import co.edu.uniquindio.unilocal.dto.MensajeDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
@@ -43,9 +44,9 @@ public class UsuarioControlador {
 //    }
 
     @PutMapping("/recuperar-contrasenia-usuario")
-    public ResponseEntity<MensajeDTO<String>> recuperarContrasenia(){
-        usuarioServicio.recuperarContrasenia();
-        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Contraseña recuperada correctamente"));
+    public ResponseEntity<MensajeDTO<CambiarPasswordDTO>> recuperarContrasenia(@PathVariable String idUsuario) throws Exception {
+
+        return ResponseEntity.ok().body(new MensajeDTO<>(false,usuarioServicio.recuperarContrasenia(idUsuario)));
     }
 
 
@@ -68,9 +69,9 @@ public class UsuarioControlador {
     }
 
     @GetMapping("/solicitar-Ruta")
-    public ResponseEntity<MensajeDTO<String>> solicitarRuta(@Valid @RequestBody Ubicacion ubicacionOrigen,@Valid @RequestBody Ubicacion ubicacionDestino){
-
-        return ResponseEntity.ok().body(new MensajeDTO<>(false,usuarioServicio.solicitarRuta(ubicacionOrigen,ubicacionDestino)));
+    public ResponseEntity<MensajeDTO<String>> solicitarRuta(@PathVariable String idUsuario,@Valid @RequestBody Ubicacion ubicacionDestino) throws ResourceNotFoundException {
+        usuarioServicio.solicitarRuta(idUsuario,ubicacionDestino);
+        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Ruta encontrada correctamente"));
     }
 
     @GetMapping("/recomendar-lugares")
