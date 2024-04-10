@@ -133,17 +133,38 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     public void actualizarUsuario(ActualizarUsuarioDTO actualizarUsuarioDTO) throws Exception {
 
         Optional<Usuario> optionalUsuario = validarUsuarioExiste(actualizarUsuarioDTO.idUsuario());
+<<<<<<< HEAD
+=======
+//        //Buscamos el cliente que se quiere actualizar
+//        Optional<Usuario> optionalUsuario = usuarioRepo.findById( actualizarUsuarioDTO.idUsuario() );
+//
+//        //Si no se encontró el usuario, lanzamos una excepción
+//        if(optionalUsuario.isEmpty()){
+//            throw new Exception("No se encontró el usuario a actualizar");
+//        }
+        //Obtenemos el usuario que se quiere actualizar y le asignamos los nuevos valores (el nickname no se puede cambiar)
+
+        if( existeEmail(actualizarUsuarioDTO.correo()) ){
+            throw new Exception("El correo ya se encuentra registrado");
+        }
+>>>>>>> ramaDiego
 
         Usuario usuario = optionalUsuario.get();
         usuario.setNombre( actualizarUsuarioDTO.nombre() );
         usuario.setUrlFotoPerfil( actualizarUsuarioDTO.fotoPerfil() );
         usuario.setCiudad( actualizarUsuarioDTO.ciudadReidencia() );
+<<<<<<< HEAD
         usuario.setUbicacion(actualizarUsuarioDTO.ubicacion());
         if( existeEmail(actualizarUsuarioDTO.correo()) ){
             throw new Exception("El correo ya se encuentra registrado");
         }else {
             usuario.setCorreo( actualizarUsuarioDTO.correo() );
         }
+=======
+        usuario.setDireccion(actualizarUsuarioDTO.direccion());
+        usuario.setCorreo( actualizarUsuarioDTO.correo() );
+
+>>>>>>> ramaDiego
         //Como el objeto cliente ya tiene un id, el save() no crea un nuevo registro sino que actualiza el que ya existe
         usuarioRepo.save(usuario);
 
