@@ -20,7 +20,7 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
 
     Optional<Negocio> findByNombre(String nombre);
 
-    boolean existsByNombre(String nombreNegocio);
+//    boolean existsByNombre(String nombreNegocio);
 
     @Query (value = "{tipoNegocio :  ?0}")
     List<Negocio> buscarNegocioPorTipo(TipoNegocio tipoNegocio);

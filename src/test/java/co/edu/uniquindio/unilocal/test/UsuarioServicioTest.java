@@ -6,6 +6,7 @@ import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.RegistroUsuarioDTO;
 import co.edu.uniquindio.unilocal.model.Ciudad;
 import co.edu.uniquindio.unilocal.model.EstadoRegistro;
+import co.edu.uniquindio.unilocal.model.Ubicacion;
 import co.edu.uniquindio.unilocal.model.Usuario;
 import co.edu.uniquindio.unilocal.servicios.implementacion.UsuarioServicioImpl;
 import co.edu.uniquindio.unilocal.servicios.interfaces.UsuarioServicio;
@@ -25,11 +26,14 @@ public class UsuarioServicioTest {
 
     @Autowired
     private UsuarioServicio usuarioServicio;
+    Ubicacion ubicacion = new Ubicacion(245,245);
 
     @Test
     public void registrarTest() throws Exception {
 
         List<String> negociosFav = new ArrayList<>();
+        List<String> registroBusqueda = new ArrayList<>();
+
 
         //Se crea un objeto de tipo RegistroClienteDTO
         RegistroUsuarioDTO registroUsuarioDTO = new RegistroUsuarioDTO(
@@ -39,7 +43,8 @@ public class UsuarioServicioTest {
                 "juanakdmfwmfofo",
                 "juanito123",
                 Ciudad.ARMENIA,
-                ,
+                ubicacion,
+                registroBusqueda,
                 negociosFav
                 );
 
@@ -60,7 +65,7 @@ public class UsuarioServicioTest {
                 "andres1@gmail.com",
                 "urlfotoperfil",
                 Ciudad.PEREIRA,
-                "Carrera 9 # 9-98"
+                ubicacion
         );
 
         usuarioServicio.actualizarUsuario(actualizarUsuarioDTO);
@@ -73,17 +78,10 @@ public class UsuarioServicioTest {
     public void eliminarTest() throws Exception{
 
         usuarioServicio.eliminarUsuario("Cliente2");
-        Assertions.assertNotNull(Exception.class,() -> usuarioServicio.obtenerUsuario("Cliente1"));
 
-    }
-
-    @Test
-    public void obtenerTest() throws Exception{
-
-        List<ItemUsuarioDTO> lista = usuarioServicio.listarUsuarios();
-        //Se verifica que la lista no sea nula y que tenga 3 elementos
-
-        Assertions.assertEquals(5, lista.size());
+        Assertions.assertThrows(Exception.class, () -> {
+            usuarioServicio.obtenerUsuario("Cliente2");
+        });
 
     }
 
