@@ -39,7 +39,7 @@ public class UsuarioServicioTest {
                 "juanakdmfwmfofo",
                 "juanito123",
                 Ciudad.ARMENIA,
-                "Quimbaya, Mz 1 #12-12",
+                ,
                 negociosFav
                 );
 
