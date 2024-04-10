@@ -1,6 +1,8 @@
 package co.edu.uniquindio.unilocal.test;
 
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
+import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
+import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.RegistroUsuarioDTO;
 import co.edu.uniquindio.unilocal.model.Ciudad;
 import co.edu.uniquindio.unilocal.model.EstadoRegistro;
@@ -33,7 +35,7 @@ public class UsuarioServicioTest {
         RegistroUsuarioDTO registroUsuarioDTO = new RegistroUsuarioDTO(
                 "Juan",
                 "micorreo@gmail.com",
-                "mipassword",
+                "Mipassword1@",
                 "juanakdmfwmfofo",
                 "juanito123",
                 Ciudad.ARMENIA,
@@ -52,38 +54,36 @@ public class UsuarioServicioTest {
     @Test
     public void actualizarTest() throws Exception{
 
-        Usuario usuario = new Usuario();
-
         ActualizarUsuarioDTO actualizarUsuarioDTO = new ActualizarUsuarioDTO(
-                usuario.getId(),
+                "Cliente1",
                 "Andres",
-                "andres@gmail.com",
+                "andres1@gmail.com",
                 "urlfotoperfil",
                 Ciudad.PEREIRA,
                 "Carrera 9 # 9-98"
         );
 
         usuarioServicio.actualizarUsuario(actualizarUsuarioDTO);
-        Assertions.assertNotNull(usuario.getId());
+        DetalleUsuarioDTO detalleUsuarioDTO = usuarioServicio.obtenerUsuario("Cliente1");
+        Assertions.assertNotNull("urlFotoperfil",detalleUsuarioDTO.fotoPerfil());
 
     }
 
     @Test
     public void eliminarTest() throws Exception{
 
-        Usuario usuario = new Usuario();
-
-        usuario.setEstadoRegistro(EstadoRegistro.INACTIVO);
-
-        usuarioServicio.eliminarUsuario(usuario.getId());
-        Assertions.assertNotNull(usuario.getId());
+        usuarioServicio.eliminarUsuario("Cliente2");
+        Assertions.assertNotNull(Exception.class,() -> usuarioServicio.obtenerUsuario("Cliente1"));
 
     }
 
     @Test
     public void obtenerTest() throws Exception{
 
+        List<ItemUsuarioDTO> lista = usuarioServicio.listarUsuarios();
+        //Se verifica que la lista no sea nula y que tenga 3 elementos
 
+        Assertions.assertEquals(5, lista.size());
 
     }
 

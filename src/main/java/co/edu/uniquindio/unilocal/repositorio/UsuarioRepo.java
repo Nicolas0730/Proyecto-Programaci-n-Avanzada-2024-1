@@ -25,15 +25,12 @@ public interface UsuarioRepo extends MongoRepository<Usuario,String> {
 
 
     Optional<Usuario> findByNickname(String nickname);
-    Optional<Usuario> findById(String contrasenia);
 
     boolean existsByCorreo(String correo);
     boolean existsByNickname(String nickname);
 
     @Query("{ 'mail':?0, 'password' :  ?1}")
     Usuario buscarPorCorreoyContrasenia(String correo, String contrasenia);
-
-    Usuario findByCorreoAndContrasenia(String correo);
 
 
 

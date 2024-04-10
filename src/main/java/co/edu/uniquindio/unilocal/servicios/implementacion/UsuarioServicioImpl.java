@@ -134,16 +134,18 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 //            throw new Exception("No se encontró el usuario a actualizar");
 //        }
         //Obtenemos el usuario que se quiere actualizar y le asignamos los nuevos valores (el nickname no se puede cambiar)
+
+        if( existeEmail(actualizarUsuarioDTO.correo()) ){
+            throw new Exception("El correo ya se encuentra registrado");
+        }
+
         Usuario usuario = optionalUsuario.get();
         usuario.setNombre( actualizarUsuarioDTO.nombre() );
         usuario.setUrlFotoPerfil( actualizarUsuarioDTO.fotoPerfil() );
         usuario.setCiudad( actualizarUsuarioDTO.ciudadReidencia() );
         usuario.setDireccion(actualizarUsuarioDTO.direccion());
-        if( existeEmail(actualizarUsuarioDTO.correo()) ){
-            throw new Exception("El correo ya se encuentra registrado");
-        }else {
-            usuario.setCorreo( actualizarUsuarioDTO.correo() );
-        }
+        usuario.setCorreo( actualizarUsuarioDTO.correo() );
+
         //Como el objeto cliente ya tiene un id, el save() no crea un nuevo registro sino que actualiza el que ya existe
         usuarioRepo.save(usuario);
 
