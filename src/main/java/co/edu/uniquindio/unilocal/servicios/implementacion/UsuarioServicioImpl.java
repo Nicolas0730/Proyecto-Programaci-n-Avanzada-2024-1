@@ -308,17 +308,17 @@ public class UsuarioServicioImpl implements UsuarioServicio {
      * @return Id usuario eliminado
      * @throws ResourceNotFoundException
      */
-    @Override
-    public String eliminarCuentaUsuario(String idUsuario) throws ResourceNotFoundException {
-
-        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
-
-        //Obtenemos el cliente
-        Usuario usuario = optionalUsuario.get();
-        usuario.setEstadoRegistro(EstadoRegistro.INACTIVO);
-        usuarioRepo.save(usuario);
-        return usuario.getId();
-    }
+//    @Override
+//    public String eliminarCuentaUsuario(String idUsuario) throws ResourceNotFoundException {
+//
+//        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+//
+//        //Obtenemos el cliente
+//        Usuario usuario = optionalUsuario.get();
+//        usuario.setEstadoRegistro(EstadoRegistro.INACTIVO);
+//        usuarioRepo.save(usuario);
+//        return usuario.getId();
+//    }
 
     @Override
     public String agregarNegocioFavorito(String idUsuario,String idNegocio) throws Exception {
@@ -369,6 +369,10 @@ public class UsuarioServicioImpl implements UsuarioServicio {
      * la fórmula de la distancia haversine. Esto no es una ruta real, sino la
      * distancia entre los dos puntos en una línea directa.
      * Cuando se tenga la api de los mapas se reescribirá el método
+     *
+     * DEBE RETORNAR TAMBIÉN EL TIEMPO?? 10/04
+     * no recibe ubicaciondestino sino Negocio y este contiene la ubicacion
+     *
      * @param idUsuario
      * @param ubicacionDestino
      * @return
