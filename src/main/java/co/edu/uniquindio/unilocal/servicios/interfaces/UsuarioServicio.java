@@ -27,7 +27,7 @@ public interface UsuarioServicio {
 
     //List<NegocioDTO> listarNegociosPropios();
 
-    String eliminarCuentaUsuario(String idUsuario) throws ResourceNotFoundException; //Que retorne el id de la cuenta eliminada
+    //String eliminarCuentaUsuario(String idUsuario) throws ResourceNotFoundException; //Que retorne el id de la cuenta eliminada
 
 
     //void comentarPublicacion(String comentario,String idNegocio);
