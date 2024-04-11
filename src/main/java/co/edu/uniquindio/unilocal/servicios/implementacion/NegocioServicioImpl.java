@@ -1,26 +1,38 @@
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.*;
+import co.edu.uniquindio.unilocal.dto.comentarioDTO.ItemComentariODTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.exception.ResourceNotFoundException;
 import co.edu.uniquindio.unilocal.model.*;
+import co.edu.uniquindio.unilocal.repositorio.ComentarioRepo;
 import co.edu.uniquindio.unilocal.repositorio.NegocioRepo;
+import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
 import co.edu.uniquindio.unilocal.servicios.interfaces.NegocioServicio;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class NegocioServicioImpl implements NegocioServicio {
 
     private final NegocioRepo negocioRepo;
+    private final UsuarioRepo usuarioRepo;
+    private final ComentarioRepo comentarioRepo;
 
+    /**
+     * Método utilizado por un usuario para registrar un negocio
+     * este por defecto se crea con estado en espera mientras el
+     * administrador valida el mismo
+     * @param registroNegocioDTO
+     * @return
+     * @throws Exception
+     */
     @Override
     public String crearNegocio(RegistroNegocioDTO registroNegocioDTO) throws Exception {
         //Se crea un objeto negocio que va a contener todos los datos de registroNegocioDTO
@@ -30,6 +42,11 @@ public class NegocioServicioImpl implements NegocioServicio {
         negocio.setListaImagenes(registroNegocioDTO.listaImagenes());
         negocio.setListaTelefonos(registroNegocioDTO.listaTelefonos());
         negocio.setUbicacion(registroNegocioDTO.ubicacion());
+
+        if(!validarEstadoRegistroUsuario(registroNegocioDTO.idUsuario())){
+            throw new Exception("No se pudo crear el negocio, el estado del usuario es inválido");
+        }
+
         negocio.setIdUsuario(registroNegocioDTO.idUsuario());
         if (!esHorarioValido(registroNegocioDTO.horarioNegocio())) {
             throw new Exception("El horario del negocio no es válido. Debe estar entre las 7:00 am y las 10:00 pm.");
@@ -50,18 +67,92 @@ public class NegocioServicioImpl implements NegocioServicio {
         return negocioGuardado.getId();
     }
 
+    /**
+     * Método auxiliar que verifica que el estado de registro de un usuario
+     * sea activo para poder permitir que un negocio sea creado por este
+     * @param idUsuario a verificar su estado de registro
+     * @return false si el estado del registro es inactivo, true si es activo
+     */
+    private boolean validarEstadoRegistroUsuario(String idUsuario) throws ResourceNotFoundException {
+        boolean aux = true;
+
+        if (!usuarioRepo.findById(idUsuario).isPresent()){
+            throw new ResourceNotFoundException("El usuario no ha sido encontrado en la base de datos.");
+        }
+        Optional<Usuario> optionalUsuario = usuarioRepo.findById(idUsuario);
+        Usuario usuario = optionalUsuario.get();
+
+        if (usuario.getEstadoRegistro().equals(EstadoRegistro.INACTIVO)){
+            aux=false;
+        }
+        return aux;
+    }
+
+    /**
+     * Método que busca un negocio en la BD dado su id
+     * @param idNegocio
+     * @return DetalleNegocioDTO si se encuentra el negocio
+     * @throws Exception
+     */
     @Override
-    public DetalleNegocioDTO buscarNegocios(String idNegocio) throws Exception {
+    public DetalleNegocioDTO buscarNegocio(String idNegocio, String idUsuario) throws Exception {
 
         Optional<Negocio> optionalNegocio = validarNegocioExiste(idNegocio);
-
         Negocio negocio = optionalNegocio.get();
+
+        //Una vez se valida que el negocio existe lo agregamos a las busquedas del usuario
+        //que realiza la busqueda
+        agregarNegocioRegistroBusquedasUsuario(idUsuario,negocio.getNombre());
 
         return new DetalleNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getDescripcion(),negocio.getListaImagenes(),
                 negocio.getListaTelefonos(),negocio.getUbicacion(),negocio.getIdUsuario(),negocio.getHorario(),
                 negocio.getTipoNegocio(),negocio.getHistorialNegocio(),negocio.getCiudad(),negocio.getDireccion());
     }
 
+    /**
+     * Método auxiliar que busca un usuario dado su id y le agrega el nombre de un negocio
+     * a los registro de busqueda del usuario
+     * @param idUsuario usuario al que se modificará el registroBusqeudas
+     * @param nombreNegocio negocio que se agregará a registroBusquedas
+     * @throws Exception
+     */
+    private void agregarNegocioRegistroBusquedasUsuario(String idUsuario,String nombreNegocio) throws Exception {
+        Optional<Usuario> usuarioOptional = usuarioRepo.findById(idUsuario);
+        if (usuarioOptional.isEmpty()){
+            throw new Exception("Error al buscar el usuario con el id "+idUsuario);
+        }
+        Usuario usuario = usuarioOptional.get();
+        usuario.getRegistroBusquedas().add(nombreNegocio);
+        usuarioRepo.save(usuario);
+    }
+
+    /**
+     * Método que busca todos los negocios que tengan un nombre indicado por parámetro
+     * @param nombre que se va a buscar en los negocios
+     * @return Lista de los negocios que tienen el nombre por parámetro
+     * @throws Exception
+     */
+    @Override
+    public List<ItemNegocioDTO> busquedaPorNombre(String nombre,String idUsuario) throws Exception{
+        List<Negocio> listaNegocios = negocioRepo.busquedaNombresSimilares(nombre);
+        if (listaNegocios.isEmpty()){
+            throw new ResourceNotFoundException("Error al momento de obtener los negocio que contienen el nombre "+nombre);
+        }
+        agregarNegocioRegistroBusquedasUsuario(idUsuario,nombre);
+
+        List<ItemNegocioDTO> items = new ArrayList<>();
+        for (Negocio negocio: listaNegocios){
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+        }
+        return  items;
+    }
+
+    /**
+     * Método usado por un administrador para eliminar un negocio
+     * la eliminación al ser lógica solo cambia su estado a Inactivo
+     * @param idNegocio
+     * @throws Exception
+     */
     @Override
     public void eliminarNegocio(String idNegocio) throws Exception {
         Optional<Negocio> optionalNegocio = validarNegocioExiste(idNegocio);
@@ -93,6 +184,12 @@ public class NegocioServicioImpl implements NegocioServicio {
     }
 
 
+    /**
+     * Método usado por un administrador para aprobar un negocio que se encuentra en
+     *      * espera
+     * @param revisionDTO
+     * @throws Exception
+     */
     @Override
     public void aprobarNegocio(RegistroRevisionDTO revisionDTO) throws Exception {
 
@@ -109,10 +206,15 @@ public class NegocioServicioImpl implements NegocioServicio {
                 EstadoNegocio.APROBADO,
                 revisionDTO.idModerador()
         ) );
-
         negocioRepo.save(negocio);
     }
 
+    /**
+     * Método usado por un administrador para rechazar un negocio que se encuentra en
+     * espera
+     * @param revisionDTO
+     * @throws Exception
+     */
     @Override
     public void rechazarNegocio(RegistroRevisionDTO revisionDTO) throws Exception {
 
@@ -131,9 +233,6 @@ public class NegocioServicioImpl implements NegocioServicio {
         negocioRepo.save(negocio);
     }
 
-<<<<<<< HEAD
-    
-=======
     /**
      * Método que actualiza los datos de un negocio
      * Cabe resaltar que no todos los campos son actualizables
@@ -149,14 +248,13 @@ public class NegocioServicioImpl implements NegocioServicio {
         if (!esHorarioValido(actualizarNegocioDTO.horarioNegocio())) {
             throw new Exception("El horario del negocio no es válido. Debe estar entre las 7:00 am y las 10:00 pm.");
         }
+        negocio.setHorario(actualizarNegocioDTO.horarioNegocio());
         negocio.setNombre(actualizarNegocioDTO.nombre());
         negocio.setDescripcion(actualizarNegocioDTO.descripcion());
         negocio.setListaImagenes(actualizarNegocioDTO.listaImagenes());
         negocio.setListaTelefonos(actualizarNegocioDTO.listaTelefonos());
-        negocio.setHorario(actualizarNegocioDTO.horarioNegocio());
 
         negocioRepo.save(negocio);
-
     }
 
     /**
@@ -186,15 +284,16 @@ public class NegocioServicioImpl implements NegocioServicio {
         return aux;
     }
 
-    /**
-     * Método encargado de verificar si existe un negocio en la base de datos
-     * con un nombre enviado por parámetro
-     * @param nombre
-     * @return true si existe, false de lo contrario
-     */
-    private boolean validarNombreNegocio(String nombre) {
-        return negocioRepo.findByNombre(nombre).isPresent();
-    }
+//    /**
+//     * Método encargado de verificar si existe un negocio en la base de datos
+//     * con un nombre enviado por parámetro
+//     * @param nombre
+//     * @return true si existe, false de lo contrario
+//     */
+//    private boolean validarNombreNegocio(String nombre) {
+//        l
+//        return negocioRepo.existsByNombre(nombre);
+//    }
 
 
     /**
@@ -231,10 +330,10 @@ public class NegocioServicioImpl implements NegocioServicio {
     @Override
     public List<ItemNegocioDTO> buscarNegociosPorTipo(TipoNegocio tipoNegocio) throws ResourceNotFoundException {
 
-        List<Negocio> listaNegocios = negocioRepo.findAll(); //Ajustar la consulta para que retorne solo los negocios de tipoNegocio
+        List<Negocio> listaNegocios = negocioRepo.buscarNegocioPorTipo(tipoNegocio);
 
         if (listaNegocios.isEmpty()){
-            throw new ResourceNotFoundException("Error al momento de buscar negocios de tipo "+tipoNegocio);
+            throw new ResourceNotFoundException("Error al momento de filtrar negocios por el tipo "+tipoNegocio);
         }
 
         List<ItemNegocioDTO> items = new ArrayList<>();
@@ -246,22 +345,173 @@ public class NegocioServicioImpl implements NegocioServicio {
     }
 
     /**
-     * Método que busca en la BD negocios en un rango de distancia indicado por parámetro
-     * <DetalleNegocioDTO> el cual contiene todos los atributos del negocio
+     * Método que dada el id de un usuario, se obtiene el usuario y su ubicación
+     * busca en la BD negocios con estado activo. se valida con el metodo distanciaentredospuntos
+     * y devuelve una lista de <DetalleNegocioDTO> el cual contiene todos los atributos del negocio
+     * @param idUsuario el cual tiene la ubicacion desde donde se va a calcular los otros negocios cercanos
      * @param distanciaAlrededor
      * @return Lista de negocios en el rango indicado
      */
     @Override
-    public List<DetalleNegocioDTO> buscarNegociosPorDistancia(int distanciaAlrededor) {
-        return null;
+    public List<ItemNegocioDTO> buscarNegociosPorDistancia(String idUsuario,int distanciaAlrededor) throws Exception {
+        List<ItemNegocioDTO> negociosEnRango = new ArrayList<>();
+        List<Negocio> listNegocios = negocioRepo.ListarNegocioPorEstadoRegistro(EstadoRegistro.ACTIVO);
+
+        Optional<Usuario> optionalUsuario = usuarioRepo.findById(idUsuario);
+        if (optionalUsuario.isEmpty()){
+            throw new Exception("ERROR AL OBTENER USUARIO");
+        }
+        Usuario usuario = optionalUsuario.get();
+
+        double latitud = usuario.getUbicacion().getLatitud();
+        double longitud = usuario.getUbicacion().getLongitud();
+
+        for (Negocio nego: listNegocios){
+
+            double distancia = distanciaEntreDosPuntos(latitud, longitud, nego.getUbicacion().getLatitud(), nego.getUbicacion().getLongitud());
+
+            // Si la distancia es menor o igual a la distancia máxima permitida, agregar el negocio a la lista de resultados
+            if (distancia <= distanciaAlrededor) {
+                negociosEnRango.add(new ItemNegocioDTO(nego.getId(),nego.getNombre(),nego.getListaImagenes(),nego.getTipoNegocio(),nego.getDireccion()));
+            }
+        }
+        return negociosEnRango;
     }
->>>>>>> ramaNicolas
 
+    /**
+     * Método para calcular la distancia entre dos puntos utilizando la fórmula de la
+     * distancia haversine
+     * Método hecho con chatGPT
+     * @param latitudUsuario
+     * @param longitudUsuario
+     * @param latitudNegocio
+     * @param longitudNegocio
+     * @return
+     */
+    private double distanciaEntreDosPuntos(double latitudUsuario, double longitudUsuario, double latitudNegocio, double longitudNegocio) {
+        // Radio de la Tierra en kilómetros
+        final int RADIO_TIERRA = 6371;
 
+        // Convertir las latitudes y longitudes de grados a radianes
+        double latitudUsuarioRad = Math.toRadians(latitudUsuario);
+        double longitudUsuarioRad = Math.toRadians(longitudUsuario);
+        double latitudNegocioRad = Math.toRadians(latitudNegocio);
+        double longitudNegocioRad = Math.toRadians(longitudNegocio);
+
+        // Calcular la diferencia de latitudes y longitudes
+        double diferenciaLatitud = latitudNegocioRad - latitudUsuarioRad;
+        double diferenciaLongitud = longitudNegocioRad - longitudUsuarioRad;
+
+        // Calcular la distancia utilizando la fórmula de la distancia haversine
+        double a = Math.pow(Math.sin(diferenciaLatitud / 2), 2)
+                + Math.cos(latitudUsuarioRad) * Math.cos(latitudNegocioRad)
+                * Math.pow(Math.sin(diferenciaLongitud / 2), 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distancia = RADIO_TIERRA * c;
+
+        return distancia;
+    }
+
+    /**
+     * Método usado al momento de realizar una busqueda de negocios pero filtrando
+     * por los estados que un negocio puede tener
+     * @param estadoNegocio  APROBADO/EN_ESPERA/RECHAZADO
+     * @throws Exception
+     */
     @Override
-    public void filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception {
+    public List<ItemNegocioDTO> filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception {
+        List<Negocio> listaNegocios = negocioRepo.ListarNegocioEstado(estadoNegocio);
+        if (listaNegocios.isEmpty()){
+            throw new ResourceNotFoundException("Error al momento de obtener los negocio con el estado "+estadoNegocio);
+        }
+        List<ItemNegocioDTO> items = new ArrayList<>();
+        for (Negocio negocio: listaNegocios){
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+        }
+        return  items;
 
     }
 
+    /**
+     * Método que se encarga de devolver todos los negocios asociados a un usuario
+     * Se realiza una consulta a la base de datos donde se obtienen todos los negocios
+     * que tiene idUsuario = al que llega por parámetro
+     * @param idUsuario al que se le buscarán sus negocios
+     * @return La lista de negocios relacionada al usuario
+     * @throws ResourceNotFoundException
+     */
+    @Override
+    public List<ItemNegocioDTO> listarNegociosDeUsuario(String idUsuario) throws ResourceNotFoundException {
 
+        List<Negocio> listaNegocios = negocioRepo.listarNegocioUsuario(idUsuario); //Hacer consulta que traiga todos los negocios del usuario indicado por parámetro
+
+        if (listaNegocios.isEmpty()){
+            throw new ResourceNotFoundException("Error al momento de obtener los negocios relacionados al usuario "+idUsuario);
+        }
+
+        List<ItemNegocioDTO> items = new ArrayList<>();
+
+        for(Negocio negocio : listaNegocios){
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+        }
+        return items;
+    }
+
+    /**
+     * Método que devuelve el puntaje promedio de calificación de un negocio
+     * @param idNegocio del negocio
+     * @return puntaje del negocio
+     * @throws Exception
+     */
+    public double calcularPuntajeNegocio(String idNegocio) throws Exception {
+        double acumulado=0;
+        List<Comentario> listaComentarios = comentarioRepo.listarComentario(idNegocio);
+        if (listaComentarios.isEmpty()){
+            throw new ResourceNotFoundException("Error al momento de obtener los comentarios del negocio "+idNegocio);
+        }
+        for (Comentario comentario: listaComentarios) {
+            acumulado += comentario.getCalifacion(); //Acumula los puntajes de todos los comentarios
+        }
+        return (double) acumulado/listaComentarios.size();  //Devolvemos el promedio de las calificaciones para el negocio ingresado
+    }
+
+    /**
+     * Método que encuentra el top 5 de los negocios que tienen mejor calificación
+     * @return lista de 5 negocios
+     * @throws Exception
+     */
+    @Override
+    public List<ItemNegocioDTO> encontrarTop5() throws Exception {
+        List<Negocio> negocioList = negocioRepo.ListarNegocioPorEstadoRegistro(EstadoRegistro.ACTIVO);
+        Map<Negocio, Double> promediosCalificaciones = new HashMap<>();
+
+        if (negocioList.isEmpty()){
+            throw new Exception("ERROR AL OBTENER EL LISTADO DE NEGOCIOS ACTIVOS");
+        }
+
+        for (Negocio negocio : negocioList){
+            double promedio = calcularPuntajeNegocio(negocio.getId());
+            promediosCalificaciones.put(negocio, promedio);
+        }
+
+        // Ordenar los negocios por promedio de calificaciones de mayor a menor
+        List<Map.Entry<Negocio, Double>> listaOrdenada = new ArrayList<>(promediosCalificaciones.entrySet());
+        listaOrdenada.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
+        // Obtener los top 5 negocios con mejores calificaciones
+        List<Negocio> top5Negocios = new ArrayList<>();
+        for (int i = 0; i < Math.min(5, listaOrdenada.size()); i++) {
+            top5Negocios.add(listaOrdenada.get(i).getKey());
+        }
+
+        //Se convierte la lista de negocio a ItemNegocioDTO
+        List<ItemNegocioDTO> itemNegocioDTOList = new ArrayList<>();
+        for (Negocio negocio: top5Negocios){
+            itemNegocioDTOList.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),
+                    negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+        }
+
+        return itemNegocioDTOList;
+
+    }
 }

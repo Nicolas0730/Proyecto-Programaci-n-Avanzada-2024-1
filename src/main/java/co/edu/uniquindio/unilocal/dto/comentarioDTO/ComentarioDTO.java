@@ -7,10 +7,10 @@ import java.util.List;
 
 public record ComentarioDTO(@NotBlank String id,
                             @NotBlank String descripcion,
-                            int calificacion,
+                            @NotBlank int calificacion,
                             @NotBlank String idUsuario,
                             @NotBlank String idNegocio,
-                            //String respuesta,
+                            String respuesta,
                             List<String> imagenes,
                             @NotBlank LocalDateTime fechaComentario) {
 }

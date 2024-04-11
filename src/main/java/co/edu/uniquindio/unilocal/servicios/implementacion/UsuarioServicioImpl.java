@@ -1,19 +1,25 @@
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
-import co.edu.uniquindio.unilocal.dto.NegocioDTO.DetalleNegocioDTO;
-import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
+import co.edu.uniquindio.unilocal.dto.CambiarPasswordDTO;
+import co.edu.uniquindio.unilocal.dto.EmailDTO;
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.ItemNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
-import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.RegistroUsuarioDTO;
 import co.edu.uniquindio.unilocal.exception.ResourceNotFoundException;
 import co.edu.uniquindio.unilocal.model.*;
+import co.edu.uniquindio.unilocal.repositorio.ComentarioRepo;
+import co.edu.uniquindio.unilocal.repositorio.NegocioRepo;
 import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
+import co.edu.uniquindio.unilocal.servicios.interfaces.EmailServicio;
 import co.edu.uniquindio.unilocal.servicios.interfaces.UsuarioServicio;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,23 +28,33 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
+@Getter
+@Setter
 public class UsuarioServicioImpl implements UsuarioServicio {
 
-    private final UsuarioRepo usuarioRepo; //variable para poder invocar sus métodos de acceso a la bd.
+    //variable para poder invocar sus métodos de acceso a la bd.
+    private final UsuarioRepo usuarioRepo;
+    private final NegocioRepo negocioRepo;
 
+    /**
+     * Método que almacena un nuevo usuario en la base de datos
+     * @param registroUsuarioDTO
+     * @return idDelUsuarioRegistrado
+     * @throws Exception
+     */
     @Override
     public String registrarUsuario(RegistroUsuarioDTO registroUsuarioDTO) throws Exception {
         //Se crea el objeto usuario
         Usuario usuario = new Usuario();
 
-        //Se le asignan sus campos
+        //Se le asigna al usuario la información que trae registroDTO
         usuario.setNombre( registroUsuarioDTO.nombre() );
 
         if (existeNickname(registroUsuarioDTO.nickname()) ){
-            throw new Exception("El correo ya se encuentra registrado");
-        }else {
+            throw new Exception("El nickname ya se encuentra registrado");
+        }else
             usuario.setNickname( registroUsuarioDTO.nickname() );
-        }
+
 
         usuario.setCiudad( registroUsuarioDTO.ciudadResidencia() );
         usuario.setUrlFotoPerfil( registroUsuarioDTO.urlFotoPerfil() );
@@ -61,7 +77,9 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuario.setContrasenia( passwordEncriptada );
 
         usuario.setEstadoRegistro(EstadoRegistro.ACTIVO);
-        usuario.setDireccion(registroUsuarioDTO.direccion());
+        usuario.setUbicacion(registroUsuarioDTO.ubicacion());
+        usuario.setRegistroBusquedas(registroUsuarioDTO.registroBusquedas());//va a ser null al momento del registro
+        usuario.setNegociosFavoritos(registroUsuarioDTO.negociosFavoritos()); //va a ser null al momento del registro
 
         //Se guarda en la base de datos y obtenemos el objeto registrado
         Usuario usuarioGuardado = usuarioRepo.save(usuario);
@@ -70,6 +88,12 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return usuarioGuardado.getId();
     }
 
+    /**
+     * Método auxiliar que se encarga de verificcar que una contraseña cumpla una
+     * expresión regular previamente definida para que esta sea segura
+     * @param contrasenia
+     * @return
+     */
     private boolean validarPatronContrasenia(String contrasenia) {
         // Patrón para validar la contraseña
         String patron = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
@@ -83,38 +107,38 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     }
 
     /**
-     * Método para verificar si existe un usuario ya está registrado con ese nickname
-     * @param nickname
+     * Método para verificar si existe un usuario registrado en la BD con ese nickname
+     * @param nickname a verificar si ya está en uso
+     * @return true si existe, false de lo contrario
      */
     private boolean existeNickname(String nickname) {
-        return usuarioRepo.findByNickname(nickname).isPresent();
+        return usuarioRepo.existsByNickname(nickname);
     }
+
     /**
-     * Método para verificar si existe un usuario ya está registrado con ese correo
+     * Método para verificar si existe un usuario registrado en la BD con ese correo
      * @param correo
      * @return
      */
     private boolean existeEmail(String correo) {
-        return usuarioRepo.findByCorreo(correo).isPresent();
+        return usuarioRepo.existsByCorreo(correo);
     }
 
+    /**
+     * Método que actualiza datos de un usuario ya registrado en la BD
+     * @param actualizarUsuarioDTO contiene los campos que se pueden actualizar en un usuario
+     * @throws Exception
+     */
     @Override
     public void actualizarUsuario(ActualizarUsuarioDTO actualizarUsuarioDTO) throws Exception {
 
         Optional<Usuario> optionalUsuario = validarUsuarioExiste(actualizarUsuarioDTO.idUsuario());
-//        //Buscamos el cliente que se quiere actualizar
-//        Optional<Usuario> optionalUsuario = usuarioRepo.findById( actualizarUsuarioDTO.idUsuario() );
-//
-//        //Si no se encontró el usuario, lanzamos una excepción
-//        if(optionalUsuario.isEmpty()){
-//            throw new Exception("No se encontró el usuario a actualizar");
-//        }
-        //Obtenemos el usuario que se quiere actualizar y le asignamos los nuevos valores (el nickname no se puede cambiar)
+
         Usuario usuario = optionalUsuario.get();
         usuario.setNombre( actualizarUsuarioDTO.nombre() );
         usuario.setUrlFotoPerfil( actualizarUsuarioDTO.fotoPerfil() );
         usuario.setCiudad( actualizarUsuarioDTO.ciudadReidencia() );
-        usuario.setDireccion(actualizarUsuarioDTO.direccion());
+        usuario.setUbicacion(actualizarUsuarioDTO.ubicacion());
         if( existeEmail(actualizarUsuarioDTO.correo()) ){
             throw new Exception("El correo ya se encuentra registrado");
         }else {
@@ -125,6 +149,12 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
     }
 
+    /**
+     * Método que elimina logicamente un usuario dado el id del mismo
+     * el usuario debe existir para que este pueda eliminarse
+     * @param idUsuario usuario a eliminar
+     * @throws Exception
+     */
     @Override
     public void eliminarUsuario(String idUsuario) throws Exception{
 
@@ -140,6 +170,12 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuarioRepo.save(usuario);
     }
 
+    /**
+     * Método que obtiene un usuario de la BD dado su id
+     * @param idUsuario
+     * @return
+     * @throws Exception
+     */
     @Override
     public DetalleUsuarioDTO obtenerUsuario(String idUsuario) throws Exception {
 
@@ -148,9 +184,13 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         //Obtenemos el cliente
         Usuario usuario = optionalUsuario.get();
 
+        if (usuario.getEstadoRegistro().equals(EstadoRegistro.INACTIVO)){
+            throw new Exception("El usuario solicitado tiene un estado de registro inválido");
+        }
+
         //Retornamos el usuario en formato DTO
         return new DetalleUsuarioDTO( usuario.getId(), usuario.getNombre(), usuario.getUrlFotoPerfil(),
-                usuario.getNickname(), usuario.getCorreo(), usuario.getCiudad());
+                usuario.getNickname(), usuario.getCorreo(), usuario.getCiudad(),usuario.getUbicacion(),usuario.getNegociosFavoritos());
     }
 
     /**
@@ -171,47 +211,106 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return optionalUsuario;
     }
 
+    /**
+     * Método que devuelve todos los usuarios de la BD con estado ACTIVO
+     * @return Lista de usuarios activos
+     */
+//    @Override
+//    public List<ItemUsuarioDTO> listarUsuarios() {
+//
+//        //Obtenemos todos los clientes de la base de datos
+//        List<Usuario> usuarioList = usuarioRepo.findAll();  //HAY QUE MEJORAR LA CONSULTA PARA QUE NO TRAIGA TODOS LOS USUARIOS SINO UNICAMENTE LOS QUE TIENEN ESTADO ACTIVO 30/03
+//
+//        //Creamos una lista de DTOs de clientes
+//        List<ItemUsuarioDTO> items = new ArrayList<>();
+//
+//        //Recorremos la lista de clientes y por cada uno creamos un DTO y lo agregamos a la lista
+//        for (Usuario usuario : usuarioList) {
+//            items.add(new ItemUsuarioDTO(usuario.getId(), usuario.getNombre(),
+//                    usuario.getCorreo(), usuario.getUrlFotoPerfil(), usuario.getNickname(), usuario.getNegociosFavoritos()));
+//        }
+//        return items;
+//    }
+
+    /**
+     * Método que recupera la contraseña de un usuario dado su id
+     * @param idUsuario
+     * @return
+     * @throws Exception
+     */
     @Override
-    public List<ItemUsuarioDTO> listarUsuarios() {
+    public CambiarPasswordDTO recuperarContrasenia(String idUsuario) throws Exception {
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+        String nuevaContra=generarNuevaContrasenia();
 
-        //Obtenemos todos los clientes de la base de datos
-        List<Usuario> usuarioList = usuarioRepo.findAll();  //HAY QUE MEJORAR LA CONSULTA PARA QUE NO TRAIGA TODOS LOS USUARIOS SINO UNICAMENTE LOS QUE TIENEN ESTADO ACTIVO 30/03
-
-        //Creamos una lista de DTOs de clientes
-        List<ItemUsuarioDTO> items = new ArrayList<>();
-
-        //Recorremos la lista de clientes y por cada uno creamos un DTO y lo agregamos a la lista
-        for (Usuario usuario : usuarioList) {
-            items.add(new ItemUsuarioDTO(usuario.getId(), usuario.getNombre(),
-                    usuario.getCorreo(), usuario.getUrlFotoPerfil(), usuario.getNickname()));
+        //Obtenemos el usuario que se quiere recuperar la contraseña y verifica su estado
+        Usuario usuario = optionalUsuario.get();
+        if (usuario.getEstadoRegistro().equals(EstadoRegistro.INACTIVO)){
+            throw new Exception("CUENTA CON ESTADO INVÁLIDO");
         }
-        return items;
+        usuario.setContrasenia(nuevaContra);
+        usuarioRepo.save(usuario);
+        CambiarPasswordDTO cambiarPasswordDTO = new CambiarPasswordDTO(idUsuario,nuevaContra,usuario.getCorreo());
+        enviarCorreoRecuperacion(cambiarPasswordDTO);
+        return cambiarPasswordDTO;
     }
 
-    @Override
-    public String recuperarContrasenia() {
-        return null;
+    private void enviarCorreoRecuperacion(CambiarPasswordDTO cambiarPasswordDTO) throws Exception {
+        //PREGUNTAR EN LA PRÓXIMA CLASE CÓMO HACER PARA USAR EL SERVICIO enviarCorreo
+        final EmailServicio emailServicio = null;
+        emailServicio.enviarCorreo(new EmailDTO("RECUPERACIÓN DE CONTRASEÑA", "Su nueva contraseña es: "+cambiarPasswordDTO.passwordNueva(), cambiarPasswordDTO.email()));
+
     }
 
-//    @Override
-//    public List<DetalleNegocioDTO> listarNegociosPropios() {
-//        return null;
-//    }
+    /**
+     * Método que genera un String que servirá como contraseña, este contiene al menos 8
+     * caracteres, incluyendo al menos una letra mayúscula, una letra minúscula, un número
+     * y un carácter especial
+     * @return contraseña generada aleatoriamente
+     */
+    private String generarNuevaContrasenia() {
+        String CARACTERES_PERMITIDOS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$!%*?&";
+        SecureRandom RANDOM = new SecureRandom();
+        StringBuilder contrasenia = new StringBuilder();
 
-//    @Override
-//    public String registrarNegocio(RegistroNegocioDTO registroNegocioDTO) {
-//        return null;
-//    }
+        // Agregar al menos una letra mayúscula
+        contrasenia.append((char) (RANDOM.nextInt(26) + 'A'));
 
+        // Agregar al menos una letra minúscula
+        contrasenia.append((char) (RANDOM.nextInt(26) + 'a'));
 
-//    @Override
-//    public String eliminarNegocio(String idNegocio) {
-//        //Se encuentra en NegocioServicioImpl
-//        return null;
-//    }
+        // Agregar al menos un número
+        contrasenia.append((char) (RANDOM.nextInt(10) + '0'));
 
+        // Agregar al menos un carácter especial
+        contrasenia.append(CARACTERES_PERMITIDOS.charAt(RANDOM.nextInt(CARACTERES_PERMITIDOS.length())));
+
+        // Completar la contraseña hasta alcanzar la longitud mínima
+        while (contrasenia.length() < 8) {
+            contrasenia.append(CARACTERES_PERMITIDOS.charAt(RANDOM.nextInt(CARACTERES_PERMITIDOS.length())));
+        }
+
+        // Mezclar la contraseña para que los caracteres estén en orden aleatorio
+        char[] contraseniaMezclada = contrasenia.toString().toCharArray();
+        for (int i = 0; i < contrasenia.length(); i++) {
+            int indiceAleatorio = RANDOM.nextInt(contrasenia.length());
+            char temp = contraseniaMezclada[i];
+            contraseniaMezclada[i] = contraseniaMezclada[indiceAleatorio];
+            contraseniaMezclada[indiceAleatorio] = temp;
+        }
+
+        return new String(contraseniaMezclada);
+    }
+
+    /**
+     * Método que se encarga de eliminar logicamente un Usuario cambiando su estado a inactivo
+     * @param idUsuario usuario que se desea eliminar
+     * @return Id usuario eliminado
+     * @throws ResourceNotFoundException
+     */
     @Override
     public String eliminarCuentaUsuario(String idUsuario) throws ResourceNotFoundException {
+
         Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
 
         //Obtenemos el cliente
@@ -221,40 +320,167 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return usuario.getId();
     }
 
-//    @Override
-//    public void comentarPublicacion(String comentario, String idNegocio) {
-//
-//    }
-
-//    @Override
-//    public void contestarComentario(String comentario, String idComentario, String idNegocio) {
-//
-//    }
-
     @Override
-    public int calificarNegocio(int calificacion, String idNegocio) {
-        return 0;
+    public String agregarNegocioFavorito(String idUsuario,String idNegocio) throws Exception {
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+        Usuario usuario = optionalUsuario.get();
+        if (idNegocio==null||idNegocio.isEmpty()){
+            throw new Exception("Ocurrió un error al momento de agregar el negocio "+idNegocio+" a la lista de favoritos del usuario "+idUsuario);
+        }
+        usuario.getNegociosFavoritos().add(idNegocio);
+        usuario.getRegistroBusquedas().add(obtenerNombreNegocioById(idNegocio));
+        usuarioRepo.save(usuario);
+
+        return idNegocio;
+    }
+
+    /**
+     * Método que obtiene el nombre de un negocio dado su id
+     * este método será usado en agregar negocio favoritos para obtener
+     * el nombre del negocio y agregarlo a la lista de registro de busquedas del usuario
+     * @param idNegocio
+     * @return
+     * @throws Exception
+     */
+    private String obtenerNombreNegocioById(String idNegocio) throws Exception {
+
+        Optional<Negocio> negocioOptional = negocioRepo.findById(idNegocio);
+        if (negocioOptional.isEmpty()){
+            throw new Exception("Error al obtener el negocio con el id "+idNegocio);
+        }
+        Negocio negocio = negocioOptional.get();
+        return negocio.getNombre();
     }
 
     @Override
-    public String agregarNegocioFavorito(String idNegocio) {
-        return null;
+    public String eliminarNegocioFavorito(String idUsuario,String idNegocio) throws ResourceNotFoundException {
+
+        if (!negocioRepo.existsById(idNegocio)){
+            throw new ResourceNotFoundException("El negocio que desea eliminar de la lista de favoritos no se encuentra registrado en la base de datos.");
+        }
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+        Usuario usuario = optionalUsuario.get();
+        usuario.getNegociosFavoritos().remove(idNegocio);
+        return idNegocio;
     }
 
+    /**
+     * Este método calculará la distancia en línea recta entre dos puntos geográficos utilizando
+     * la fórmula de la distancia haversine. Esto no es una ruta real, sino la
+     * distancia entre los dos puntos en una línea directa.
+     * Cuando se tenga la api de los mapas se reescribirá el método
+     * @param idUsuario
+     * @param ubicacionDestino
+     * @return
+     */
     @Override
-    public String eliminarNegocioFavorito(String idNegocio) {
-        return null;
+    public double solicitarRuta(String idUsuario, Ubicacion ubicacionDestino) throws ResourceNotFoundException {
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+        Usuario usuario = optionalUsuario.get();
+        double distancia = distanciaEntreDosPuntos(usuario.getUbicacion().getLatitud(),
+                usuario.getUbicacion().getLongitud(),ubicacionDestino.getLatitud(),
+                ubicacionDestino.getLongitud());
+        return distancia;
     }
 
+    /*** Método auxiliar para calcular la distancia entre dos puntos utilizando la fórmula de la
+     * distancia haversine
+     * Método hecho con chatGPT
+     * @param latitudUsuario
+     * @param longitudUsuario
+     * @param latitudNegocio
+     * @param longitudNegocio
+     * @return
+             */
+    private double distanciaEntreDosPuntos(double latitudUsuario, double longitudUsuario, double latitudNegocio, double longitudNegocio) {
+        // Radio de la Tierra en kilómetros
+        final int RADIO_TIERRA = 6371;
+
+        // Convertir las latitudes y longitudes de grados a radianes
+        double latitudUsuarioRad = Math.toRadians(latitudUsuario);
+        double longitudUsuarioRad = Math.toRadians(longitudUsuario);
+        double latitudNegocioRad = Math.toRadians(latitudNegocio);
+        double longitudNegocioRad = Math.toRadians(longitudNegocio);
+
+        // Calcular la diferencia de latitudes y longitudes
+        double diferenciaLatitud = latitudNegocioRad - latitudUsuarioRad;
+        double diferenciaLongitud = longitudNegocioRad - longitudUsuarioRad;
+
+        // Calcular la distancia utilizando la fórmula de la distancia haversine
+        double a = Math.pow(Math.sin(diferenciaLatitud / 2), 2)
+                + Math.cos(latitudUsuarioRad) * Math.cos(latitudNegocioRad)
+                * Math.pow(Math.sin(diferenciaLongitud / 2), 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distancia = RADIO_TIERRA * c;
+
+        return distancia;
+    }
+
+
+    /**
+     * Método que recomienda lugares (negocios) en base a las busquedas que un usuario
+     * ha realizado. Estas busquedas se encuentran en la lista de registro de busquedas
+     * @param idUsuario
+     * @return Lista de negocios a recomendar
+     * @throws Exception
+     */
     @Override
-    public String solicitarRuta(Ubicacion ubicacionOrigen, Ubicacion ubicacionDestino) {
-        return null;
+    public List<ItemNegocioDTO> recomendarLugares(String idUsuario) throws Exception {
+        Optional<Usuario> usuarioOptional = usuarioRepo.findById(idUsuario);
+        if (usuarioOptional.isEmpty()){
+            throw new Exception("Error al buscar el usuario con el id "+idUsuario);
+        }
+        Usuario usuario = usuarioOptional.get();
+        //Obtenemos las busquedas del usuario
+        List<String> listaLugares = usuario.getRegistroBusquedas();
+        return obtenerLugaresRecomendados(listaLugares);
     }
 
+    /**
+     * Método que obtiene los lugares a recomendar de un usuario
+     * recibe la lista de lugares que el usuario ha buscado y en base a estos
+     * busca en la base de datos un negocio que su nombre sea similar al que
+     * se encuentra en listaLugares. una vez obtenida la lista de negocios
+     * se crea un List<itemNegocioDTO> y se transforma para retornarse
+     * @param listaLugares lista con nombres de lugares que el usuario ha buscado
+     * @return lista de itemNegocio de lugares que pueden interesarle al usuario
+     */
+    private List<ItemNegocioDTO> obtenerLugaresRecomendados(List<String> listaLugares) throws ResourceNotFoundException {
+
+        List<Negocio> listaNegocios = new ArrayList<>();
+        for (String lugar: listaLugares) {
+            if (!listaNegocios.contains(negocioRepo.busquedaNombresSimilares(lugar).get(0))) {
+                //El negocio no está en la lista, por lo tanto se agrega
+                listaNegocios.add(negocioRepo.busquedaNombresSimilares(lugar).get(0));}
+            }
+
+            List<ItemNegocioDTO> itemNegocioDTOList = new ArrayList<>();
+            for (Negocio negocio : listaNegocios) {
+                itemNegocioDTOList.add(new ItemNegocioDTO(negocio.getId(), negocio.getNombre(), negocio.getListaImagenes(), negocio.getTipoNegocio(), negocio.getDireccion()));
+            }
+            return itemNegocioDTOList;
+        }
+
+    /**
+     * Este metodo iria aqui o en NegocioRepo?
+     * Método que lista todos los negocios que el usuario tiene como favoritos en una lista
+     * @param negociosFavoritos Lista con los ids de los negocios que voy a buscar en la BD
+     * @return Lista de ItemNegocio
+     * @throws Exception
+     */
     @Override
-    public void recomendarLugares() {
-
+    public List<ItemNegocioDTO> listarNegociosFavoritos(List<String> negociosFavoritos) throws Exception{
+        List<Negocio> listaNegocios = negocioRepo.ListarFavoritos(negociosFavoritos);
+        if (listaNegocios.isEmpty()){
+            throw new ResourceNotFoundException("Error al momento de obtener los negocios favoritos ");
+        }
+        List<ItemNegocioDTO> items = new ArrayList<>();
+        for (Negocio negocio: listaNegocios){
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+        }
+        return  items;
     }
 
 
-}
+
+    }

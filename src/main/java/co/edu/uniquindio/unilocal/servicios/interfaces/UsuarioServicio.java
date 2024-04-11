@@ -1,5 +1,7 @@
 package co.edu.uniquindio.unilocal.servicios.interfaces;
 
+import co.edu.uniquindio.unilocal.dto.CambiarPasswordDTO;
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.ItemNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
@@ -20,8 +22,8 @@ public interface UsuarioServicio {
     void eliminarUsuario(String idUsuario) throws Exception;
 
     DetalleUsuarioDTO obtenerUsuario(String idCuenta) throws Exception;
-    List<ItemUsuarioDTO> listarUsuarios();
-    String recuperarContrasenia();
+    //List<ItemUsuarioDTO> listarUsuarios(); --No es necesario en el proyecto
+    CambiarPasswordDTO recuperarContrasenia(String idUsuario) throws Exception;
 
     //List<NegocioDTO> listarNegociosPropios();
 
@@ -31,16 +33,17 @@ public interface UsuarioServicio {
     //void comentarPublicacion(String comentario,String idNegocio);
     //void contestarComentario(String comentario,String idComentario,String idNegocio);
 
+    String agregarNegocioFavorito(String idUsuario,String idNegocio) throws Exception;
 
-    int calificarNegocio(int calificacion,String idNegocio); //Se califa del 1 al 5
-    String agregarNegocioFavorito(String idNegocio);//Guardaria solo la referencia del negocio? 17/03 2:12pm
+    String eliminarNegocioFavorito(String idUsuario,String idNegocio) throws ResourceNotFoundException;
 
-    String eliminarNegocioFavorito(String idNegocio); //Retorna el id del negocio
-
-    String solicitarRuta(Ubicacion ubicacionOrigen, Ubicacion ubicacionDestino);
+    double solicitarRuta(String idUsuario, Ubicacion ubicacionDestino) throws ResourceNotFoundException;
 
 
 
     //Recomendar lugares en función de las búsquedas que realiza.
-    void recomendarLugares();
+    List<ItemNegocioDTO> recomendarLugares(String idUsuario) throws Exception;
+
+    List<ItemNegocioDTO> listarNegociosFavoritos(List<String> negociosFavoritos) throws Exception;
+
 }

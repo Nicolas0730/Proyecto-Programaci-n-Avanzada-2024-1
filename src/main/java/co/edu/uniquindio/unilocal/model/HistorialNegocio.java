@@ -2,6 +2,7 @@ package co.edu.uniquindio.unilocal.model;
 
 import java.time.LocalDateTime;
 
+import co.edu.uniquindio.unilocal.model.Moderador;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

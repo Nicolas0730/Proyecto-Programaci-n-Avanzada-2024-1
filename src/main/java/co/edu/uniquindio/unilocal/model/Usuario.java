@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Document("Usuario")
 @Getter
@@ -19,7 +20,9 @@ public class Usuario extends Cuenta implements Serializable {
     private String id;
     private String nickname;
     private String urlFotoPerfil;
-    private String direccion;
+    private Ubicacion ubicacion;
+    private List<String> registroBusquedas;
+    private List<String> negociosFavoritos;
 
     @Builder
     public Usuario(String nombre, String correo, String contrasenia, EstadoRegistro estadoRegistro, Ciudad ciudad) {

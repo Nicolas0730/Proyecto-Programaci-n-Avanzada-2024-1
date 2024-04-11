@@ -1,16 +1,6 @@
 package co.edu.uniquindio.unilocal.servicios.interfaces;
 
-
-import co.edu.uniquindio.unilocal.dto.NegocioDTO.DetalleNegocioDTO;
-import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
-import co.edu.uniquindio.unilocal.model.EstadoNegocio;
-import co.edu.uniquindio.unilocal.model.EstadoRegistro;
-
-import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroRevisionDTO;
-
-
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.*;
-import co.edu.uniquindio.unilocal.exception.ResourceNotFoundException;
 import co.edu.uniquindio.unilocal.model.EstadoNegocio;
 import co.edu.uniquindio.unilocal.model.TipoNegocio;
 
@@ -19,7 +9,8 @@ import java.util.List;
 public interface NegocioServicio {
 
     String crearNegocio(RegistroNegocioDTO registroNegocioDTO) throws Exception;
-    DetalleNegocioDTO buscarNegocios(String idNegocio) throws Exception;
+    DetalleNegocioDTO buscarNegocio(String idNegocio,String idUsuario) throws Exception;
+    List<ItemNegocioDTO> busquedaPorNombre(String nombre,String idUsuario) throws Exception;
     void eliminarNegocio(String idNegocio) throws Exception;
 
 
@@ -31,11 +22,12 @@ public interface NegocioServicio {
     void actualizarNegocio(ActualizarNegocioDTO actualizarNegocioDTO) throws Exception;
     //-----------------------------------------------------------------------------------------
 
-
     DetalleNegocioDTO buscarNegocioPorNombre(String nombreNegocio)throws Exception;
     List<ItemNegocioDTO> buscarNegociosPorTipo(TipoNegocio tipoNegocio) throws Exception;
-    List<DetalleNegocioDTO> buscarNegociosPorDistancia(int rangoNegocio) throws Exception;
+    List<ItemNegocioDTO> buscarNegociosPorDistancia(String idNegocio,int distanciaAlrededor) throws Exception;
+    List<ItemNegocioDTO> filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception;
 
+    List<ItemNegocioDTO> listarNegociosDeUsuario(String idUsuario) throws Exception;
 
-    void filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception;
+    List<ItemNegocioDTO> encontrarTop5() throws Exception; // FUNCIONALIDAD PROPUESTA
 }

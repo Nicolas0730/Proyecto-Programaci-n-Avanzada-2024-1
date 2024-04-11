@@ -1,13 +1,14 @@
 package co.edu.uniquindio.unilocal.repositorio;
 
+import co.edu.uniquindio.unilocal.model.EstadoNegocio;
 import co.edu.uniquindio.unilocal.model.EstadoRegistro;
 import co.edu.uniquindio.unilocal.model.Negocio;
 import co.edu.uniquindio.unilocal.model.TipoNegocio;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.RepositoryDefinition;
 import org.springframework.stereotype.Repository;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,17 +18,28 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
 
     Optional<Negocio> findById(String idNegocio);
 
-
-
-@Query (value = "{'estadoRegistro' :  ?0}")
-    List<Negocio> findByEstadoRegistro(EstadoRegistro estadoRegistro);
-
     Optional<Negocio> findByNombre(String nombre);
 
-    Optional<Negocio> finByTipoNegocio(TipoNegocio tipoNegocio);
+    boolean existsByNombre(String nombreNegocio);
 
-    //Toca construir una consulta que busque y devuelva un Optional<Negocio> en base una distancia
-    //indicada por parámetro (int)
+    @Query (value = "{tipoNegocio :  ?0}")
+    List<Negocio> buscarNegocioPorTipo(TipoNegocio tipoNegocio);
+
+    @Query (value = "{'historialNegocio.estadoNegocio' : ?0 }")
+    List<Negocio> ListarNegocioEstado(EstadoNegocio Estado);
+
+    @Query (value = "{'estadoRegistro' :  ?0}")
+    List<Negocio> ListarNegocioPorEstadoRegistro(EstadoRegistro estadoRegistro);
+
+    @Query (value = "{'idUsuario' :  ?0}" )
+    List<Negocio> listarNegocioUsuario (String idUsuario);
+
+    @Query(value = "{ '_id' : { $in : ?0 } }")
+    List<Negocio> ListarFavoritos (List<String> idNeogcio);
+
+    @Query (value = "{ 'nombre' : { $regex : ?0, $options: 'i' } }" )
+    List<Negocio> busquedaNombresSimilares (String nombre);
+
 
 
 }
