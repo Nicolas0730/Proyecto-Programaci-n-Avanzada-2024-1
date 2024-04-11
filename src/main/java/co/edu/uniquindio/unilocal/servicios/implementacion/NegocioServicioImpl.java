@@ -1,4 +1,3 @@
-
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.*;
@@ -516,4 +515,3 @@ public class NegocioServicioImpl implements NegocioServicio {
 
     }
 }
-

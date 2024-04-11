@@ -28,6 +28,7 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
     @Query (value = "{'historialNegocio.estadoNegocio' : ?0 }")
     List<Negocio> ListarNegocioEstado(EstadoNegocio Estado);
 
+    @Query (value = "{'estadoRegistro' :  ?0}")
     List<Negocio> ListarNegocioPorEstadoRegistro(EstadoRegistro estadoRegistro);
 
     @Query (value = "{'idUsuario' :  ?0}" )
@@ -38,6 +39,7 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
 
     @Query (value = "{ 'nombre' : { $regex : ?0, $options: 'i' } }" )
     List<Negocio> busquedaNombresSimilares (String nombre);
+
 
 
 }
