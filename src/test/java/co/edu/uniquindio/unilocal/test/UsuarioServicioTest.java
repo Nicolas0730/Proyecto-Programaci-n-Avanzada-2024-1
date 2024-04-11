@@ -77,10 +77,10 @@ public class UsuarioServicioTest {
     @Test
     public void eliminarTest() throws Exception{
 
-        usuarioServicio.eliminarUsuario("Cliente2");
+        usuarioServicio.eliminarUsuario("Usuario1");
 
         Assertions.assertThrows(Exception.class, () -> {
-            usuarioServicio.obtenerUsuario("Cliente2");
+            usuarioServicio.obtenerUsuario("Usuario1");
         });
 
     }
