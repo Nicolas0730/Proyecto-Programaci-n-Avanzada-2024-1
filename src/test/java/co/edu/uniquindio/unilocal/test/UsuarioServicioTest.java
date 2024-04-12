@@ -85,4 +85,13 @@ public class UsuarioServicioTest {
 
     }
 
+    @Test
+    public void obtenerTest() throws Exception{
+
+        Assertions.assertThrows(Exception.class, () -> {
+            usuarioServicio.obtenerUsuario("Usuario3");
+        });
+
+    }
+
 }
