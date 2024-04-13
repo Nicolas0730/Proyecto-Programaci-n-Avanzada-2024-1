@@ -88,10 +88,21 @@ public class UsuarioServicioTest {
     @Test
     public void obtenerTest() throws Exception{
 
+        DetalleUsuarioDTO detalleUsuarioDTO = usuarioServicio.obtenerUsuario("Usuario1");
+
+        Assertions.assertNotNull(detalleUsuarioDTO.id());
+
+    }
+
+    @Test
+    public void obtenerBorradoTest() throws Exception{
+
         Assertions.assertThrows(Exception.class, () -> {
-            usuarioServicio.obtenerUsuario("Usuario3");
+            usuarioServicio.obtenerUsuario("Usuario2");
         });
 
     }
+
+    public void
 
 }
