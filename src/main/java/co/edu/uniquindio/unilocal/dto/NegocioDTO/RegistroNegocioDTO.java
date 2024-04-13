@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
 
-public record RegistroNegocioDTO(@NotBlank String nombre,
+public record   RegistroNegocioDTO(@NotBlank String nombre,
                                  @NotBlank @Length(max = 100) String descripcion,
                                  @NotBlank List<String> listaImagenes,
                                  @NotBlank List<String> listaTelefonos,

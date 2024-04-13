@@ -499,7 +499,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
     /**
      * Método que lista todos los negocios que el usuario tiene como favoritos en una lista
-     * @param negociosFavoritos Lista con los ids de los negocios que voy a buscar en la BD
+     * @param idUsuario Lista con los ids de los negocios que voy a buscar en la BD
      * @return Lista de ItemNegocio
      * @throws Exception
      */
