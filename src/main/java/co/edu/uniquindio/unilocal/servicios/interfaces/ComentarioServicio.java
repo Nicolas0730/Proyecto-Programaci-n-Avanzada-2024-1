@@ -15,9 +15,4 @@ public interface ComentarioServicio {
 
     void responderComentario(ResponderComentarioDTO responderComentarioDTO) throws Exception;
 
-    //ComentarioDTO buscarComentario(String idComentario) throws Exception; SE PIDE EN EL PROYECTO?
-
-    //List<ItemComentariODTO> listarComentarios(String id) throws Exception; SE PIDE EN EL PROYECTO?
-
-    //int calificarNegocio(int calificacion,String idNegocio); //SERIA EL MISMO REGISTRAR COMENTARIO?
 }

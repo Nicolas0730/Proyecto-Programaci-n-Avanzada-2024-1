@@ -127,13 +127,14 @@ public class NegocioServicioImpl implements NegocioServicio {
     }
 
     /**
-     * Método que busca todos los negocios que tengan un nombre indicado por parámetro
+     * Método usado en la barra de busqueda. se encargar de buscar todos los negocios que
+     * tengan un nombre indicado por parámetro y los lista
      * @param nombre que se va a buscar en los negocios
      * @return Lista de los negocios que tienen el nombre por parámetro
      * @throws Exception
      */
     @Override
-    public List<ItemNegocioDTO> busquedaPorNombre(String nombre,String idUsuario) throws Exception{
+    public List<ItemNegocioDTO> buscarNegociosPorNombre(String nombre, String idUsuario) throws Exception{
         List<Negocio> listaNegocios = negocioRepo.busquedaNombresSimilares(nombre);
         if (listaNegocios.isEmpty()){
             throw new ResourceNotFoundException("Error al momento de obtener los negocio que contienen el nombre "+nombre);
@@ -186,7 +187,7 @@ public class NegocioServicioImpl implements NegocioServicio {
 
     /**
      * Método usado por un administrador para aprobar un negocio que se encuentra en
-     *      * espera
+     * espera
      * @param revisionDTO
      * @throws Exception
      */

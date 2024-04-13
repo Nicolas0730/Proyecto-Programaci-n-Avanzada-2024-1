@@ -34,7 +34,6 @@ public class AutenticacionControlador {
         return ResponseEntity.ok().body( new MensajeDTO<>(false, "Cliente registrado correctamente"));
     }
 
-
     @PostMapping("/login-administrador")
     public ResponseEntity<MensajeDTO<TokenDTO>> iniciarSesionAdministrador(@Valid @RequestBody
                                                                      LoginDTO loginDTO) throws Exception {

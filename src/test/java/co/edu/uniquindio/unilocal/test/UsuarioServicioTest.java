@@ -103,6 +103,4 @@ public class UsuarioServicioTest {
 
     }
 
-    public void
-
 }
