@@ -5,8 +5,5 @@ import co.edu.uniquindio.unilocal.dto.SesionDTO;
 import org.springframework.stereotype.Service;
 
 public interface EmailServicio {
-
     void enviarCorreo(EmailDTO emailDTO) throws Exception;
-
-
 }

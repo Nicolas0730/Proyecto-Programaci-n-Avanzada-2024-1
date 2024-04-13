@@ -34,6 +34,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     //variable para poder invocar sus métodos de acceso a la bd.
     private final UsuarioRepo usuarioRepo;
     private final NegocioRepo negocioRepo;
+    private final EmailServicio emailServicio;
 
     /**
      * Método que almacena un nuevo usuario en la base de datos
@@ -285,9 +286,13 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return cambiarPasswordDTO;
     }
 
+    /**
+     * Método encargado de enviar un correo para la recuperación de contraseña de un usuario
+     * @param cambiarPasswordDTO Contiene los datos necesarios para enviar un correo
+     * @throws Exception
+     */
     private void enviarCorreoRecuperacion(CambiarPasswordDTO cambiarPasswordDTO) throws Exception {
-        //PREGUNTAR EN LA PRÓXIMA CLASE CÓMO HACER PARA USAR EL SERVICIO enviarCorreo
-        final EmailServicio emailServicio = null;
+
         emailServicio.enviarCorreo(new EmailDTO("RECUPERACIÓN DE CONTRASEÑA", "Su nueva contraseña es: "+cambiarPasswordDTO.passwordNueva(), cambiarPasswordDTO.email()));
 
     }
@@ -333,30 +338,21 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     }
 
     /**
-     * Método que se encarga de eliminar logicamente un Usuario cambiando su estado a inactivo
-     * @param idUsuario usuario que se desea eliminar
-     * @return Id usuario eliminado
-     * @throws ResourceNotFoundException
+     * Método que dado el id de un usuario, agrega a su lista de negocios favoritos
+     * el id de un negocio
+     * @param idUsuario
+     * @param idNegocio
+     * @return id del negocio agregado a la lista de negocios favoritos del usuario
+     * @throws Exception
      */
-//    @Override
-//    public String eliminarCuentaUsuario(String idUsuario) throws ResourceNotFoundException {
-//
-//        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
-//
-//        //Obtenemos el cliente
-//        Usuario usuario = optionalUsuario.get();
-//        usuario.setEstadoRegistro(EstadoRegistro.INACTIVO);
-//        usuarioRepo.save(usuario);
-//        return usuario.getId();
-//    }
-
     @Override
     public String agregarNegocioFavorito(String idUsuario,String idNegocio) throws Exception {
+        //Verifica que el usuario que se va a agregar a favoritos exista en la BD
+        if (idNegocio==null||!negocioRepo.existsById(idNegocio)){
+            throw new ResourceNotFoundException("El negocio que desea agregar de la lista de favoritos no se encuentra registrado en la base de datos.");
+        }
         Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
         Usuario usuario = optionalUsuario.get();
-        if (idNegocio==null||idNegocio.isEmpty()){
-            throw new Exception("Ocurrió un error al momento de agregar el negocio "+idNegocio+" a la lista de favoritos del usuario "+idUsuario);
-        }
         usuario.getNegociosFavoritos().add(idNegocio);
         usuario.getRegistroBusquedas().add(obtenerNombreNegocioById(idNegocio));
         usuarioRepo.save(usuario);
@@ -382,9 +378,17 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return negocio.getNombre();
     }
 
+    /**
+     * Método que dado el id de un usuario, elimina de su lista de negocios favoritos
+     * el id de un negocio indicado
+     * @param idUsuario
+     * @param idNegocio
+     * @return id del negocio eliminado de la lista de negocios favoritos del usuario
+     * @throws Exception
+     */
     @Override
     public String eliminarNegocioFavorito(String idUsuario,String idNegocio) throws ResourceNotFoundException {
-
+        //Verifica que el usuario que se va a eliminar de favoritos exista en la BD
         if (!negocioRepo.existsById(idNegocio)){
             throw new ResourceNotFoundException("El negocio que desea eliminar de la lista de favoritos no se encuentra registrado en la base de datos.");
         }
@@ -395,14 +399,12 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     }
 
     /**
-     * Este método calculará la distancia en línea recta entre dos puntos geográficos utilizando
-     * la fórmula de la distancia haversine. Esto no es una ruta real, sino la
-     * distancia entre los dos puntos en una línea directa.
-     * Cuando se tenga la api de los mapas se reescribirá el método
-     *
-     * DEBE RETORNAR TAMBIÉN EL TIEMPO?? 10/04
-     * no recibe ubicaciondestino sino Negocio y este contiene la ubicacion
-     *
+     * Este método calculará POR AHORA la distancia en línea recta entre dos puntos
+     * geográficos utilizando la fórmula de la distancia haversine. Esto no es una ruta real,
+     * sino la distancia entre los dos puntos en una línea directa.
+     ****Cuando se tenga la api de los mapas se reescribirá el método****
+     * Cada vez que se vaya a solicitar una ruta el usuario debe actualizar su atributo ubicacion
+     * para que se pueda calcular
      * @param idUsuario
      * @param ubicacionDestino
      * @return
@@ -496,15 +498,16 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         }
 
     /**
-     * Este metodo iria aqui o en NegocioRepo?
      * Método que lista todos los negocios que el usuario tiene como favoritos en una lista
      * @param negociosFavoritos Lista con los ids de los negocios que voy a buscar en la BD
      * @return Lista de ItemNegocio
      * @throws Exception
      */
     @Override
-    public List<ItemNegocioDTO> listarNegociosFavoritos(List<String> negociosFavoritos) throws Exception{
-        List<Negocio> listaNegocios = negocioRepo.ListarFavoritos(negociosFavoritos);
+    public List<ItemNegocioDTO> listarNegociosFavoritos(String idUsuario) throws Exception{
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+        Usuario usuario = optionalUsuario.get();
+        List<Negocio> listaNegocios = negocioRepo.ListarFavoritos(usuario.getNegociosFavoritos());
         if (listaNegocios.isEmpty()){
             throw new ResourceNotFoundException("Error al momento de obtener los negocios favoritos ");
         }
@@ -515,6 +518,20 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return  items;
     }
 
-
+    /**
+     * Ya que para nuestro proyecto el usuario tiene una ubicacion como atributo, este debe
+     * poder actualizarla con un botón cada vez que desee calcular una ruta entre él y un negocio
+     * @param idUsuario
+     * @param longitud
+     * @param latitud
+     * @throws Exception
+     */
+    @Override
+    public void actualizarUbicacion(String idUsuario,double longitud, double latitud) throws Exception{
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+        Usuario usuario = optionalUsuario.get();
+        usuario.setUbicacion(new Ubicacion(latitud,longitud));
+        usuarioRepo.save(usuario);
+    }
 
     }

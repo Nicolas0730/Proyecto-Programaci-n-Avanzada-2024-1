@@ -21,14 +21,23 @@ import java.util.Optional;
 public class ComentarioServicioImpl implements ComentarioServicio {
 
     private final ComentarioRepo comentarioRepo;
-    private final UsuarioRepo usuarioRepo;
+
+    /**
+     * Método que registra un comentario en un negocio, obliga a calificar
+     * y pueden agregarse imagenes en el comentario (o no)
+     * Cada vez que se quiera calificar un negocio debe llamarse este metodo y completar los campos
+     * @param registroComentarioDTO
+     * @return
+     * @throws Exception
+     */
     @Override
     public String registrarComentario(RegistroComentarioDTO registroComentarioDTO) throws Exception {
         Comentario comentario = new Comentario();
         comentario.setDescripcion(registroComentarioDTO.descripcion());
         comentario.setCalifacion(registroComentarioDTO.calificacion());
         comentario.setIdUsuario(registroComentarioDTO.idUsuario());
-        comentario.setIdNegocio(registroComentarioDTO.idNegocio()); // DEBERIA SER NULL?
+        comentario.setIdNegocio(registroComentarioDTO.idNegocio());
+        comentario.setRespuesta(null);
         comentario.setImagenes(registroComentarioDTO.imagenes()); //FUNCIONALIDAD PROPUESTA: Agregar a imagenes al comentario
         comentario.setFechaComentario(LocalDateTime.now());
 
@@ -37,12 +46,19 @@ public class ComentarioServicioImpl implements ComentarioServicio {
         return comentarioGuardado.getId();
     }
 
+    /**
+     * Método que es invocado por el dueño de una publicacion para contestar un comentario
+     * que otro usuario le dejó. Unicamente el dueño de la publicación puede contestar el comentario
+     * y solo se puede contestar una vez
+     * @param responderComentarioDTO
+     * @throws Exception
+     */
     @Override
     public void responderComentario(ResponderComentarioDTO responderComentarioDTO) throws Exception {
 
         Optional<Comentario> optionalComentario = comentarioRepo.findById(responderComentarioDTO.idComentario());
         if (optionalComentario.isEmpty()){
-            throw new Exception("Error ");
+            throw new Exception("Error Comentario no encontrado");
         }
         Comentario comentario = optionalComentario.get();
         if (comentario.getRespuesta()!=null){
@@ -50,16 +66,6 @@ public class ComentarioServicioImpl implements ComentarioServicio {
         }
         comentario.setRespuesta(responderComentarioDTO.respuesta());
     }
-
-//    @Override
-//    public ComentarioDTO buscarComentario(String idComentario) throws Exception {
-//        return null;
-//    }
-
-//    @Override
-//    public String eliminarComentario(String idComentario) throws Exception {
-//        return  null;
-//    }
 
 
 }
