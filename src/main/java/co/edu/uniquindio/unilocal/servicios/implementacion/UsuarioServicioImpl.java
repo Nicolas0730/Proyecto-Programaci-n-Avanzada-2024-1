@@ -8,7 +8,6 @@ import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.RegistroUsuarioDTO;
 import co.edu.uniquindio.unilocal.exception.ResourceNotFoundException;
 import co.edu.uniquindio.unilocal.model.*;
-import co.edu.uniquindio.unilocal.repositorio.ComentarioRepo;
 import co.edu.uniquindio.unilocal.repositorio.NegocioRepo;
 import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
 import co.edu.uniquindio.unilocal.servicios.interfaces.EmailServicio;
@@ -59,7 +58,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuario.setCiudad( registroUsuarioDTO.ciudadResidencia() );
         usuario.setUrlFotoPerfil( registroUsuarioDTO.urlFotoPerfil() );
 
-        if( existeEmail(registroUsuarioDTO.correo()) ){
+        if( existeCorreo(registroUsuarioDTO.correo()) ){
             throw new Exception("El correo ya se encuentra registrado");
         }else {
             usuario.setCorreo( registroUsuarioDTO.correo() );
@@ -107,20 +106,51 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     }
 
     /**
-     * Método para verificar si existe un usuario registrado en la BD con ese nickname
+     * Método usado al momento de registrar un nuevo usuario en la Bd
+     * sirve para verificar si existe un usuario registrado en la BD con ese nickname
      * @param nickname a verificar si ya está en uso
-     * @return true si existe, false de lo contrario
+     * @return true si existe un usuario con el nickname en uso, false de lo contrario
      */
     private boolean existeNickname(String nickname) {
         return usuarioRepo.existsByNickname(nickname);
     }
 
     /**
-     * Método para verificar si existe un usuario registrado en la BD con ese correo
+     * Método usado al momento de actualizar la información de un usuario, su función
+     * es verificar si ya existe un usuario registrado en la BD con ese correo a excepciión
+     * de él mismo
      * @param correo
-     * @return
+     * @return false si el correo está en uso por un usuario que no sea el usuario con el id
+     * por parámetro, true si nadie está haciendo uso del correo o si quien lo usa es el mismo
+     * usuario indicado por parámetro
      */
-    private boolean existeEmail(String correo) {
+    private boolean ConsultarDisponibilidadEmail(String id, String correo) {
+
+        boolean valido = false;
+
+        // Verificar si el correo electrónico está en uso por otros usuarios
+        Usuario usuario = usuarioRepo.findByCorreo(correo).orElse(null);
+        if (usuario == null) {
+            // El correo electrónico no está en uso por otros usuarios
+            valido = true;
+        } else {
+            // El correo electrónico está en uso por otro usuario
+            if (id != null && id.equals(usuario.getId())) {
+                // El correo electrónico está en uso por el usuario con el ID proporcionado
+                valido = true;
+            }
+        }
+        return valido;
+
+    }
+
+    /**
+     * Método usado al momento de registrar un usuario el cual verifica que el correo que el usuario
+     * que se está registrando ingrese un correo que nadie mas use
+     * @param correo
+     * @return true si existe un usuario en la BD con el correo en uso, false si nadie lo usa
+     */
+    private boolean existeCorreo(String correo) {
         return usuarioRepo.existsByCorreo(correo);
     }
 
@@ -139,7 +169,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuario.setUrlFotoPerfil( actualizarUsuarioDTO.fotoPerfil() );
         usuario.setCiudad( actualizarUsuarioDTO.ciudadReidencia() );
         usuario.setUbicacion(actualizarUsuarioDTO.ubicacion());
-        if( existeEmail(actualizarUsuarioDTO.correo()) ){
+        if(!ConsultarDisponibilidadEmail(actualizarUsuarioDTO.idUsuario(),actualizarUsuarioDTO.correo()) ){
             throw new Exception("El correo ya se encuentra registrado");
         }else {
             usuario.setCorreo( actualizarUsuarioDTO.correo() );
@@ -201,7 +231,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
      */
     private Optional<Usuario> validarUsuarioExiste(String idUsuario) throws ResourceNotFoundException{
 
-        //Buscamos el cliente que se quiere manipular
+        //Buscamos el usuario que se quiere manipular
         Optional<Usuario> optionalUsuario = usuarioRepo.findById(idUsuario);
 
         //Si no se encontró el usuario, lanzamos una excepción

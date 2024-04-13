@@ -39,6 +39,7 @@ public class ComentarioServicioImpl implements ComentarioServicio {
 
     @Override
     public void responderComentario(ResponderComentarioDTO responderComentarioDTO) throws Exception {
+
         Optional<Comentario> optionalComentario = comentarioRepo.findById(responderComentarioDTO.idComentario());
         if (optionalComentario.isEmpty()){
             throw new Exception("Error ");
