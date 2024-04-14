@@ -1,39 +1,54 @@
 db = connect( 'mongodb://root:example@localhost:27017/unilocalTest?authSource=admin' );
 db.usuario.insertMany([
     {
-        _id: 'Cliente1',
+        _id: 'Usuario1',
         nickname: 'juanito',
         ciudad: 'ARMENIA',
         urlFotoPerfil: 'mi foto',
-        direccion:'Quimbaya Mz 1 #12',
+        ubicacion:{
+            latitud: 4.540130,
+            longitud: -75.665660
+        },
         correo: 'juan@email.com',
-        contrasenia: 'mipassword',
+        contrasenia: 'Mipassword1@',
         nombre: 'Juan',
-        estadoCuenta: 'ACTIVO',
+        estadoRegistro: 'ACTIVO',
+        registroBusqueda: '',
+        negocioFav: '',
         _class: 'co.edu.uniquindio.unilocal.model.Usuario'
     },
     {
-        _id: 'Cliente2',
+        _id: 'Usuario2',
         nickname: 'juanito2',
         ciudad: 'ARMENIA',
         urlFotoPerfil: 'mi foto',
-        direccion:'Quimbaya Mz 1 #12',
-        correo: 'juan@email.com',
-        contrasenia: 'mipassword',
+        ubicacion:{
+            latitud: 4.540130,
+            longitud: -75.665660
+        },
+        correo: 'juan2@email.com',
+        contrasenia: 'Mipassword2@',
         nombre: 'Juan',
-        estadoCuenta: 'ACTIVO',
+        estadoRegistro: 'ACTIVO',
+        registroBusqueda: '',
+        negocioFav: '',
         _class: 'co.edu.uniquindio.unilocal.model.Usuario'
     },
     {
-        _id: 'Cliente3',
+        _id: 'Usuario3',
         nickname: 'juanito',
         ciudad: 'ARMENIA',
         urlFotoPerfil: 'mi foto',
-        direccion:'Quimbaya Mz 1 #12',
-        correo: 'juan@email.com',
+        ubicacion:{
+            latitud: 4.540130,
+            longitud: -75.665660
+        },
+        correo: 'juan3@email.com',
         contrasenia: 'mipassword',
         nombre: 'Juan',
-        estadoCuenta: 'ACTIVO',
+        estadoRegistro: 'ACTIVO',
+        registroBusqueda: '',
+        negocioFav: '',
         _class: 'co.edu.uniquindio.unilocal.model.Usuario'
     },
     {
@@ -41,22 +56,32 @@ db.usuario.insertMany([
         nickname: 'juanito4',
         ciudad: 'ARMENIA',
         urlFotoPerfil: 'mi foto',
-        direccion: 'Quimbaya Mz 1 #12',
-        correo: 'juan@email.com',
+        ubicacion: {
+            latitud: 4.540130,
+            longitud: -75.665660
+        },
+        correo: 'juan4@email.com',
         contrasenia: 'Mipassword4@',
         nombre: 'Juan',
-        estadoCuenta: 'ACTIVO',
+        estadoRegistro: 'ACTIVO',
+        registroBusqueda: '',
+        negocioFav: '',
         _class: 'co.edu.uniquindio.unilocal.model.Usuario' },
     {
         _id: 'Usuario5',
         nickname: 'juanito5',
         ciudad: 'ARMENIA',
         urlFotoPerfil: 'mi foto',
-        direccion: 'Quimbaya Mz 1 #12',
+        ubicacion: {
+            latitud: 4.540130,
+            longitud: -75.665660
+        },
         correo: 'juan@email.com',
         contrasenia: 'Mipassword5@',
         nombre: 'Juan',
-        estadoCuenta: 'ACTIVO',
+        estadoRegistro: 'ACTIVO',
+        registroBusqueda: '',
+        negocioFav: '',
         _class: 'co.edu.uniquindio.unilocal.model.Usuario' }
 ]);
 db.negocios.insertMany([
@@ -64,7 +89,7 @@ db.negocios.insertMany([
         _id: 'Negocio1',
         nombre: 'Restaurante Mexicano',
         descripcion: 'Restaurante de comida mexicana en Armenia',
-        codigoCliente: 'Cliente1',
+        codigoUsuario: 'Usuario1',
         ubicacion: {
             latitud: 4.540130,
             longitud: -75.665660
@@ -79,14 +104,14 @@ db.negocios.insertMany([
             }
         ],
         telefonos: ['1234567', '7654321'],
-        estado: 'ACTIVO',
+        estadoRegistro: 'ACTIVO',
         _class: 'co.edu.uniquindio.unilocal.model.Negocio'
     },
     {
         _id: 'Negocio2',
         nombre: 'Restaurante La fogata',
         descripcion: 'Restaurante de 1963 con ambiente tranquilo y antiguo, platos de carnes tradicionales y bebidas.',
-        codigoCliente: 'Cliente2',
+        codigoUsuario: 'Usuario2',
         ubicacion: {
             latitud: 4.5539956,
             longitud:-75.6585289
@@ -101,14 +126,14 @@ db.negocios.insertMany([
             }
         ],
         telefonos: ['1234567', '7654321'],
-        estado: 'ACTIVO',
+        estadoRegistro: 'ACTIVO',
         _class: 'co.edu.uniquindio.unilocal.model.Negocio'
     },
     {
         _id: 'Negocio3',
         nombre: 'Casa Quimbaya',
         descripcion: 'Este hotel tranquilo se encuentra a 12 minutos a pie del parque Vida, a 3 km del Museo del Oro Quimbaya y a 19 km del jardín botánico del Quindío.',
-        codigoCliente: 'Cliente3',
+        codigoUsuario: 'Usuario3',
         ubicacion: {
             latitud: 4.5538009,
             longitud: -75.6590702
@@ -123,14 +148,14 @@ db.negocios.insertMany([
             }
         ],
         telefonos: ['1234567', '7654321'],
-        estado: 'ACTIVO',
+        estadoRegistro: 'ACTIVO',
         _class: 'co.edu.uniquindio.unilocal.model.Negocio'
     },
     {
         _id: 'Negocio4',
         nombre: 'Museo del oro Quimbaya',
         descripcion: 'Museo del oro Quimbaya',
-        codigoCliente: 'Cliente4',
+        codigoUsuario: 'Usuario4',
         ubicacion: {
             latitud: 4.5603605,
             longitud: -75.6692269
@@ -145,14 +170,14 @@ db.negocios.insertMany([
             }
         ],
         telefonos: ['1234567', '7654321'],
-        estado: 'ACTIVO',
+        estadoRegistro: 'ACTIVO',
         _class: 'co.edu.uniquindio.unilocal.model.Negocio'
     },
     {
         _id: 'Negocio5',
         nombre: 'Sandwich Qbano',
         descripcion: 'Sandwich Qbano',
-        codigoCliente: 'Cliente5',
+        codigoUsuario: 'Usuario5',
         ubicacion: {
             latitud: 4.5594048,
             longitud: -75.6557529
@@ -176,7 +201,7 @@ db.comentarios.insertMany([
     {
         mensaje: "Excelente sitio, muy buena atención",
         fecha: new Date(),
-        codigoCliente: 'Cliente1',
+        codigoUsuario: 'Usuario1',
         codigoNegocio: 'Negocio1',
         calificacion: 5,
         _class: 'co.edu.uniquindio.unilocal.model.Comentario'
@@ -184,7 +209,7 @@ db.comentarios.insertMany([
     {
         mensaje: "Excelente sitio, muy buena atención",
         fecha: new Date(),
-        codigoCliente: 'Cliente2',
+        codigoUsuario: 'Usuario2',
         codigoNegocio: 'Negocio2',
         calificacion: 4,
         _class: 'co.edu.uniquindio.unilocal.model.Comentario'
@@ -192,7 +217,7 @@ db.comentarios.insertMany([
     {
         mensaje: "Mal servicio",
         fecha: new Date(),
-        codigoCliente: 'Cliente5',
+        codigoUsuario: 'Usuario5',
         codigoNegocio: 'Negocio1',
         calificacion: 3,
         _class: 'co.edu.uniquindio.unilocal.model.Comentario'
@@ -200,7 +225,7 @@ db.comentarios.insertMany([
     {
         mensaje: "Excelente sitio, muy buena atención",
         fecha: new Date(),
-        codigoCliente: 'Cliente3',
+        codigoUsuario: 'Usuario3',
         codigoNegocio: 'Negocio4',
         calificacion: 5,
         _class: 'co.edu.uniquindio.unilocal.model.Comentario'
@@ -208,7 +233,7 @@ db.comentarios.insertMany([
     {
         mensaje: "Excelente sitio, muy buena atención",
         fecha: new Date(),
-        codigoCliente: 'Cliente5',
+        codigoUsuario: 'Usuario5',
         codigoNegocio: 'Negocio5',
         calificacion: 5,
         _class: 'co.edu.uniquindio.unilocal.model.Comentario'

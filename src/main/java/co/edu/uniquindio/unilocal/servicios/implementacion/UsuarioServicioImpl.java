@@ -170,6 +170,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuario.setUrlFotoPerfil( actualizarUsuarioDTO.fotoPerfil() );
         usuario.setCiudad( actualizarUsuarioDTO.ciudadReidencia() );
         usuario.setUbicacion(actualizarUsuarioDTO.ubicacion());
+        usuario.setEstadoRegistro(actualizarUsuarioDTO.estadoRegistro());
         if(!ConsultarDisponibilidadEmail(actualizarUsuarioDTO.idUsuario(),actualizarUsuarioDTO.correo()) ){
             throw new Exception("El correo ya se encuentra registrado");
         }else {

@@ -1,14 +1,13 @@
 package co.edu.uniquindio.unilocal.test;
 
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.RegistroUsuarioDTO;
-import co.edu.uniquindio.unilocal.model.Ciudad;
-import co.edu.uniquindio.unilocal.model.EstadoRegistro;
-import co.edu.uniquindio.unilocal.model.Ubicacion;
-import co.edu.uniquindio.unilocal.model.Usuario;
+import co.edu.uniquindio.unilocal.model.*;
 import co.edu.uniquindio.unilocal.servicios.implementacion.UsuarioServicioImpl;
+import co.edu.uniquindio.unilocal.servicios.interfaces.NegocioServicio;
 import co.edu.uniquindio.unilocal.servicios.interfaces.UsuarioServicio;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +27,9 @@ public class UsuarioServicioTest {
     @Autowired
     private UsuarioServicio usuarioServicio;
     Ubicacion ubicacion = new Ubicacion(245,245);
+
+    @Autowired
+    private NegocioServicio negocioServicio;
 
     @Test
     public void registrarTest() throws Exception {
@@ -60,12 +63,13 @@ public class UsuarioServicioTest {
     public void actualizarTest() throws Exception{
 
         ActualizarUsuarioDTO actualizarUsuarioDTO = new ActualizarUsuarioDTO(
-                "Cliente1",
+                "Cliente3",
                 "Andres",
-                "andres1@gmail.com",
+                "andres12@gmail.com",
                 "urlfotoperfil",
                 Ciudad.PEREIRA,
-                ubicacion
+                ubicacion,
+                EstadoRegistro.ACTIVO
         );
 
         usuarioServicio.actualizarUsuario(actualizarUsuarioDTO);
@@ -102,5 +106,53 @@ public class UsuarioServicioTest {
         });
 
     }
+
+    @Test
+    public void recuperarContraseniaTest() throws Exception{
+
+        Assertions.assertNotNull(usuarioServicio.recuperarContrasenia("Usuario1"));
+
+    }
+
+    @Test
+    public void agregarNegecioFavTest() throws Exception{
+
+        usuarioServicio.agregarNegocioFavorito("Usuario1","661b128a033b464389ac9944");
+
+    }
+
+    @Test
+    public void eliminarNegocioFavTest() throws Exception{
+
+        usuarioServicio.eliminarNegocioFavorito("Usuario1","Negocio1");
+
+    }
+
+    @Test
+    public void recomendarLugarTest() throws Exception{
+
+        Assertions.assertThrows(Exception.class, () -> {
+            usuarioServicio.recomendarLugares("Usuario1");
+        });
+
+    }
+
+    @Test
+    public void listarNegociosFav() throws Exception{
+
+        Assertions.assertThrows(Exception.class,() -> {
+            usuarioServicio.listarNegociosFavoritos("Usuario1");
+        });
+
+    }
+
+    @Test
+    public void actualizarUbicacionTest() throws Exception{
+
+        usuarioServicio.actualizarUbicacion("Usuario1",300,350);
+
+    }
+
+
 
 }

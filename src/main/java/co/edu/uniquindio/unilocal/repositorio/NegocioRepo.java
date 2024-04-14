@@ -20,6 +20,8 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
 
     Optional<Negocio> findByNombre(String nombre);
 
+//    Optional<Negocio> existsById(String idNegocio);
+
     @Query (value = "{tipoNegocio :  ?0}")
     List<Negocio> buscarNegocioPorTipo(TipoNegocio tipoNegocio);
 
