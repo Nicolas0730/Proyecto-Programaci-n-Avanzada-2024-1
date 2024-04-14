@@ -405,6 +405,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
         Usuario usuario = optionalUsuario.get();
         usuario.getNegociosFavoritos().remove(idNegocio);
+        usuarioRepo.save(usuario);
         return idNegocio;
     }
 
