@@ -353,8 +353,18 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         }
         Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
         Usuario usuario = optionalUsuario.get();
-        usuario.getNegociosFavoritos().add(idNegocio);
-        usuario.getRegistroBusquedas().add(obtenerNombreNegocioById(idNegocio));
+
+        if (usuario.getNegociosFavoritos().isEmpty()){ //Quiere decir que es el primer negocio que agregará
+            usuario.setNegociosFavoritos(new ArrayList<>(List.of(idNegocio)));
+        }else { //La lista de busquedas ya tiene negocios almacenados
+            usuario.getNegociosFavoritos().addAll(List.of(idNegocio));
+        }
+
+        if (usuario.getRegistroBusquedas().isEmpty()){ //Quiere decir que es el primer negocio que agregará
+            usuario.setRegistroBusquedas(new ArrayList<>(List.of(obtenerNombreNegocioById(idNegocio))));
+        }else { //La lista de busquedas ya tiene negocios almacenados
+            usuario.getRegistroBusquedas().addAll(List.of(obtenerNombreNegocioById(idNegocio)));
+        }
         usuarioRepo.save(usuario);
 
         return idNegocio;
