@@ -349,23 +349,31 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     @Override
     public String agregarNegocioFavorito(String idUsuario,String idNegocio) throws Exception {
         //Verifica que el usuario que se va a agregar a favoritos exista en la BD
-        if (idNegocio==null||!negocioRepo.existsById(idNegocio)){
+        if (idNegocio == null || !negocioRepo.existsById(idNegocio)) {
             throw new ResourceNotFoundException("El negocio que desea agregar de la lista de favoritos no se encuentra registrado en la base de datos.");
         }
-        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
-        Usuario usuario = optionalUsuario.get();
 
-        if (usuario.getNegociosFavoritos().isEmpty()){ //Quiere decir que es el primer negocio que agregará
-            usuario.setNegociosFavoritos(new ArrayList<>(List.of(idNegocio)));
-        }else { //La lista de busquedas ya tiene negocios almacenados
-            usuario.getNegociosFavoritos().addAll(List.of(idNegocio));
+        // Verifica si el usuario existe
+        Usuario usuario = usuarioRepo.findById(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException("El usuario no existe."));
+
+        // Inicializa la lista de favoritos si es null
+        if (usuario.getNegociosFavoritos() == null) {
+            usuario.setNegociosFavoritos(new ArrayList<>());
         }
 
-        if (usuario.getRegistroBusquedas().isEmpty()){ //Quiere decir que es el primer negocio que agregará
-            usuario.setRegistroBusquedas(new ArrayList<>(List.of(obtenerNombreNegocioById(idNegocio))));
-        }else { //La lista de busquedas ya tiene negocios almacenados
-            usuario.getRegistroBusquedas().addAll(List.of(obtenerNombreNegocioById(idNegocio)));
+        // Agrega el negocio a la lista de favoritos
+        usuario.getNegociosFavoritos().add(idNegocio);
+
+        // Inicializa la lista de registros de búsqueda si es null
+        if (usuario.getRegistroBusquedas() == null) {
+            usuario.setRegistroBusquedas(new ArrayList<>());
         }
+
+        // Agrega el nombre del negocio a la lista de registros de búsqueda
+        usuario.getRegistroBusquedas().add(obtenerNombreNegocioById(idNegocio));
+
+        // Guarda los cambios en la base de datos
         usuarioRepo.save(usuario);
 
         return idNegocio;

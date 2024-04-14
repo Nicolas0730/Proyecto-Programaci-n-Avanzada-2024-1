@@ -63,9 +63,9 @@ public class UsuarioServicioTest {
     public void actualizarTest() throws Exception{
 
         ActualizarUsuarioDTO actualizarUsuarioDTO = new ActualizarUsuarioDTO(
-                "Cliente3",
+                "661b22d9b6d1751c2ab2a94c",
                 "Andres",
-                "andres12@gmail.com",
+                "andres1@gmail.com",
                 "urlfotoperfil",
                 Ciudad.PEREIRA,
                 ubicacion,
@@ -117,7 +117,7 @@ public class UsuarioServicioTest {
     @Test
     public void agregarNegecioFavTest() throws Exception{
 
-        usuarioServicio.agregarNegocioFavorito("Usuario1","661b128a033b464389ac9944");
+        usuarioServicio.agregarNegocioFavorito("Usuario1","Negocio1");
 
     }
 
@@ -152,7 +152,5 @@ public class UsuarioServicioTest {
         usuarioServicio.actualizarUbicacion("Usuario1",300,350);
 
     }
-
-
 
 }

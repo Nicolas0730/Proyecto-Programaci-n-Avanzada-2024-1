@@ -13,8 +13,8 @@ db.usuario.insertMany([
         contrasenia: 'Mipassword1@',
         nombre: 'Juan',
         estadoRegistro: 'ACTIVO',
-        registroBusqueda: '',
-        negocioFav: '',
+        registroBusquedas: '',
+        negociosFavoritos: '',
         _class: 'co.edu.uniquindio.unilocal.model.Usuario'
     },
     {
@@ -30,8 +30,8 @@ db.usuario.insertMany([
         contrasenia: 'Mipassword2@',
         nombre: 'Juan',
         estadoRegistro: 'ACTIVO',
-        registroBusqueda: '',
-        negocioFav: '',
+        registroBusquedas: '',
+        negociosFavoritos: '',
         _class: 'co.edu.uniquindio.unilocal.model.Usuario'
     },
     {
@@ -47,8 +47,8 @@ db.usuario.insertMany([
         contrasenia: 'mipassword',
         nombre: 'Juan',
         estadoRegistro: 'ACTIVO',
-        registroBusqueda: '',
-        negocioFav: '',
+        registroBusquedas: '',
+        negociosFavoritos: '',
         _class: 'co.edu.uniquindio.unilocal.model.Usuario'
     },
     {
@@ -64,8 +64,8 @@ db.usuario.insertMany([
         contrasenia: 'Mipassword4@',
         nombre: 'Juan',
         estadoRegistro: 'ACTIVO',
-        registroBusqueda: '',
-        negocioFav: '',
+        registroBusquedas: '',
+        negociosFavoritos: '',
         _class: 'co.edu.uniquindio.unilocal.model.Usuario' },
     {
         _id: 'Usuario5',
@@ -80,11 +80,11 @@ db.usuario.insertMany([
         contrasenia: 'Mipassword5@',
         nombre: 'Juan',
         estadoRegistro: 'ACTIVO',
-        registroBusqueda: '',
-        negocioFav: '',
+        registroBusquedas: '',
+        negociosFavoritos: '',
         _class: 'co.edu.uniquindio.unilocal.model.Usuario' }
 ]);
-db.negocios.insertMany([
+db.negocio.insertMany([
     {
         _id: 'Negocio1',
         nombre: 'Restaurante Mexicano',
@@ -197,7 +197,7 @@ db.negocios.insertMany([
     }
 
 ]);
-db.comentarios.insertMany([
+db.comentario.insertMany([
     {
         mensaje: "Excelente sitio, muy buena atención",
         fecha: new Date(),
