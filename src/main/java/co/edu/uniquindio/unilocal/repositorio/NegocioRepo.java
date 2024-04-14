@@ -4,6 +4,7 @@ import co.edu.uniquindio.unilocal.model.EstadoNegocio;
 import co.edu.uniquindio.unilocal.model.EstadoRegistro;
 import co.edu.uniquindio.unilocal.model.Negocio;
 import co.edu.uniquindio.unilocal.model.TipoNegocio;
+import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -43,5 +44,8 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
     List<Negocio> busquedPorEstadoRegistroyEstadoNegocio (EstadoNegocio estadoNegocio,EstadoRegistro estadoRegistro);
 
 
+    // @Aggregation({
+      //       "{$match: {estadoRegistro: 'Activo', 'historialNegocio.estadoNegocio': 'Aceptado'}}" })
+    //List<Negocio> busquedaEstadoRegistroyEstadoNegocio ();
 
 }
