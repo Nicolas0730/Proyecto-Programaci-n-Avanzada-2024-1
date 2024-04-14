@@ -22,28 +22,18 @@ public interface UsuarioServicio {
     void eliminarUsuario(String idUsuario) throws Exception;
 
     DetalleUsuarioDTO obtenerUsuario(String idCuenta) throws Exception;
-    //List<ItemUsuarioDTO> listarUsuarios(); --No es necesario en el proyecto
+
     CambiarPasswordDTO recuperarContrasenia(String idUsuario) throws Exception;
 
-    //List<NegocioDTO> listarNegociosPropios();
+    String agregarNegocioFavorito(String idUsuario, String idNegocio) throws Exception;
 
-    String eliminarCuentaUsuario(String idUsuario) throws ResourceNotFoundException; //Que retorne el id de la cuenta eliminada
-
-
-    //void comentarPublicacion(String comentario,String idNegocio);
-    //void contestarComentario(String comentario,String idComentario,String idNegocio);
-
-    String agregarNegocioFavorito(String idUsuario,String idNegocio) throws Exception;
-
-    String eliminarNegocioFavorito(String idUsuario,String idNegocio) throws ResourceNotFoundException;
+    String eliminarNegocioFavorito(String idUsuario, String idNegocio) throws ResourceNotFoundException;
 
     double solicitarRuta(String idUsuario, Ubicacion ubicacionDestino) throws ResourceNotFoundException;
 
-
-
-    //Recomendar lugares en función de las búsquedas que realiza.
+    //Recomendar lugares en función de las búsquedas que ha realizado.
     List<ItemNegocioDTO> recomendarLugares(String idUsuario) throws Exception;
 
-    List<ItemNegocioDTO> listarNegociosFavoritos(List<String> negociosFavoritos) throws Exception;
-
+    List<ItemNegocioDTO> listarNegociosFavoritos(String idUsuario) throws Exception;
+    void actualizarUbicacion(String idUsuario,double longitud, double latitud) throws Exception;
 }

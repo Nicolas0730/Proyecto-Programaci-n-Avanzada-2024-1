@@ -2,6 +2,7 @@ package co.edu.uniquindio.unilocal.controladores;
 
 import co.edu.uniquindio.unilocal.dto.CambiarPasswordDTO;
 import co.edu.uniquindio.unilocal.dto.MensajeDTO;
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.ItemNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
@@ -43,17 +44,16 @@ public class UsuarioControlador {
 //                usuarioServicio.listarUsuarios()));
 //    }
 
-    @PutMapping("/recuperar-contrasenia-usuario")
+    @PutMapping("/recuperar-contrasenia-usuario/{idUsuario}")
     public ResponseEntity<MensajeDTO<CambiarPasswordDTO>> recuperarContrasenia(@PathVariable String idUsuario) throws Exception {
 
         return ResponseEntity.ok().body(new MensajeDTO<>(false,usuarioServicio.recuperarContrasenia(idUsuario)));
     }
 
-
     @DeleteMapping("/eliminar-usuario/{idUsuario}")
-    public ResponseEntity<MensajeDTO<String>> eliminarCuentaUsuario(@PathVariable String idUsuario) throws ResourceNotFoundException{ //Que retorne el id de la cuenta eliminada
-                usuarioServicio.eliminarCuentaUsuario(idUsuario);
-        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Cliente eliminado correctamente"));
+    public ResponseEntity<MensajeDTO<String>> eliminarCuentaUsuario(@PathVariable String idUsuario) throws Exception { //Que retorne el id de la cuenta eliminada
+                usuarioServicio.eliminarUsuario(idUsuario);
+        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Cliente eliminado correctamente "+idUsuario));
     }
 
     @PutMapping("/agregar-negocio-favoritos/{idNegocio}")
@@ -76,8 +76,19 @@ public class UsuarioControlador {
 
     @GetMapping("/recomendar-lugares")
     //Recomendar lugares en función de las búsquedas que realiza.
-    public void recomendarLugares(String idUsuario) throws Exception {
-        usuarioServicio.recomendarLugares(idUsuario);
+    public ResponseEntity<MensajeDTO<List<ItemNegocioDTO>>> recomendarLugares(String idUsuario) throws Exception {
+        return ResponseEntity.ok().body(new MensajeDTO<>(false, usuarioServicio.recomendarLugares(idUsuario)));
+    }
+
+    @GetMapping("/listar-negocios-favoritos/{idUsuario}")
+    public ResponseEntity<MensajeDTO<List<ItemNegocioDTO>>> listarNegociosFavoritos(@PathVariable String idUsuario) throws Exception{
+        return ResponseEntity.ok().body(new MensajeDTO<>(false,usuarioServicio.listarNegociosFavoritos(idUsuario)));
+    }
+
+    @PutMapping("/actualizar-ubicacion/{idUsuario}")
+    public ResponseEntity<MensajeDTO<String>> actualizarUbicacion(String idUsuario,double longitud, double latitud) throws Exception{
+        usuarioServicio.actualizarUbicacion(idUsuario,longitud,latitud);
+        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Ubicación actualizada correctamente."));
     }
 
 }

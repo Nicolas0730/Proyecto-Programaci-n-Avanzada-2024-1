@@ -11,8 +11,6 @@ import java.util.Optional;
 @Repository
 public interface ComentarioRepo extends MongoRepository<Comentario,String> {
 
-    //Se puede hacer la consulta para que devuelva directamente el promedio??
-    //int calcularCalificacionNegocio(String idNegocio);
 
     @Query(value = "{ 'idNegocio' : ?0 }")
     List<Comentario> listarComentario (String idNegocio);

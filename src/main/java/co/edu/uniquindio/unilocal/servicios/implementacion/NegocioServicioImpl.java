@@ -123,18 +123,23 @@ public class NegocioServicioImpl implements NegocioServicio {
             throw new Exception("Error al buscar el usuario con el id "+idUsuario);
         }
         Usuario usuario = usuarioOptional.get();
-        usuario.getRegistroBusquedas().add(nombreNegocio);
+        if (usuario.getRegistroBusquedas().isEmpty()){ //Quiere decir que es el primer negocio que agregará
+            usuario.setRegistroBusquedas(new ArrayList<>(List.of(nombreNegocio)));
+        }else { //La lista de busquedas ya tiene negocios almacenados
+        usuario.getRegistroBusquedas().addAll(List.of(nombreNegocio));
+        }
         usuarioRepo.save(usuario);
     }
 
     /**
-     * Método que busca todos los negocios que tengan un nombre indicado por parámetro
+     * Método usado en la barra de busqueda. se encargar de buscar todos los negocios que
+     * tengan un nombre indicado por parámetro y los lista
      * @param nombre que se va a buscar en los negocios
      * @return Lista de los negocios que tienen el nombre por parámetro
      * @throws Exception
      */
     @Override
-    public List<ItemNegocioDTO> busquedaPorNombre(String nombre,String idUsuario) throws Exception{
+    public List<ItemNegocioDTO> buscarNegociosPorNombre(String nombre, String idUsuario) throws Exception{
         List<Negocio> listaNegocios = negocioRepo.busquedaNombresSimilares(nombre);
         if (listaNegocios.isEmpty()){
             throw new ResourceNotFoundException("Error al momento de obtener los negocio que contienen el nombre "+nombre);
@@ -187,7 +192,7 @@ public class NegocioServicioImpl implements NegocioServicio {
 
     /**
      * Método usado por un administrador para aprobar un negocio que se encuentra en
-     *      * espera
+     * espera
      * @param revisionDTO
      * @throws Exception
      */

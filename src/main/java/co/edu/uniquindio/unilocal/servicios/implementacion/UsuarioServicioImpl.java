@@ -8,7 +8,6 @@ import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.RegistroUsuarioDTO;
 import co.edu.uniquindio.unilocal.exception.ResourceNotFoundException;
 import co.edu.uniquindio.unilocal.model.*;
-import co.edu.uniquindio.unilocal.repositorio.ComentarioRepo;
 import co.edu.uniquindio.unilocal.repositorio.NegocioRepo;
 import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
 import co.edu.uniquindio.unilocal.servicios.interfaces.EmailServicio;
@@ -35,6 +34,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     //variable para poder invocar sus métodos de acceso a la bd.
     private final UsuarioRepo usuarioRepo;
     private final NegocioRepo negocioRepo;
+    private final EmailServicio emailServicio;
 
     /**
      * Método que almacena un nuevo usuario en la base de datos
@@ -59,7 +59,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuario.setCiudad( registroUsuarioDTO.ciudadResidencia() );
         usuario.setUrlFotoPerfil( registroUsuarioDTO.urlFotoPerfil() );
 
-        if( existeEmail(registroUsuarioDTO.correo()) ){
+        if( existeCorreo(registroUsuarioDTO.correo()) ){
             throw new Exception("El correo ya se encuentra registrado");
         }else {
             usuario.setCorreo( registroUsuarioDTO.correo() );
@@ -107,20 +107,51 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     }
 
     /**
-     * Método para verificar si existe un usuario registrado en la BD con ese nickname
+     * Método usado al momento de registrar un nuevo usuario en la Bd
+     * sirve para verificar si existe un usuario registrado en la BD con ese nickname
      * @param nickname a verificar si ya está en uso
-     * @return true si existe, false de lo contrario
+     * @return true si existe un usuario con el nickname en uso, false de lo contrario
      */
     private boolean existeNickname(String nickname) {
         return usuarioRepo.existsByNickname(nickname);
     }
 
     /**
-     * Método para verificar si existe un usuario registrado en la BD con ese correo
+     * Método usado al momento de actualizar la información de un usuario, su función
+     * es verificar si ya existe un usuario registrado en la BD con ese correo a excepciión
+     * de él mismo
      * @param correo
-     * @return
+     * @return false si el correo está en uso por un usuario que no sea el usuario con el id
+     * por parámetro, true si nadie está haciendo uso del correo o si quien lo usa es el mismo
+     * usuario indicado por parámetro
      */
-    private boolean existeEmail(String correo) {
+    private boolean ConsultarDisponibilidadEmail(String id, String correo) {
+
+        boolean valido = false;
+
+        // Verificar si el correo electrónico está en uso por otros usuarios
+        Usuario usuario = usuarioRepo.findByCorreo(correo).orElse(null);
+        if (usuario == null) {
+            // El correo electrónico no está en uso por otros usuarios
+            valido = true;
+        } else {
+            // El correo electrónico está en uso por otro usuario
+            if (id != null && id.equals(usuario.getId())) {
+                // El correo electrónico está en uso por el usuario con el ID proporcionado
+                valido = true;
+            }
+        }
+        return valido;
+
+    }
+
+    /**
+     * Método usado al momento de registrar un usuario el cual verifica que el correo que el usuario
+     * que se está registrando ingrese un correo que nadie mas use
+     * @param correo
+     * @return true si existe un usuario en la BD con el correo en uso, false si nadie lo usa
+     */
+    private boolean existeCorreo(String correo) {
         return usuarioRepo.existsByCorreo(correo);
     }
 
@@ -139,7 +170,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         usuario.setUrlFotoPerfil( actualizarUsuarioDTO.fotoPerfil() );
         usuario.setCiudad( actualizarUsuarioDTO.ciudadReidencia() );
         usuario.setUbicacion(actualizarUsuarioDTO.ubicacion());
-        if( existeEmail(actualizarUsuarioDTO.correo()) ){
+        if(!ConsultarDisponibilidadEmail(actualizarUsuarioDTO.idUsuario(),actualizarUsuarioDTO.correo()) ){
             throw new Exception("El correo ya se encuentra registrado");
         }else {
             usuario.setCorreo( actualizarUsuarioDTO.correo() );
@@ -201,7 +232,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
      */
     private Optional<Usuario> validarUsuarioExiste(String idUsuario) throws ResourceNotFoundException{
 
-        //Buscamos el cliente que se quiere manipular
+        //Buscamos el usuario que se quiere manipular
         Optional<Usuario> optionalUsuario = usuarioRepo.findById(idUsuario);
 
         //Si no se encontró el usuario, lanzamos una excepción
@@ -255,9 +286,13 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return cambiarPasswordDTO;
     }
 
+    /**
+     * Método encargado de enviar un correo para la recuperación de contraseña de un usuario
+     * @param cambiarPasswordDTO Contiene los datos necesarios para enviar un correo
+     * @throws Exception
+     */
     private void enviarCorreoRecuperacion(CambiarPasswordDTO cambiarPasswordDTO) throws Exception {
-        //PREGUNTAR EN LA PRÓXIMA CLASE CÓMO HACER PARA USAR EL SERVICIO enviarCorreo
-        final EmailServicio emailServicio = null;
+
         emailServicio.enviarCorreo(new EmailDTO("RECUPERACIÓN DE CONTRASEÑA", "Su nueva contraseña es: "+cambiarPasswordDTO.passwordNueva(), cambiarPasswordDTO.email()));
 
     }
@@ -303,32 +338,33 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     }
 
     /**
-     * Método que se encarga de eliminar logicamente un Usuario cambiando su estado a inactivo
-     * @param idUsuario usuario que se desea eliminar
-     * @return Id usuario eliminado
-     * @throws ResourceNotFoundException
+     * Método que dado el id de un usuario, agrega a su lista de negocios favoritos
+     * el id de un negocio
+     * @param idUsuario
+     * @param idNegocio
+     * @return id del negocio agregado a la lista de negocios favoritos del usuario
+     * @throws Exception
      */
     @Override
-    public String eliminarCuentaUsuario(String idUsuario) throws ResourceNotFoundException {
-
-        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
-
-        //Obtenemos el cliente
-        Usuario usuario = optionalUsuario.get();
-        usuario.setEstadoRegistro(EstadoRegistro.INACTIVO);
-        usuarioRepo.save(usuario);
-        return usuario.getId();
-    }
-
-    @Override
     public String agregarNegocioFavorito(String idUsuario,String idNegocio) throws Exception {
+        //Verifica que el usuario que se va a agregar a favoritos exista en la BD
+        if (idNegocio==null||!negocioRepo.existsById(idNegocio)){
+            throw new ResourceNotFoundException("El negocio que desea agregar de la lista de favoritos no se encuentra registrado en la base de datos.");
+        }
         Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
         Usuario usuario = optionalUsuario.get();
-        if (idNegocio==null||idNegocio.isEmpty()){
-            throw new Exception("Ocurrió un error al momento de agregar el negocio "+idNegocio+" a la lista de favoritos del usuario "+idUsuario);
+
+        if (usuario.getNegociosFavoritos().isEmpty()){ //Quiere decir que es el primer negocio que agregará
+            usuario.setNegociosFavoritos(new ArrayList<>(List.of(idNegocio)));
+        }else { //La lista de busquedas ya tiene negocios almacenados
+            usuario.getNegociosFavoritos().addAll(List.of(idNegocio));
         }
-        usuario.getNegociosFavoritos().add(idNegocio);
-        usuario.getRegistroBusquedas().add(obtenerNombreNegocioById(idNegocio));
+
+        if (usuario.getRegistroBusquedas().isEmpty()){ //Quiere decir que es el primer negocio que agregará
+            usuario.setRegistroBusquedas(new ArrayList<>(List.of(obtenerNombreNegocioById(idNegocio))));
+        }else { //La lista de busquedas ya tiene negocios almacenados
+            usuario.getRegistroBusquedas().addAll(List.of(obtenerNombreNegocioById(idNegocio)));
+        }
         usuarioRepo.save(usuario);
 
         return idNegocio;
@@ -352,23 +388,34 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return negocio.getNombre();
     }
 
+    /**
+     * Método que dado el id de un usuario, elimina de su lista de negocios favoritos
+     * el id de un negocio indicado
+     * @param idUsuario
+     * @param idNegocio
+     * @return id del negocio eliminado de la lista de negocios favoritos del usuario
+     * @throws Exception
+     */
     @Override
     public String eliminarNegocioFavorito(String idUsuario,String idNegocio) throws ResourceNotFoundException {
-
+        //Verifica que el usuario que se va a eliminar de favoritos exista en la BD
         if (!negocioRepo.existsById(idNegocio)){
             throw new ResourceNotFoundException("El negocio que desea eliminar de la lista de favoritos no se encuentra registrado en la base de datos.");
         }
         Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
         Usuario usuario = optionalUsuario.get();
         usuario.getNegociosFavoritos().remove(idNegocio);
+        usuarioRepo.save(usuario);
         return idNegocio;
     }
 
     /**
-     * Este método calculará la distancia en línea recta entre dos puntos geográficos utilizando
-     * la fórmula de la distancia haversine. Esto no es una ruta real, sino la
-     * distancia entre los dos puntos en una línea directa.
-     * Cuando se tenga la api de los mapas se reescribirá el método
+     * Este método calculará POR AHORA la distancia en línea recta entre dos puntos
+     * geográficos utilizando la fórmula de la distancia haversine. Esto no es una ruta real,
+     * sino la distancia entre los dos puntos en una línea directa.
+     ****Cuando se tenga la api de los mapas se reescribirá el método****
+     * Cada vez que se vaya a solicitar una ruta el usuario debe actualizar su atributo ubicacion
+     * para que se pueda calcular
      * @param idUsuario
      * @param ubicacionDestino
      * @return
@@ -462,15 +509,16 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         }
 
     /**
-     * Este metodo iria aqui o en NegocioRepo?
      * Método que lista todos los negocios que el usuario tiene como favoritos en una lista
-     * @param negociosFavoritos Lista con los ids de los negocios que voy a buscar en la BD
+     * @param idUsuario Lista con los ids de los negocios que voy a buscar en la BD
      * @return Lista de ItemNegocio
      * @throws Exception
      */
     @Override
-    public List<ItemNegocioDTO> listarNegociosFavoritos(List<String> negociosFavoritos) throws Exception{
-        List<Negocio> listaNegocios = negocioRepo.ListarFavoritos(negociosFavoritos);
+    public List<ItemNegocioDTO> listarNegociosFavoritos(String idUsuario) throws Exception{
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+        Usuario usuario = optionalUsuario.get();
+        List<Negocio> listaNegocios = negocioRepo.ListarFavoritos(usuario.getNegociosFavoritos());
         if (listaNegocios.isEmpty()){
             throw new ResourceNotFoundException("Error al momento de obtener los negocios favoritos ");
         }
@@ -481,6 +529,20 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         return  items;
     }
 
-
+    /**
+     * Ya que para nuestro proyecto el usuario tiene una ubicacion como atributo, este debe
+     * poder actualizarla con un botón cada vez que desee calcular una ruta entre él y un negocio
+     * @param idUsuario
+     * @param longitud
+     * @param latitud
+     * @throws Exception
+     */
+    @Override
+    public void actualizarUbicacion(String idUsuario,double longitud, double latitud) throws Exception{
+        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
+        Usuario usuario = optionalUsuario.get();
+        usuario.setUbicacion(new Ubicacion(latitud,longitud));
+        usuarioRepo.save(usuario);
+    }
 
     }
