@@ -63,7 +63,7 @@ public class UsuarioServicioTest {
     public void actualizarTest() throws Exception{
 
         ActualizarUsuarioDTO actualizarUsuarioDTO = new ActualizarUsuarioDTO(
-                "661b22d9b6d1751c2ab2a94c",
+                "Usuario1",
                 "Andres",
                 "andres1@gmail.com",
                 "urlfotoperfil",
@@ -73,7 +73,7 @@ public class UsuarioServicioTest {
         );
 
         usuarioServicio.actualizarUsuario(actualizarUsuarioDTO);
-        DetalleUsuarioDTO detalleUsuarioDTO = usuarioServicio.obtenerUsuario("Cliente1");
+        DetalleUsuarioDTO detalleUsuarioDTO = usuarioServicio.obtenerUsuario("Usuario1");
         Assertions.assertNotNull("urlFotoperfil",detalleUsuarioDTO.fotoPerfil());
 
     }

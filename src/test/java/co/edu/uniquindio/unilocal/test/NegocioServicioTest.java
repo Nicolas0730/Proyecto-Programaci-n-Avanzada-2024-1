@@ -1,6 +1,10 @@
 package co.edu.uniquindio.unilocal.test;
 
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.ActualizarNegocioDTO;
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.DetalleNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroRevisionDTO;
+import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
 import co.edu.uniquindio.unilocal.model.*;
 import co.edu.uniquindio.unilocal.servicios.interfaces.NegocioServicio;
 import org.junit.jupiter.api.Assertions;
@@ -44,6 +48,108 @@ public class NegocioServicioTest {
         String codigo = negocioServicio.crearNegocio(registroNegocioDTO);
 
         Assertions.assertNotNull(codigo);
+
+    }
+
+    @Test
+    public void buscarNegocioTest() throws Exception{
+
+        negocioServicio.buscarNegocio("Negocio1","Usuario1");
+
+    }
+
+    @Test
+    public void buscarNegocioNombreTest() throws Exception{
+
+        negocioServicio.buscarNegocioPorNombre("Restaurante Mexicano");
+
+    }
+
+    @Test
+    public void eliminarTest() throws Exception{
+
+        negocioServicio.eliminarNegocio("661b30a613481c7f49a585b9");
+
+    }
+
+    @Test
+    public void aprobarTest() throws Exception{
+
+        RegistroRevisionDTO registroRevisionDTO = new RegistroRevisionDTO(
+                "Negocio2",
+                "Muy bueno",
+                "Moderador1"
+        );
+
+        negocioServicio.aprobarNegocio(registroRevisionDTO);
+
+    }
+
+    @Test
+    public void rechazarTest() throws Exception{
+
+        RegistroRevisionDTO registroRevisionDTO = new RegistroRevisionDTO(
+                "Negocio2",
+                "Muy malo",
+                "Moderador1"
+        );
+
+        negocioServicio.rechazarNegocio(registroRevisionDTO);
+    }
+
+    @Test
+    public void actualizarTest() throws Exception{
+
+        List<String> imagenes = new ArrayList<>();
+        List<String> telefonos = new ArrayList<>();
+        HorarioNegocio horarioNegocio = new HorarioNegocio(LocalDateTime.now(),LocalDateTime.now(),"Lunes");
+
+        ActualizarNegocioDTO actualizarNegocioDTO = new ActualizarNegocioDTO(
+                "Negocio1",
+                "Restaurante Comida Mexicana",
+                "Restaurante de la mejor comida Mexicana",
+                imagenes,
+                telefonos,
+                horarioNegocio
+        );
+
+        negocioServicio.actualizarNegocio(actualizarNegocioDTO);
+        DetalleNegocioDTO detalleNegocioDTO = negocioServicio.buscarNegocio("Negocio1","Usuario1");
+        Assertions.assertNotNull("id",detalleNegocioDTO.id());
+    }
+
+    @Test
+    public void buscarTipoTest() throws Exception{
+
+        negocioServicio.buscarNegociosPorTipo(TipoNegocio.RESTAURANTE);
+
+    }
+
+    @Test
+    public void buscarDistanciaTest() throws Exception{
+
+        negocioServicio.buscarNegociosPorDistancia("Negocio2",2);
+
+    }
+
+    @Test
+    public void filtrarEstado() throws Exception{
+
+        negocioServicio.filtrarPorEstado(EstadoNegocio.RECHAZADO);
+
+    }
+
+    @Test
+    public void listarNegociosUsuarioTest() throws Exception{
+
+        Assertions.assertNotNull(negocioServicio.listarNegociosDeUsuario("Usuario1"));
+
+    }
+
+    @Test
+    public void encontrarTop5Test() throws Exception{
+
+        negocioServicio.encontrarTop5();
 
     }
 
