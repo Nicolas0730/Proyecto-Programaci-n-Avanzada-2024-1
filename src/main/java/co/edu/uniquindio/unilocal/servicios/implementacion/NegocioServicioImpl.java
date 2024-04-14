@@ -123,7 +123,11 @@ public class NegocioServicioImpl implements NegocioServicio {
             throw new Exception("Error al buscar el usuario con el id "+idUsuario);
         }
         Usuario usuario = usuarioOptional.get();
-        usuario.getRegistroBusquedas().add(nombreNegocio);
+        if (usuario.getRegistroBusquedas().isEmpty()){ //Quiere decir que es el primer negocio que agregará
+            usuario.setRegistroBusquedas(new ArrayList<>(List.of(nombreNegocio)));
+        }else { //La lista de busquedas ya tiene negocios almacenados
+        usuario.getRegistroBusquedas().addAll(List.of(nombreNegocio));
+        }
         usuarioRepo.save(usuario);
     }
 
