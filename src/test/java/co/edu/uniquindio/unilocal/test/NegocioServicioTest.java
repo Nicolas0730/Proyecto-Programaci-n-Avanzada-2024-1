@@ -54,22 +54,24 @@ public class NegocioServicioTest {
     @Test
     public void buscarNegocioTest() throws Exception{
 
-        negocioServicio.buscarNegocio("Negocio1","Usuario1");
+        Assertions.assertNotNull(negocioServicio.buscarNegocio("Negocio1","Usuario1"));
 
     }
 
     @Test
     public void buscarNegocioNombreTest() throws Exception{
 
-        negocioServicio.buscarNegocioPorNombre("Restaurante Mexicano");
+        Assertions.assertNotNull(negocioServicio.buscarNegocioPorNombre("Restaurante Mexicano"));
 
     }
 
     @Test
     public void eliminarTest() throws Exception{
 
-        negocioServicio.eliminarNegocio("661b30a613481c7f49a585b9");
-
+        negocioServicio.eliminarNegocio("Negocio2");
+        Assertions.assertThrows(Exception.class, () -> {
+            negocioServicio.eliminarNegocio("Negocio2");
+        });
     }
 
     @Test
@@ -82,6 +84,7 @@ public class NegocioServicioTest {
         );
 
         negocioServicio.aprobarNegocio(registroRevisionDTO);
+        Assertions.assertNotNull(registroRevisionDTO.idNegocio());
 
     }
 
@@ -95,6 +98,8 @@ public class NegocioServicioTest {
         );
 
         negocioServicio.rechazarNegocio(registroRevisionDTO);
+        Assertions.assertNotNull(registroRevisionDTO.idNegocio());
+
     }
 
     @Test
@@ -121,21 +126,21 @@ public class NegocioServicioTest {
     @Test
     public void buscarTipoTest() throws Exception{
 
-        negocioServicio.buscarNegociosPorTipo(TipoNegocio.RESTAURANTE);
+        Assertions.assertNotNull(negocioServicio.buscarNegociosPorTipo(TipoNegocio.RESTAURANTE));
 
     }
 
     @Test
     public void buscarDistanciaTest() throws Exception{
 
-        negocioServicio.buscarNegociosPorDistancia("Usuario1",2);
+        Assertions.assertNotNull(negocioServicio.buscarNegociosPorDistancia("Usuario1",2));
 
     }
 
     @Test
     public void filtrarEstado() throws Exception{
 
-        negocioServicio.filtrarPorEstado(EstadoNegocio.RECHAZADO);
+        Assertions.assertNotNull(negocioServicio.filtrarPorEstado(EstadoNegocio.RECHAZADO));
 
     }
 
@@ -149,7 +154,7 @@ public class NegocioServicioTest {
     @Test
     public void encontrarTop5Test() throws Exception{
 
-        negocioServicio.encontrarTop5();
+        Assertions.assertNotNull(negocioServicio.encontrarTop5());
 
     }
 

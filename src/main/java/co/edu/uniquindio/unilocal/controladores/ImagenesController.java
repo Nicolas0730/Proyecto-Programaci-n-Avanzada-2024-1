@@ -11,8 +11,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/imagenes")
 @RequiredArgsConstructor
-public class
-ImagenesController {
+public class ImagenesController {
 
     private final ImagenesServicio imagenesServicio;
 

@@ -55,7 +55,6 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         }else
             usuario.setNickname( registroUsuarioDTO.nickname() );
 
-
         usuario.setCiudad( registroUsuarioDTO.ciudadResidencia() );
         usuario.setUrlFotoPerfil( registroUsuarioDTO.urlFotoPerfil() );
 
@@ -278,7 +277,8 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         if (usuario.getEstadoRegistro().equals(EstadoRegistro.INACTIVO)){
             throw new Exception("CUENTA CON ESTADO INVÁLIDO");
         }
-        usuario.setContrasenia(nuevaContra);
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        usuario.setContrasenia(passwordEncoder.encode(nuevaContra));
         usuarioRepo.save(usuario);
         CambiarPasswordDTO cambiarPasswordDTO = new CambiarPasswordDTO(idUsuario,nuevaContra,usuario.getCorreo());
         enviarCorreoRecuperacion(cambiarPasswordDTO);

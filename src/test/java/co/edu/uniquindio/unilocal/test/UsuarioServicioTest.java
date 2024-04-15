@@ -28,15 +28,8 @@ public class UsuarioServicioTest {
     private UsuarioServicio usuarioServicio;
     Ubicacion ubicacion = new Ubicacion(245,245);
 
-    @Autowired
-    private NegocioServicio negocioServicio;
-
     @Test
     public void registrarTest() throws Exception {
-
-        List<String> negociosFav = new ArrayList<>();
-        List<String> registroBusqueda = new ArrayList<>();
-
 
         //Se crea un objeto de tipo RegistroClienteDTO
         RegistroUsuarioDTO registroUsuarioDTO = new RegistroUsuarioDTO(
@@ -46,9 +39,7 @@ public class UsuarioServicioTest {
                 "juanakdmfwmfofo",
                 "juanito123",
                 Ciudad.ARMENIA,
-                ubicacion,
-                registroBusqueda,
-                negociosFav
+                ubicacion
                 );
 
         //Se registra el cliente

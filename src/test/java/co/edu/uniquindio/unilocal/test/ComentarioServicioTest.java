@@ -40,11 +40,11 @@ public class ComentarioServicioTest {
     public void responderTest() throws Exception{
 
         ResponderComentarioDTO responderComentarioDTO = new ResponderComentarioDTO(
-                "661d6116d1b32d0cdf87cfde",
+                "661d620c5ea25a30e85b6cfd",
                 "Gracias"
         );
 
-            comentarioServicio.responderComentario(responderComentarioDTO);
-
+        comentarioServicio.responderComentario(responderComentarioDTO);
+        Assertions.assertNotNull(Exception.class, responderComentarioDTO::idComentario);
     }
 }

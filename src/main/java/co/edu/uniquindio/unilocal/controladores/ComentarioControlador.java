@@ -16,16 +16,16 @@ public class ComentarioControlador {
 
     private final ComentarioServicio comentarioServicio;
 
-    @PostMapping("/registrar-comentario")
-    public ResponseEntity<MensajeDTO<String>> registrarComentario(@Valid @RequestBody RegistroComentarioDTO registroComentarioDTO) throws Exception{
-        comentarioServicio.registrarComentario(registroComentarioDTO);
-        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Comentario registrado correctamente."));
-    }
-
-    @PutMapping("/responder-comentario")
-    public ResponseEntity<MensajeDTO<String>> responderComentario(@Valid @RequestBody ResponderComentarioDTO responderComentarioDTO) throws Exception{
-        comentarioServicio.responderComentario(responderComentarioDTO);
-        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Comentario respondido correctamente."));
-    }
+//    @PostMapping("/registrar-comentario")
+//    public ResponseEntity<MensajeDTO<String>> registrarComentario(@Valid @RequestBody RegistroComentarioDTO registroComentarioDTO) throws Exception{
+//        comentarioServicio.registrarComentario(registroComentarioDTO);
+//        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Comentario registrado correctamente."));
+//    }
+//
+//    @PutMapping("/responder-comentario")
+//    public ResponseEntity<MensajeDTO<String>> responderComentario(@Valid @RequestBody ResponderComentarioDTO responderComentarioDTO) throws Exception{
+//        comentarioServicio.responderComentario(responderComentarioDTO);
+//        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Comentario respondido correctamente."));
+//    }
 
 }

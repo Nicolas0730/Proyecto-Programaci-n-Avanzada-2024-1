@@ -30,8 +30,8 @@ public class AutenticacionServicioTest {
     public void iniciarSesionClienteTest() throws Exception{
 
         LoginDTO loginDTO = new LoginDTO(
-                "andres1@gmail.com",
-                "Mipassword1@"
+                "diegoalejandrocordobamo@gmail.com",
+                "063uV2mP"
         );
 
         TokenDTO codigo = autenticacionServicio.iniciarSesionCliente(loginDTO);
