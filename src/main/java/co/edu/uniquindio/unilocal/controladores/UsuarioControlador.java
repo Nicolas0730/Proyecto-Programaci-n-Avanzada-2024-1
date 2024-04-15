@@ -56,7 +56,7 @@ public class UsuarioControlador {
         return ResponseEntity.ok().body(new MensajeDTO<>(false,"Cliente eliminado correctamente "+idUsuario));
     }
 
-    @PutMapping("/agregar-negocio-favoritos/{idNegocio}")
+    @PutMapping("/agregar-negocio-favoritos/{idNegocio}/{idUsuario}")
     public ResponseEntity<MensajeDTO<String>> agregarNegocioFavorito(@PathVariable String idUsuario,@PathVariable String idNegocio) throws Exception{
         usuarioServicio.agregarNegocioFavorito(idUsuario,idNegocio);
         return ResponseEntity.ok().body(new MensajeDTO<>(false,"Negocio agregado a la lista de favoritos correctamente"));

@@ -2,10 +2,7 @@ package co.edu.uniquindio.unilocal.dto.usuarioDTO;
 
 import co.edu.uniquindio.unilocal.model.Ciudad;
 import co.edu.uniquindio.unilocal.model.Ubicacion;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
@@ -21,8 +18,6 @@ public record RegistroUsuarioDTO(
         String contrasenia,
         @NotBlank String urlFotoPerfil,
         @NotBlank String nickname,
-        @NotBlank Ciudad ciudadResidencia,
-        @NotBlank Ubicacion ubicacion,
-        List<String> registroBusquedas,
-        List<String> negociosFavoritos) {
+        @NotNull Ciudad ciudadResidencia,
+        @NotNull Ubicacion ubicacion) {
 }

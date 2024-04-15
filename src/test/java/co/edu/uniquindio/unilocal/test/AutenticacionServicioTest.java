@@ -7,12 +7,24 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootTest
 public class AutenticacionServicioTest {
 
     @Autowired
     AutenticacionServicio autenticacionServicio;
+
+    @Test
+    public void generarPass() throws Exception{
+
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        System.out.println( passwordEncoder.encode("Mipassword1@") );
+
+    }
+
+
 
     @Test
     public void iniciarSesionClienteTest() throws Exception{
@@ -32,7 +44,7 @@ public class AutenticacionServicioTest {
 
         LoginDTO loginDTO = new LoginDTO(
                 "carlos@gmail.com",
-                "Password1@"
+                "Mipassword1@"
 
         );
 

@@ -78,8 +78,6 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
         usuario.setEstadoRegistro(EstadoRegistro.ACTIVO);
         usuario.setUbicacion(registroUsuarioDTO.ubicacion());
-        usuario.setRegistroBusquedas(registroUsuarioDTO.registroBusquedas());//va a ser null al momento del registro
-        usuario.setNegociosFavoritos(registroUsuarioDTO.negociosFavoritos()); //va a ser null al momento del registro
 
         //Se guarda en la base de datos y obtenemos el objeto registrado
         Usuario usuarioGuardado = usuarioRepo.save(usuario);
