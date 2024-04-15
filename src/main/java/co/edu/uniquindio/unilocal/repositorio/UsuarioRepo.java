@@ -28,15 +28,5 @@ public interface UsuarioRepo extends MongoRepository<Usuario,String> {
   //  @Query("{ 'mail':?0, 'password' :  ?1}")
  //   Usuario buscarPorCorreoyContrasenia(String correo, String contrasenia);
 
-
-   /* @Aggregation({
-            "{$match: {_id: ?0}}",  // Preguntar si esta consulta, se hace en usuario o en negocio
-            "{$unwind: '$negociosFavoritos'}",
-            "{$lookup: {from: 'negocio', localField: 'negociosFavoritos', foreignField: '_id', as: 'negocio_favorito'}}",
-            "{$project: { _id: 0, negociosFavoritos: { $arrayElemAt: ['$negocio_favorito', 0]}}}" })
-    List<Negocio> Favoritos (String idUsuario);*/
-
-
-
 }
 

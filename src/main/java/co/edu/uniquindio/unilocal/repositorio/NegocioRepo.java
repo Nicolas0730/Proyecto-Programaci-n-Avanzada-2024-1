@@ -34,17 +34,21 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
     @Query (value = "{'idUsuario' :  ?0}" )
     List<Negocio> listarNegocioUsuario (String idUsuario);
 
-    @Query(value = "{ '_id' : { $in : ?0 } }")
-    List<Negocio> ListarFavoritos (List<String> idNeogcio);
+   // @Query(value = "{ '_id' : { $in : ?0 } }")
+   // List<Negocio> ListarFavoritos (List<String> idNeogcio);
 
     @Query (value = "{ 'nombre' : { $regex : ?0, $options: 'i' } }" )
     List<Negocio> busquedaNombresSimilares (String nombre);
 
-    //@Query (value = "{'estadoRegistro' : 'ACTIVO', 'historialNegocio' : { $last:  } }")
-    //List<Negocio> busquedPorEstadoRegistroyEstadoNegocio (EstadoNegocio estadoNegocio,EstadoRegistro estadoRegistro);
-
 
     @Aggregation({ "{$match: {estadoRegistro: ?1} }", "{ $addFields: { utlimaResvision: { $last: '$historialNegocio' } } }", "{$match: {utlimaResvision.estadoNegocio: ?0} }" })
-    List<Negocio> busquedaEstadoRegistroyEstadoNegocio (EstadoNegocio estadoNegocio,EstadoRegistro estadoRegistro);
+    List<Negocio> busquedPorEstadoRegistroyEstadonegocio (EstadoNegocio estadoNegocio,EstadoRegistro estadoRegistro);
+
+     @Aggregation({
+            "{$match: {_id: ?0}}",  // Preguntar si esta consulta, se hace en usuario o en negocio
+            "{$unwind: '$negociosFavoritos'}",
+            "{$lookup: {from: 'negocio', localField: 'negociosFavoritos', foreignField: '_id', as: 'negocio_favorito'}}",
+            "{$project: { _id: 0, negociosFavoritos: { $arrayElemAt: ['$negocio_favorito', 0]}}}" })
+    List<Negocio> ListarFavoritos (String idUsuario);
 
 }
