@@ -40,12 +40,11 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
     @Query (value = "{ 'nombre' : { $regex : ?0, $options: 'i' } }" )
     List<Negocio> busquedaNombresSimilares (String nombre);
 
-    @Query (value = "{'estadoRegistro' : 'ACTIVO', 'historialNegocio.estadoNegocio': 'ACEPTADO'}")
-    List<Negocio> busquedPorEstadoRegistroyEstadoNegocio (EstadoNegocio estadoNegocio,EstadoRegistro estadoRegistro);
+    //@Query (value = "{'estadoRegistro' : 'ACTIVO', 'historialNegocio' : { $last:  } }")
+    //List<Negocio> busquedPorEstadoRegistroyEstadoNegocio (EstadoNegocio estadoNegocio,EstadoRegistro estadoRegistro);
 
 
-    // @Aggregation({
-      //       "{$match: {estadoRegistro: 'Activo', 'historialNegocio.estadoNegocio': 'Aceptado'}}" })
-    //List<Negocio> busquedaEstadoRegistroyEstadoNegocio ();
+    @Aggregation({ "{$match: {estadoRegistro: ?1} }", "{ $addFields: { utlimaResvision: { $last: '$historialNegocio' } } }", "{$match: {utlimaResvision.estadoNegocio: ?0} }" })
+    List<Negocio> busquedaEstadoRegistroyEstadoNegocio (EstadoNegocio estadoNegocio,EstadoRegistro estadoRegistro);
 
 }
