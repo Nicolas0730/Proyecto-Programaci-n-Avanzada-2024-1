@@ -1,11 +1,13 @@
 package co.edu.uniquindio.unilocal.test;
 
+import co.edu.uniquindio.unilocal.dto.NegocioDTO.RegistroNegocioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.ActualizarUsuarioDTO;
+import co.edu.uniquindio.unilocal.dto.usuarioDTO.DetalleUsuarioDTO;
+import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.dto.usuarioDTO.RegistroUsuarioDTO;
-import co.edu.uniquindio.unilocal.model.Ciudad;
-import co.edu.uniquindio.unilocal.model.EstadoRegistro;
-import co.edu.uniquindio.unilocal.model.Usuario;
+import co.edu.uniquindio.unilocal.model.*;
 import co.edu.uniquindio.unilocal.servicios.implementacion.UsuarioServicioImpl;
+import co.edu.uniquindio.unilocal.servicios.interfaces.NegocioServicio;
 import co.edu.uniquindio.unilocal.servicios.interfaces.UsuarioServicio;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,22 +26,20 @@ public class UsuarioServicioTest {
 
     @Autowired
     private UsuarioServicio usuarioServicio;
+    Ubicacion ubicacion = new Ubicacion(245,245);
 
     @Test
     public void registrarTest() throws Exception {
 
-        List<String> negociosFav = new ArrayList<>();
-
         //Se crea un objeto de tipo RegistroClienteDTO
         RegistroUsuarioDTO registroUsuarioDTO = new RegistroUsuarioDTO(
                 "Juan",
-                "micorreo@gmail.com",
-                "mipassword",
+                "diegoalejandrocordobamo@gmail.com",
+                "Mipassword1@",
                 "juanakdmfwmfofo",
                 "juanito123",
                 Ciudad.ARMENIA,
-                "Quimbaya, Mz 1 #12-12",
-                negociosFav
+                ubicacion
                 );
 
         //Se registra el cliente
@@ -52,38 +53,91 @@ public class UsuarioServicioTest {
     @Test
     public void actualizarTest() throws Exception{
 
-        Usuario usuario = new Usuario();
-
         ActualizarUsuarioDTO actualizarUsuarioDTO = new ActualizarUsuarioDTO(
-                usuario.getId(),
+                "Usuario1",
                 "Andres",
-                "andres@gmail.com",
+                "andres1@gmail.com",
                 "urlfotoperfil",
                 Ciudad.PEREIRA,
-                "Carrera 9 # 9-98"
+                ubicacion,
+                EstadoRegistro.ACTIVO
         );
 
         usuarioServicio.actualizarUsuario(actualizarUsuarioDTO);
-        Assertions.assertNotNull(usuario.getId());
+        DetalleUsuarioDTO detalleUsuarioDTO = usuarioServicio.obtenerUsuario("Usuario1");
+        Assertions.assertNotNull("urlFotoperfil",detalleUsuarioDTO.fotoPerfil());
 
     }
 
     @Test
     public void eliminarTest() throws Exception{
 
-        Usuario usuario = new Usuario();
+        usuarioServicio.eliminarUsuario("Usuario1");
 
-        usuario.setEstadoRegistro(EstadoRegistro.INACTIVO);
-
-        usuarioServicio.eliminarUsuario(usuario.getId());
-        Assertions.assertNotNull(usuario.getId());
+        Assertions.assertThrows(Exception.class, () -> {
+            usuarioServicio.obtenerUsuario("Usuario1");
+        });
 
     }
 
     @Test
     public void obtenerTest() throws Exception{
 
+        DetalleUsuarioDTO detalleUsuarioDTO = usuarioServicio.obtenerUsuario("Usuario1");
 
+        Assertions.assertNotNull(detalleUsuarioDTO.id());
+
+    }
+
+    @Test
+    public void obtenerBorradoTest() throws Exception{
+
+        Assertions.assertThrows(Exception.class, () -> {
+            usuarioServicio.obtenerUsuario("Usuario2");
+        });
+
+    }
+
+    @Test
+    public void recuperarContraseniaTest() throws Exception{
+
+        Assertions.assertNotNull(usuarioServicio.recuperarContrasenia("661d62f417e41410ba42bbdb"));
+
+    }
+
+    @Test
+    public void agregarNegecioFavTest() throws Exception{
+
+        usuarioServicio.agregarNegocioFavorito("Usuario1","Negocio1");
+
+    }
+
+    @Test
+    public void eliminarNegocioFavTest() throws Exception{
+
+        usuarioServicio.eliminarNegocioFavorito("Usuario1","Negocio1");
+
+    }
+
+    @Test
+    public void recomendarLugarTest() throws Exception{
+
+        Assertions.assertThrows(Exception.class, () -> {
+            usuarioServicio.recomendarLugares("Usuario1");
+        });
+
+    }
+
+    @Test
+    public void listarNegociosFav() throws Exception{
+
+            Assertions.assertNotNull(usuarioServicio.listarNegociosFavoritos("Usuario1"));
+    }
+
+    @Test
+    public void actualizarUbicacionTest() throws Exception{
+
+        usuarioServicio.actualizarUbicacion("Usuario1",300,350);
 
     }
 

@@ -3,6 +3,7 @@ package co.edu.uniquindio.unilocal.servicios.implementacion;
 import co.edu.uniquindio.unilocal.dto.LoginDTO;
 import co.edu.uniquindio.unilocal.dto.TokenDTO;
 import co.edu.uniquindio.unilocal.model.Usuario;
+import co.edu.uniquindio.unilocal.repositorio.ModeradorRepo;
 import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
 import co.edu.uniquindio.unilocal.servicios.interfaces.AutenticacionServicio;
 import co.edu.uniquindio.unilocal.util.JWTUtils;
@@ -21,6 +22,7 @@ import java.util.Optional;
 public class AutenticacionServicioImpl implements AutenticacionServicio {
 
     private final UsuarioRepo usuarioRepo;
+    private final ModeradorRepo moderadorRepo;
     private final JWTUtils jwtUtils;
 
     @Override
@@ -43,7 +45,7 @@ public class AutenticacionServicioImpl implements AutenticacionServicio {
 
     @Override
     public TokenDTO iniciarSesionModerador(LoginDTO loginDTO) throws Exception {
-        Optional<Usuario> usuarioOptional = usuarioRepo.findByCorreo(loginDTO.correo());
+        Optional<Usuario> usuarioOptional = moderadorRepo.findByCorreo(loginDTO.correo());
         if (usuarioOptional.isEmpty()) {
             throw new Exception("El correo no se encuentra registrado");
         }
@@ -53,7 +55,7 @@ public class AutenticacionServicioImpl implements AutenticacionServicio {
             throw new Exception("La contraseña es incorrecta");
         }
         Map<String, Object> map = new HashMap<>();
-        map.put("rol", "Moderador");
+        map.put("rol", "MODERADOR");
         map.put("nombre", usuario.getNombre());
         map.put("id", usuario.getId());
         return new TokenDTO( jwtUtils.generarToken(usuario.getCorreo(), map) );

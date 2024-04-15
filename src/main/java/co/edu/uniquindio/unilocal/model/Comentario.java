@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Document("Comentario")
+@Document("comentario")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,7 +21,7 @@ public class Comentario implements Serializable {
     @EqualsAndHashCode.Include
     private String id;
     private String descripcion;
-    private int califacion; //Califican del 1 al 5
+    private int calificacion; //Califican del 1 al 5
     private String idUsuario;
     private String idNegocio;
     private String respuesta;

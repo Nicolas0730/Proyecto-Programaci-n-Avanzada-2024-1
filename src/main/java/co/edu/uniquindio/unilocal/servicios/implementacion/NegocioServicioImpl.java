@@ -1,4 +1,3 @@
-
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.*;
@@ -476,7 +475,7 @@ public class NegocioServicioImpl implements NegocioServicio {
             throw new ResourceNotFoundException("Error al momento de obtener los comentarios del negocio "+idNegocio);
         }
         for (Comentario comentario: listaComentarios) {
-            acumulado += comentario.getCalifacion(); //Acumula los puntajes de todos los comentarios
+            acumulado += comentario.getCalificacion(); //Acumula los puntajes de todos los comentarios
         }
         return (double) acumulado/listaComentarios.size();  //Devolvemos el promedio de las calificaciones para el negocio ingresado
     }
@@ -521,4 +520,3 @@ public class NegocioServicioImpl implements NegocioServicio {
 
     }
 }
-
