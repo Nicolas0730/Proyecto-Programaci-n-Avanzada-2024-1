@@ -41,7 +41,7 @@ public class UsuarioServicioTest {
         //Se crea un objeto de tipo RegistroClienteDTO
         RegistroUsuarioDTO registroUsuarioDTO = new RegistroUsuarioDTO(
                 "Juan",
-                "micorreo@gmail.com",
+                "diegoalejandrocordobamo@gmail.com",
                 "Mipassword1@",
                 "juanakdmfwmfofo",
                 "juanito123",
@@ -110,7 +110,7 @@ public class UsuarioServicioTest {
     @Test
     public void recuperarContraseniaTest() throws Exception{
 
-        Assertions.assertNotNull(usuarioServicio.recuperarContrasenia("Usuario1"));
+        Assertions.assertNotNull(usuarioServicio.recuperarContrasenia("661d62f417e41410ba42bbdb"));
 
     }
 
@@ -140,10 +140,7 @@ public class UsuarioServicioTest {
     @Test
     public void listarNegociosFav() throws Exception{
 
-        Assertions.assertThrows(Exception.class,() -> {
-            usuarioServicio.listarNegociosFavoritos("Usuario1");
-        });
-
+            Assertions.assertNotNull(usuarioServicio.listarNegociosFavoritos("Usuario1"));
     }
 
     @Test

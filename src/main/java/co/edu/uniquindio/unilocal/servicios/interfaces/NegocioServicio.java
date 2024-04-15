@@ -22,7 +22,7 @@ public interface NegocioServicio {
     void actualizarNegocio(ActualizarNegocioDTO actualizarNegocioDTO) throws Exception;
     DetalleNegocioDTO buscarNegocioPorNombre(String nombreNegocio)throws Exception; //1 Solo negocio por nombre
     List<ItemNegocioDTO> buscarNegociosPorTipo(TipoNegocio tipoNegocio) throws Exception;
-    List<ItemNegocioDTO> buscarNegociosPorDistancia(String idNegocio,int distanciaAlrededor) throws Exception;
+    List<ItemNegocioDTO> buscarNegociosPorDistancia(String idUsuario,int distanciaAlrededor) throws Exception;
     List<ItemNegocioDTO> filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception;
     List<ItemNegocioDTO> listarNegociosDeUsuario(String idUsuario) throws Exception;
     List<ItemNegocioDTO> encontrarTop5() throws Exception; // FUNCIONALIDAD PROPUESTA

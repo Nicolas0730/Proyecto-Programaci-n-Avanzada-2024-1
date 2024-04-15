@@ -26,7 +26,7 @@ public class ComentarioServicioTest {
                 "Muy bueno",
                 5,
                 "Usuario3",
-                "Negocio2",
+                "Negocio3",
                 "",
                 imagenes
         );
@@ -40,7 +40,7 @@ public class ComentarioServicioTest {
     public void responderTest() throws Exception{
 
         ResponderComentarioDTO responderComentarioDTO = new ResponderComentarioDTO(
-                "661b250e154fe815ff4f908f",
+                "661d6116d1b32d0cdf87cfde",
                 "Gracias"
         );
 

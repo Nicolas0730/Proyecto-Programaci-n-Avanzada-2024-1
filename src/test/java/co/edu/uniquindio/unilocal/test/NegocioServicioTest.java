@@ -76,7 +76,7 @@ public class NegocioServicioTest {
     public void aprobarTest() throws Exception{
 
         RegistroRevisionDTO registroRevisionDTO = new RegistroRevisionDTO(
-                "Negocio2",
+                "661b30a613481c7f49a585b9",
                 "Muy bueno",
                 "Moderador1"
         );
@@ -89,7 +89,7 @@ public class NegocioServicioTest {
     public void rechazarTest() throws Exception{
 
         RegistroRevisionDTO registroRevisionDTO = new RegistroRevisionDTO(
-                "Negocio2",
+                "661b30a613481c7f49a585b9",
                 "Muy malo",
                 "Moderador1"
         );
@@ -128,7 +128,7 @@ public class NegocioServicioTest {
     @Test
     public void buscarDistanciaTest() throws Exception{
 
-        negocioServicio.buscarNegociosPorDistancia("Negocio2",2);
+        negocioServicio.buscarNegociosPorDistancia("Usuario1",2);
 
     }
 

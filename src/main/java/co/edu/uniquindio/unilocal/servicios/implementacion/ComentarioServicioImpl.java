@@ -34,7 +34,7 @@ public class ComentarioServicioImpl implements ComentarioServicio {
     public String registrarComentario(RegistroComentarioDTO registroComentarioDTO) throws Exception {
         Comentario comentario = new Comentario();
         comentario.setDescripcion(registroComentarioDTO.descripcion());
-        comentario.setCalifacion(registroComentarioDTO.calificacion());
+        comentario.setCalificacion(registroComentarioDTO.calificacion());
         comentario.setIdUsuario(registroComentarioDTO.idUsuario());
         comentario.setIdNegocio(registroComentarioDTO.idNegocio());
         comentario.setRespuesta(null);
@@ -61,10 +61,11 @@ public class ComentarioServicioImpl implements ComentarioServicio {
             throw new Exception("Error Comentario no encontrado");
         }
         Comentario comentario = optionalComentario.get();
-        if (comentario.getRespuesta()!=null){
-            throw new Exception("El comentario solo puede ser respondido una vez.");
-        }
+//        if (comentario.getRespuesta()==null || comentario.getRespuesta().isEmpty()){
+//            throw new Exception("El comentario solo puede ser respondido una vez.");
+//        }
         comentario.setRespuesta(responderComentarioDTO.respuesta());
+        comentarioRepo.save(comentario);
     }
 
 

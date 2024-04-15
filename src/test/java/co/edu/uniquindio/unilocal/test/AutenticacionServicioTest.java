@@ -31,8 +31,8 @@ public class AutenticacionServicioTest {
     public void iniciarSesionModeradorTest() throws Exception{
 
         LoginDTO loginDTO = new LoginDTO(
-                "example@email.com",
-                "mipassword"
+                "carlos@gmail.com",
+                "Password1@"
 
         );
 
