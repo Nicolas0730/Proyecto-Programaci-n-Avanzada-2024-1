@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/clientes")
+@RequestMapping("/api/usuario")
 @RequiredArgsConstructor
 public class UsuarioControlador {
 
@@ -125,8 +125,8 @@ public class UsuarioControlador {
     }
 
     @PutMapping("/actualizar-ubicacion/{idUsuario}")
-    public ResponseEntity<MensajeDTO<String>> actualizarUbicacion(@PathVariable String idUsuario,double longitud, double latitud) throws Exception{
-        usuarioServicio.actualizarUbicacion(idUsuario,longitud,latitud);
+    public ResponseEntity<MensajeDTO<String>> actualizarUbicacion(@PathVariable String idUsuario, @RequestBody Ubicacion ubicacion) throws Exception{
+        usuarioServicio.actualizarUbicacion(idUsuario, ubicacion.getLongitud(), ubicacion.getLatitud());
         return ResponseEntity.ok().body(new MensajeDTO<>(false,"Ubicación actualizada correctamente."));
     }
 

@@ -23,12 +23,12 @@ public class ModeradorControlador {
     private final NegocioServicio negocioServicio;
 
     @GetMapping("/obtener-datos-moderador/{idModerador}")
-    public ResponseEntity<MensajeDTO<ItemModeradorDTO>> obtenerDatosModerador(String idModerador) throws Exception{
+    public ResponseEntity<MensajeDTO<ItemModeradorDTO>> obtenerDatosModerador(@PathVariable String idModerador) throws Exception{
         return ResponseEntity.ok().body(new MensajeDTO<>(false,moderadorServicio.obtenerDatosModerador(idModerador)));
     }
 
-    @GetMapping("/filtrar-negocios-estado")
-    public ResponseEntity<MensajeDTO<List<ItemNegocioDTO>>> filtrarPorEstado(@Valid @RequestBody EstadoNegocio estadoNegocio) throws Exception{
+    @GetMapping("/filtrar-negocios-estado/{estadoNegocio}")
+    public ResponseEntity<MensajeDTO<List<ItemNegocioDTO>>> filtrarPorEstado(@PathVariable EstadoNegocio estadoNegocio) throws Exception{
         return ResponseEntity.ok().body(new MensajeDTO<>(false,negocioServicio.filtrarPorEstado(estadoNegocio)));
     }
 
@@ -37,7 +37,7 @@ public class ModeradorControlador {
         negocioServicio.aprobarNegocio(negocioDTO);
         return ResponseEntity.ok().body(new MensajeDTO<>(false,"Negocio aprobado con éxito."));
     }
-    @PutMapping("/rechazar-negocio-propio")
+    @PutMapping("/rechazar-negocio")
     public ResponseEntity<MensajeDTO<String>> rechazarNegocio(@Valid @RequestBody RegistroRevisionDTO negocioDTO) throws Exception{
         negocioServicio.rechazarNegocio(negocioDTO);
         return ResponseEntity.ok().body(new MensajeDTO<>(false,"Negocio rechazado con éxito."));

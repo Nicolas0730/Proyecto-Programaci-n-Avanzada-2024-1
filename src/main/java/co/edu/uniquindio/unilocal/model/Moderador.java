@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
 
-@Document("Moderador")
+@Document("moderador")
 @Getter
 @Setter
 @ToString

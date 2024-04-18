@@ -14,5 +14,5 @@ public class Cuenta {
     private String correo;
     private String contrasenia;
     private EstadoRegistro estadoRegistro;
-    private Ciudad ciudad;
+    private Ciudad ciudadResidencia;
 }

@@ -55,7 +55,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         }else
             usuario.setNickname( registroUsuarioDTO.nickname() );
 
-        usuario.setCiudad( registroUsuarioDTO.ciudadResidencia() );
+        usuario.setCiudadResidencia( registroUsuarioDTO.ciudadResidencia() );
         usuario.setUrlFotoPerfil( registroUsuarioDTO.urlFotoPerfil() );
 
         if( existeCorreo(registroUsuarioDTO.correo()) ){
@@ -165,7 +165,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         Usuario usuario = optionalUsuario.get();
         usuario.setNombre( actualizarUsuarioDTO.nombre() );
         usuario.setUrlFotoPerfil( actualizarUsuarioDTO.fotoPerfil() );
-        usuario.setCiudad( actualizarUsuarioDTO.ciudadReidencia() );
+        usuario.setCiudadResidencia( actualizarUsuarioDTO.ciudadReidencia() );
         usuario.setUbicacion(actualizarUsuarioDTO.ubicacion());
         usuario.setEstadoRegistro(actualizarUsuarioDTO.estadoRegistro());
         if(!ConsultarDisponibilidadEmail(actualizarUsuarioDTO.idUsuario(),actualizarUsuarioDTO.correo()) ){
@@ -219,7 +219,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
         //Retornamos el usuario en formato DTO
         return new DetalleUsuarioDTO( usuario.getId(), usuario.getNombre(), usuario.getUrlFotoPerfil(),
-                usuario.getNickname(), usuario.getCorreo(), usuario.getCiudad(),usuario.getUbicacion(),usuario.getNegociosFavoritos());
+                usuario.getNickname(), usuario.getCorreo(), usuario.getCiudadResidencia(),usuario.getUbicacion(),usuario.getNegociosFavoritos());
     }
 
     /**
@@ -548,7 +548,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
     public void actualizarUbicacion(String idUsuario,double longitud, double latitud) throws Exception{
         Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
         Usuario usuario = optionalUsuario.get();
-        usuario.setUbicacion(new Ubicacion(latitud,longitud));
+        usuario.setUbicacion(new Ubicacion((Double) latitud,(Double)longitud));
         usuarioRepo.save(usuario);
     }
 

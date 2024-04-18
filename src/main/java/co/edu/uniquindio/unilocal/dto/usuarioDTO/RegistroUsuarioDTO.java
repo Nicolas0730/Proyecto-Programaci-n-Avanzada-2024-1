@@ -19,5 +19,5 @@ public record RegistroUsuarioDTO(
         @NotBlank String urlFotoPerfil,
         @NotBlank String nickname,
         @NotNull Ciudad ciudadResidencia,
-        @NotNull Ubicacion ubicacion) {
+         Ubicacion ubicacion) {
 }
