@@ -26,7 +26,7 @@ public class AutenticacionServicioImpl implements AutenticacionServicio {
     private final JWTUtils jwtUtils;
 
     @Override
-    public TokenDTO iniciarSesionCliente(LoginDTO loginDTO) throws Exception {
+    public TokenDTO iniciarSesionUsuario(LoginDTO loginDTO) throws Exception {
         Optional<Usuario> usuarioOptional = usuarioRepo.findByCorreo(loginDTO.correo());
         if (usuarioOptional.isEmpty()) {
             throw new Exception("El correo no se encuentra registrado");

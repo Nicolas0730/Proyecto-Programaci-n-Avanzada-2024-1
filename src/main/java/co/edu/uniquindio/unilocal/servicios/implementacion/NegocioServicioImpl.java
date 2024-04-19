@@ -1,15 +1,12 @@
 package co.edu.uniquindio.unilocal.servicios.implementacion;
 
 import co.edu.uniquindio.unilocal.dto.NegocioDTO.*;
-import co.edu.uniquindio.unilocal.dto.comentarioDTO.ItemComentariODTO;
-import co.edu.uniquindio.unilocal.dto.usuarioDTO.ItemUsuarioDTO;
 import co.edu.uniquindio.unilocal.exception.ResourceNotFoundException;
 import co.edu.uniquindio.unilocal.model.*;
 import co.edu.uniquindio.unilocal.repositorio.ComentarioRepo;
 import co.edu.uniquindio.unilocal.repositorio.NegocioRepo;
 import co.edu.uniquindio.unilocal.repositorio.UsuarioRepo;
 import co.edu.uniquindio.unilocal.servicios.interfaces.NegocioServicio;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +34,12 @@ public class NegocioServicioImpl implements NegocioServicio {
     public String crearNegocio(RegistroNegocioDTO registroNegocioDTO) throws Exception {
         //Se crea un objeto negocio que va a contener todos los datos de registroNegocioDTO
         Negocio negocio = new Negocio();
+        if (negocioRepo.existsByNombre(registroNegocioDTO.nombre())){
+            throw new Exception("Ya existe un negocio con el nombre. "+registroNegocioDTO.nombre());
+        }
+        if (negocioRepo.existsByDireccion(registroNegocioDTO.direccion())){
+            throw new Exception("La direccion registrada ya se encuentra en uso.");
+        }
         negocio.setNombre(registroNegocioDTO.nombre());
         negocio.setDescripcion(registroNegocioDTO.descripcion());
         negocio.setListaImagenes(registroNegocioDTO.listaImagenes());
@@ -66,6 +69,23 @@ public class NegocioServicioImpl implements NegocioServicio {
         //Retornamos el id (código) del negocio registrado en la BD
         return negocioGuardado.getId();
     }
+
+    /**
+     * Método que verifica que no exista ningun negocio con la direccion indicada por parámetro
+     * @param direccion que se valida que no vaya a estar en uso por ningun otro negocio
+     * @return true si ningun negocio con estado activo y aprobado tienen la dirección indicada por parámetro
+     */
+//    private boolean validarDireccion(String direccion) {
+//        boolean aux = true;
+//        List<Negocio> negocioList = negocioRepo.busquedaPorEstadoRegistroyEstadonegocio(EstadoNegocio.APROBADO,EstadoRegistro.ACTIVO);
+//        for (Negocio negocio: negocioList){
+//            if (negocio.getDireccion().equals(direccion)) {
+//                aux = false;
+//                break;
+//            }
+//        }
+//        return aux;
+//    }
 
     /**
      * Método auxiliar que verifica que el estado de registro de un usuario
@@ -201,7 +221,7 @@ public class NegocioServicioImpl implements NegocioServicio {
         Optional<Negocio> optionalNegocio = validarNegocioExiste(revisionDTO.idNegocio());
         Negocio negocio = optionalNegocio.get();
 
-        if (negocio.getEstadoRegistro().equals(EstadoNegocio.RECHAZADO)){
+        if (negocio.getEstadoRegistro().equals(EstadoRegistro.INACTIVO)||!negocio.getHistorialNegocio().get(negocio.getHistorialNegocio().size()-1).getEstadoNegocio().equals(EstadoNegocio.EN_ESPERA)){
             throw new Exception("No fue posible aprobar el Negocio. Verifica su estado previo.");
         }
 
@@ -226,7 +246,7 @@ public class NegocioServicioImpl implements NegocioServicio {
         Optional<Negocio> optionalNegocio = validarNegocioExiste(revisionDTO.idNegocio());
 
         Negocio negocio = optionalNegocio.get();
-        if (negocio.getEstadoRegistro().equals(EstadoNegocio.RECHAZADO)){
+        if (negocio.getEstadoRegistro().equals(EstadoRegistro.INACTIVO)||!negocio.getHistorialNegocio().get(negocio.getHistorialNegocio().size()-1).getEstadoNegocio().equals(EstadoNegocio.EN_ESPERA)){
             throw new Exception("No fue posible rechazar el Negocio. Verifica su estado previo.");
         }
         negocio.getHistorialNegocio().add( new HistorialNegocio(
@@ -254,7 +274,11 @@ public class NegocioServicioImpl implements NegocioServicio {
             throw new Exception("El horario del negocio no es válido. Debe estar entre las 7:00 am y las 10:00 pm.");
         }
         negocio.setHorario(actualizarNegocioDTO.horarioNegocio());
+        if (negocioRepo.existsByNombre(actualizarNegocioDTO.nombre())){
+            throw new Exception("Ya existe un negocio con el nombre. "+actualizarNegocioDTO.nombre());
+        }
         negocio.setNombre(actualizarNegocioDTO.nombre());
+
         negocio.setDescripcion(actualizarNegocioDTO.descripcion());
         negocio.setListaImagenes(actualizarNegocioDTO.listaImagenes());
         negocio.setListaTelefonos(actualizarNegocioDTO.listaTelefonos());
@@ -425,7 +449,8 @@ public class NegocioServicioImpl implements NegocioServicio {
      */
     @Override
     public List<ItemNegocioDTO> filtrarPorEstado(EstadoNegocio estadoNegocio) throws Exception {
-        List<Negocio> listaNegocios = negocioRepo.ListarNegocioEstado(estadoNegocio);
+                                        //Le enviamos el estado de registro activo ya que no interesa obtener negocios inactivos
+        List<Negocio> listaNegocios = negocioRepo.busquedaPorEstadoRegistroyEstadonegocio(estadoNegocio,EstadoRegistro.ACTIVO);
         if (listaNegocios.isEmpty()){
             throw new ResourceNotFoundException("Error al momento de obtener los negocio con el estado "+estadoNegocio);
         }
@@ -487,7 +512,7 @@ public class NegocioServicioImpl implements NegocioServicio {
      */
     @Override
     public List<ItemNegocioDTO> encontrarTop5() throws Exception {
-        List<Negocio> negocioList = negocioRepo.ListarNegocioPorEstadoRegistro(EstadoRegistro.ACTIVO);
+        List<Negocio> negocioList = negocioRepo.busquedaPorEstadoRegistroyEstadonegocio(EstadoNegocio.APROBADO,EstadoRegistro.ACTIVO);
         Map<Negocio, Double> promediosCalificaciones = new HashMap<>();
 
         if (negocioList.isEmpty()){

@@ -21,12 +21,14 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
     Optional<Negocio> findByNombre(String nombre);
 
 //    Optional<Negocio> existsById(String idNegocio);
+    boolean existsByNombre(String nombre);
+    boolean existsByDireccion(String direccion);
 
     @Query (value = "{tipoNegocio :  ?0}")
     List<Negocio> buscarNegocioPorTipo(TipoNegocio tipoNegocio);
 
-    @Query (value = "{'historialNegocio.estadoNegocio' : ?0 }")
-    List<Negocio> ListarNegocioEstado(EstadoNegocio Estado);
+//    @Query (value = "{'historialNegocio.estadoNegocio' : ?0 }")
+//    List<Negocio> ListarNegocioEstado(EstadoNegocio Estado);
 
     @Query (value = "{'estadoRegistro' :  ?0}")
     List<Negocio> ListarNegocioPorEstadoRegistro(EstadoRegistro estadoRegistro);
@@ -41,14 +43,33 @@ public interface NegocioRepo extends MongoRepository<Negocio,String> {
     List<Negocio> busquedaNombresSimilares (String nombre);
 
 
-    @Aggregation({ "{$match: {estadoRegistro: ?1} }", "{ $addFields: { utlimaResvision: { $last: '$historialNegocio' } } }", "{$match: {utlimaResvision.estadoNegocio: ?0} }" })
-    List<Negocio> busquedPorEstadoRegistroyEstadonegocio (EstadoNegocio estadoNegocio,EstadoRegistro estadoRegistro);
+//    @Aggregation({ "{$match: {estadoRegistro: ?1} }", "{ $addFields: { utlimaResvision: { $last: '$historialNegocio' } } }", "{$match: {utlimaResvision.estadoNegocio: ?0} }" })
+//    List<Negocio> busquedaPorEstadoRegistroyEstadonegocio(EstadoNegocio estadoNegocio, EstadoRegistro estadoRegistro);
 
-     @Aggregation({
-            "{$match: {_id: ?0}}",  // Preguntar si esta consulta, se hace en usuario o en negocio
+    @Aggregation({
+            "{$match: {estadoRegistro: ?1}}",
+            "{ $addFields: { utlimaResvision: { $last: '$historialNegocio' } } }",
+            "{$match: {'utlimaResvision.estadoNegocio': ?0}}"
+    })
+    List<Negocio> busquedaPorEstadoRegistroyEstadonegocio(EstadoNegocio estadoNegocio, EstadoRegistro estadoRegistro);
+
+    @Aggregation({
+            "{$match: {idUsuario: ?0}}",
             "{$unwind: '$negociosFavoritos'}",
             "{$lookup: {from: 'negocio', localField: 'negociosFavoritos', foreignField: '_id', as: 'negocio_favorito'}}",
-            "{$project: { _id: 0, negociosFavoritos: { $arrayElemAt: ['$negocio_favorito', 0]}}}" })
-    List<Negocio> ListarFavoritos (String idUsuario);
+            "{$project: {_id: 0, negociosFavoritos: {$arrayElemAt: ['$negocio_favorito', 0]}}}"
+    })
+    List<Negocio> ListarFavoritos(String idUsuario);
+
+
+//    @Aggregation({
+//            "{$match: {estadoRegistro: ?1}}",
+//            "{ $addFields: { utlimaResvision: { $last: '$historialNegocio' } } }",
+//            "{$match: {'utlimaResvision.estadoNegocio': ?0}}",
+//            "{ $addFields: { promedioCalificaciones: { $avg: '$utlimaResvision.calificaciones' } } }",
+//            "{ $sort: { 'promedioCalificaciones': -1 } }",
+//            "{ $limit: 5 }"
+//    })
+//    List<Negocio> Top5 ();
 
 }

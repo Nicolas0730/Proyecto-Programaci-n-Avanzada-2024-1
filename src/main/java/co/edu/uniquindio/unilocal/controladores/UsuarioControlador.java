@@ -130,7 +130,7 @@ public class UsuarioControlador {
         return ResponseEntity.ok().body(new MensajeDTO<>(false,"Ubicación actualizada correctamente."));
     }
 
-    @PostMapping("/registrar-comentario")
+    @PostMapping("/registrar-comentarioo")
     public ResponseEntity<MensajeDTO<String>> registrarComentario(@Valid @RequestBody RegistroComentarioDTO registroComentarioDTO) throws Exception{
         comentarioServicio.registrarComentario(registroComentarioDTO);
         return ResponseEntity.ok().body(new MensajeDTO<>(false,"Comentario registrado correctamente."));

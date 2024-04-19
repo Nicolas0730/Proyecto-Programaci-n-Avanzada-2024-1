@@ -17,6 +17,6 @@ public record   RegistroNegocioDTO(@NotBlank String nombre,
                                  @NotNull TipoNegocio tipoNegocio,
                                  List<HistorialNegocio> historialNegocio,
                                  @NotNull Ciudad ciudad,
-                                   String direccion
+                                 @NotBlank  String direccion
                                  ) {
 }

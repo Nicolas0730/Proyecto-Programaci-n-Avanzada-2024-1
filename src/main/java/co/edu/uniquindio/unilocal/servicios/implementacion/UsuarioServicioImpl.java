@@ -523,8 +523,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
      */
     @Override
     public List<ItemNegocioDTO> listarNegociosFavoritos(String idUsuario) throws Exception{
-        Optional<Usuario> optionalUsuario = validarUsuarioExiste(idUsuario);
-        Usuario usuario = optionalUsuario.get();
+
         List<Negocio> listaNegocios = negocioRepo.ListarFavoritos(idUsuario);
         if (listaNegocios.isEmpty()){
             throw new ResourceNotFoundException("Error al momento de obtener los negocios favoritos ");

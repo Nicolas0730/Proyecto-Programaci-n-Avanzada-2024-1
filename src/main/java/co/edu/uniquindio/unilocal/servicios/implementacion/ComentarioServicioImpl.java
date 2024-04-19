@@ -37,7 +37,7 @@ public class ComentarioServicioImpl implements ComentarioServicio {
         comentario.setCalificacion(registroComentarioDTO.calificacion());
         comentario.setIdUsuario(registroComentarioDTO.idUsuario());
         comentario.setIdNegocio(registroComentarioDTO.idNegocio());
-        comentario.setRespuesta(null);
+        comentario.setRespuesta("null");
         comentario.setImagenes(registroComentarioDTO.imagenes()); //FUNCIONALIDAD PROPUESTA: Agregar a imagenes al comentario
         comentario.setFechaComentario(LocalDateTime.now());
 

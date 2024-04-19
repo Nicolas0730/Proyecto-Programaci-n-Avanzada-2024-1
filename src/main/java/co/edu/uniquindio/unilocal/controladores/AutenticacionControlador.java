@@ -21,17 +21,17 @@ public class AutenticacionControlador {
 
     private final AutenticacionServicio autenticacionServicio;
     private final UsuarioServicio usuarioServicio;
-    @PostMapping("/login-cliente")
-    public ResponseEntity<MensajeDTO<TokenDTO>> iniciarSesionCliente(@Valid @RequestBody
+    @PostMapping("/login-usuario")
+    public ResponseEntity<MensajeDTO<TokenDTO>> iniciarSesionUsuario(@Valid @RequestBody
                                                                      LoginDTO loginDTO) throws Exception {
-        TokenDTO tokenDTO = autenticacionServicio.iniciarSesionCliente(loginDTO);
+        TokenDTO tokenDTO = autenticacionServicio.iniciarSesionUsuario(loginDTO);
         return ResponseEntity.ok().body(new MensajeDTO<>(false, tokenDTO));
     }
     @PostMapping("/registrar-usuario")
     public ResponseEntity<MensajeDTO<String>> registrarUsuario(@Valid @RequestBody RegistroUsuarioDTO registroClienteDTO) throws Exception{
 
         usuarioServicio.registrarUsuario(registroClienteDTO);
-        return ResponseEntity.ok().body( new MensajeDTO<>(false, "Cliente registrado correctamente"));
+        return ResponseEntity.ok().body( new MensajeDTO<>(false, "Usuario registrado correctamente"));
     }
 
     @PostMapping("/login-administrador")

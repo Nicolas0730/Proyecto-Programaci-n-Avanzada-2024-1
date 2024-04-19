@@ -29,18 +29,18 @@ public class FiltroToken extends OncePerRequestFilter {
         response.addHeader("Access-Control-Allow-Origin", "*");
         response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         response.addHeader("Access-Control-Allow-Headers", "Origin, Accept, Content-Type, Authorization");
+
         if (request.getMethod().equals("OPTIONS")) {
             response.setStatus(HttpServletResponse.SC_OK);
-        }else {
-        //Obtener la URI de la petición que se está realizando
+        } else {
+            // Obtener la URI de la petición que se está realizando
             String requestURI = request.getRequestURI();
-        //Se obtiene el token de la petición del encabezado del mensaje HTTP
+            // Se obtiene el token de la petición del encabezado del mensaje HTTP
             String token = getToken(request);
             boolean error = true;
             try {
-        //Si la petición es para la ruta /api/clientes se verifica que el token sea correcto y que el rol sea CLIENTE
-
-                if (requestURI.startsWith("/api/clientes")) {
+                if (requestURI.startsWith("/api/usuario")) {
+                    // Verificar si el token es correcto y si el rol es CLIENTE
                     if (token != null) {
                         Jws<Claims> jws = jwtUtils.parseJwt(token);
                         if (!jws.getPayload().get("rol").equals("CLIENTE")) {
@@ -51,13 +51,26 @@ public class FiltroToken extends OncePerRequestFilter {
                         }
                     } else {
                         crearRespuestaError("No tiene permisos para acceder a este recurso",
-
+                                HttpServletResponse.SC_FORBIDDEN, response);
+                    }
+                } else if (requestURI.startsWith("/api/moderador")) {
+                    // Verificar si el token es correcto y si el rol es MODERADOR
+                    if (token != null) {
+                        Jws<Claims> jws = jwtUtils.parseJwt(token);
+                        if (!jws.getPayload().get("rol").equals("MODERADOR")) {
+                            crearRespuestaError("No tiene permisos para acceder a este recurso",
+                                    HttpServletResponse.SC_FORBIDDEN, response);
+                        } else {
+                            error = false;
+                        }
+                    } else {
+                        crearRespuestaError("No tiene permisos para acceder a este recurso",
                                 HttpServletResponse.SC_FORBIDDEN, response);
                     }
                 } else {
                     error = false;
                 }
-            //Agregar más validaciones para otros roles y recursos (rutas de la API) aquí
+                // Agregar más validaciones para otros roles y recursos (rutas de la API) aquí
             } catch (MalformedJwtException | SignatureException e) {
                 crearRespuestaError("El token es incorrecto",
                         HttpServletResponse.SC_INTERNAL_SERVER_ERROR, response);
@@ -67,14 +80,13 @@ public class FiltroToken extends OncePerRequestFilter {
             } catch (Exception e) {
                 crearRespuestaError(e.getMessage(),
                         HttpServletResponse.SC_INTERNAL_SERVER_ERROR, response);
-
             }
+
             if (!error) {
                 filterChain.doFilter(request, response);
             }
         }
-
-}
+    }
 
     private String getToken(HttpServletRequest req) {
         String header = req.getHeader("Authorization");

@@ -34,7 +34,7 @@ public class AutenticacionServicioTest {
                 "063uV2mP"
         );
 
-        TokenDTO codigo = autenticacionServicio.iniciarSesionCliente(loginDTO);
+        TokenDTO codigo = autenticacionServicio.iniciarSesionUsuario(loginDTO);
         Assertions.assertNotNull(codigo);
 
     }
