@@ -23,10 +23,7 @@ public class NegocioControlador {
     public ResponseEntity<MensajeDTO<DetalleNegocioDTO>> buscarNegocioPorNombre(@PathVariable String nombreNegocio)throws Exception{
         return ResponseEntity.ok().body(new MensajeDTO<>(false,negocioServicio.buscarNegocioPorNombre(nombreNegocio)));
     }
-    @GetMapping("/buscar-negocios-tipo/{tipoNegocio}")
-    public ResponseEntity<MensajeDTO<List<ItemNegocioDTO>>> buscarNegociosPorTipo(@PathVariable TipoNegocio tipoNegocio) throws Exception{
-        return ResponseEntity.ok().body(new MensajeDTO<>(false,negocioServicio.buscarNegociosPorTipo(tipoNegocio)));
-    }
+
     @GetMapping("/buscar-negocios-distancia/{idUsuario}/{rangoNegocio}")
     public ResponseEntity<MensajeDTO<List<ItemNegocioDTO>>> buscarNegociosPorDistancia(@PathVariable String idUsuario,@PathVariable int rangoNegocio) throws Exception{
         return ResponseEntity.ok().body(new MensajeDTO<>(false,negocioServicio.buscarNegociosPorDistancia(idUsuario,rangoNegocio)));
