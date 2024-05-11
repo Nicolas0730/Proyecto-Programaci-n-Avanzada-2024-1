@@ -37,11 +37,7 @@ public class UsuarioControlador {
     private final NegocioServicio negocioServicio;
     private final ComentarioServicio comentarioServicio;
 
-    @PostMapping("/registrar-negocio")
-    public ResponseEntity<MensajeDTO<String>> crearNegocio(@Valid @RequestBody RegistroNegocioDTO registroNegocioDTO) throws Exception{
-        negocioServicio.crearNegocio(registroNegocioDTO);
-        return ResponseEntity.ok().body(new MensajeDTO<>(false,"El negocio fue creado correctamente."));
-    }
+
 
     @GetMapping("/buscar-negocios-por-nombre/{idUsuario}/{nombre}")
     public ResponseEntity<MensajeDTO<List<ItemNegocioDTO>>> buscarNegociosPorNombre(@PathVariable String nombre,@PathVariable String idUsuario) throws Exception{
@@ -53,17 +49,9 @@ public class UsuarioControlador {
         return ResponseEntity.ok().body(new MensajeDTO<>(false,negocioServicio.listarNegociosDeUsuario(idUsuario)));
     }
 
-    @PutMapping("/editar-negocio")
-    public ResponseEntity<MensajeDTO<String>> actualizarNegocio(@Valid @RequestBody ActualizarNegocioDTO actualizarNegocioDTO) throws Exception{
-        negocioServicio.actualizarNegocio(actualizarNegocioDTO);
-        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Negocio actualizado con éxito."));
-    }
 
-    @DeleteMapping("/eliminar-negocio/{idNegocio}")
-    public ResponseEntity<MensajeDTO<String>> eliminarNegocio(@PathVariable String idNegocio) throws Exception{
-        negocioServicio.eliminarNegocio(idNegocio);
-        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Negocio eliminado correctamente."));
-    }
+
+
 
     @GetMapping("/buscar-negocio/{idUsuario}/{idNegocio}")
     public ResponseEntity<MensajeDTO<DetalleNegocioDTO>> buscarNegocio(@PathVariable String idNegocio, @PathVariable String idUsuario) throws Exception{

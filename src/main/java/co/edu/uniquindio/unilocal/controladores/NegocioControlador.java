@@ -33,4 +33,22 @@ public class NegocioControlador {
         return ResponseEntity.ok().body(new MensajeDTO<>(false,negocioServicio.encontrarTop5()));
     }
 
+    @PostMapping("/registrar-negocio")
+    public ResponseEntity<MensajeDTO<String>> crearNegocio(@Valid @RequestBody RegistroNegocioDTO registroNegocioDTO) throws Exception{
+        negocioServicio.crearNegocio(registroNegocioDTO);
+        return ResponseEntity.ok().body(new MensajeDTO<>(false,"El negocio fue creado correctamente."));
+    }
+
+    @DeleteMapping("/eliminar-negocio/{idNegocio}")
+    public ResponseEntity<MensajeDTO<String>> eliminarNegocio(@PathVariable String idNegocio) throws Exception{
+        negocioServicio.eliminarNegocio(idNegocio);
+        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Negocio eliminado correctamente."));
+    }
+
+    @PutMapping("/editar-negocio")
+    public ResponseEntity<MensajeDTO<String>> actualizarNegocio(@Valid @RequestBody ActualizarNegocioDTO actualizarNegocioDTO) throws Exception{
+        negocioServicio.actualizarNegocio(actualizarNegocioDTO);
+        return ResponseEntity.ok().body(new MensajeDTO<>(false,"Negocio actualizado con éxito."));
+    }
+
 }
