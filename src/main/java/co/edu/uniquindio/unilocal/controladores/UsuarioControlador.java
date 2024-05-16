@@ -50,9 +50,6 @@ public class UsuarioControlador {
     }
 
 
-
-
-
     @GetMapping("/buscar-negocio/{idUsuario}/{idNegocio}")
     public ResponseEntity<MensajeDTO<DetalleNegocioDTO>> buscarNegocio(@PathVariable String idNegocio, @PathVariable String idUsuario) throws Exception{
         return ResponseEntity.ok().body(new MensajeDTO<>(false,negocioServicio.buscarNegocio(idNegocio,idUsuario)));
