@@ -1,4 +1,4 @@
-db = connect( 'mongodb://root:example@localhost:27017/Unilocal?authSource=admin' );
+db =connect('mongodb://root:example@localhost:27017/Unilocal?authSource=admin');
 db.usuario.insertMany([
     {
         _id: 'Usuario1',
@@ -8,6 +8,7 @@ db.usuario.insertMany([
         nickname: 'juanito',
         urlFotoPerfil: 'mi foto',
         ciudadResidencia: 'ARMENIA',
+        estadoRegistro: "ACTIVO",
         ubicacion: {
             latitud: 4.540130,
             longitud: -75.665660

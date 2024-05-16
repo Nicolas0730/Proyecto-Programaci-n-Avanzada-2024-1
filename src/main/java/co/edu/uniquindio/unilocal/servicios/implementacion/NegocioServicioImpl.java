@@ -51,9 +51,12 @@ public class NegocioServicioImpl implements NegocioServicio {
         }
 
         negocio.setIdUsuario(registroNegocioDTO.idUsuario());
-        if (!esHorarioValido(registroNegocioDTO.horarioNegocio())) {
-            throw new Exception("El horario del negocio no es válido. Debe estar entre las 7:00 am y las 10:00 pm.");
+        for(HorarioNegocio horario : registroNegocioDTO.horarioNegocio()){
+            if (!esHorarioValido(horario)) {
+                throw new Exception("El horario del negocio no es válido. Debe estar entre las 7:00 am y las 10:00 pm.");
+            }
         }
+
         negocio.setHorario(registroNegocioDTO.horarioNegocio());
         negocio.setTipoNegocio(registroNegocioDTO.tipoNegocio());
         negocio.setHistorialNegocio(
@@ -270,8 +273,11 @@ public class NegocioServicioImpl implements NegocioServicio {
         Negocio negocio = optionalNegocio.get();
 
         // Validar horario del negocio
-        if (!esHorarioValido(actualizarNegocioDTO.horarioNegocio())) {
-            throw new Exception("El horario del negocio no es válido. Debe estar entre las 7:00 am y las 10:00 pm.");
+
+        for(HorarioNegocio horario : actualizarNegocioDTO.horarioNegocio()) {
+            if (!esHorarioValido(horario)) {
+                throw new Exception("El horario del negocio no es válido. Debe estar entre las 7:00 am y las 10:00 pm.");
+            }
         }
         negocio.setHorario(actualizarNegocioDTO.horarioNegocio());
         if (negocioRepo.existsByNombre(actualizarNegocioDTO.nombre())){

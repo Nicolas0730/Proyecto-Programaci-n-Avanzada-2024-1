@@ -12,5 +12,5 @@ public record ActualizarNegocioDTO(String id,
                                    @NotBlank @Length(max = 100) String descripcion,
                                    @NotNull List<String> listaImagenes,
                                    @NotNull List<String> listaTelefonos,
-                                   @NotNull HorarioNegocio horarioNegocio) {
+                                   @NotNull List<HorarioNegocio> horarioNegocio) {
 }
