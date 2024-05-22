@@ -170,7 +170,7 @@ public class NegocioServicioImpl implements NegocioServicio {
 
         List<ItemNegocioDTO> items = new ArrayList<>();
         for (Negocio negocio: listaNegocios){
-            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getUbicacion(),negocio.getDireccion()));
         }
         return  items;
     }
@@ -374,7 +374,7 @@ public class NegocioServicioImpl implements NegocioServicio {
         List<ItemNegocioDTO> items = new ArrayList<>();
 
         for(Negocio negocio : listaNegocios){
-            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getUbicacion(),negocio.getDireccion()));
         }
         return items;
     }
@@ -407,7 +407,7 @@ public class NegocioServicioImpl implements NegocioServicio {
 
             // Si la distancia es menor o igual a la distancia máxima permitida, agregar el negocio a la lista de resultados
             if (distancia <= distanciaAlrededor) {
-                negociosEnRango.add(new ItemNegocioDTO(nego.getId(),nego.getNombre(),nego.getListaImagenes(),nego.getTipoNegocio(),nego.getDireccion()));
+                negociosEnRango.add(new ItemNegocioDTO(nego.getId(),nego.getNombre(),nego.getListaImagenes(),nego.getTipoNegocio(),nego.getUbicacion(),nego.getDireccion()));
             }
         }
         return negociosEnRango;
@@ -462,7 +462,7 @@ public class NegocioServicioImpl implements NegocioServicio {
         }
         List<ItemNegocioDTO> items = new ArrayList<>();
         for (Negocio negocio: listaNegocios){
-            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getUbicacion(),negocio.getDireccion()));
         }
         return  items;
 
@@ -488,7 +488,7 @@ public class NegocioServicioImpl implements NegocioServicio {
         List<ItemNegocioDTO> items = new ArrayList<>();
 
         for(Negocio negocio : listaNegocios){
-            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getUbicacion(),negocio.getDireccion()));
         }
         return items;
     }
@@ -544,7 +544,7 @@ public class NegocioServicioImpl implements NegocioServicio {
         List<ItemNegocioDTO> itemNegocioDTOList = new ArrayList<>();
         for (Negocio negocio: top5Negocios){
             itemNegocioDTOList.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),
-                    negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getDireccion()));
+                    negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getUbicacion(),negocio.getDireccion()));
         }
 
         return itemNegocioDTOList;

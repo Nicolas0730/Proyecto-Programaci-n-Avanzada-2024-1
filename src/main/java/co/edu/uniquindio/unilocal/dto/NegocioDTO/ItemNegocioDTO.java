@@ -11,5 +11,7 @@ public record ItemNegocioDTO(@NotBlank String id,
                              @NotBlank List<String> listaImagenes,
                              @NotBlank TipoNegocio tipoNegocio,
 
+                             @NotBlank Ubicacion ubicacion,
+
                              @NotBlank String direccion) {
 }
