@@ -13,5 +13,7 @@ public record ItemNegocioDTO(@NotBlank String id,
 
                              @NotBlank Ubicacion ubicacion,
 
+                                        EstadoRegistro estadoRegistro,
+
                              @NotBlank String direccion) {
 }

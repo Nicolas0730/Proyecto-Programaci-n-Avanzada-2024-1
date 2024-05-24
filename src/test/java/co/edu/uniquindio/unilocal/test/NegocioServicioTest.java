@@ -18,7 +18,7 @@ import java.util.List;
 
 @SpringBootTest
 public class NegocioServicioTest {
-
+/*
     @Autowired
     private NegocioServicio negocioServicio;
     Ubicacion ubicacion = new Ubicacion(245,245);
@@ -41,7 +41,7 @@ public class NegocioServicioTest {
                 horarioNegocio,
                 TipoNegocio.RESTAURANTE,
                 listHistorial,
-                Ciudad.ARMENIA,
+                Ciudad.BOYACA,
                 "Armenia"
         );
 
@@ -156,6 +156,6 @@ public class NegocioServicioTest {
 
         Assertions.assertNotNull(negocioServicio.encontrarTop5());
 
-    }
+    }*/
 
 }

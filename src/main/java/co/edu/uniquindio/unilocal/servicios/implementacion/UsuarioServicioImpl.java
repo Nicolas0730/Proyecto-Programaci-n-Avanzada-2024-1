@@ -510,7 +510,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
 
             List<ItemNegocioDTO> itemNegocioDTOList = new ArrayList<>();
             for (Negocio negocio : listaNegocios) {
-                itemNegocioDTOList.add(new ItemNegocioDTO(negocio.getId(), negocio.getNombre(), negocio.getListaImagenes(), negocio.getTipoNegocio(), negocio.getUbicacion(),negocio.getDireccion()));
+                itemNegocioDTOList.add(new ItemNegocioDTO(negocio.getId(), negocio.getNombre(), negocio.getListaImagenes(), negocio.getTipoNegocio(), negocio.getUbicacion(),negocio.getEstadoRegistro(),negocio.getDireccion()));
             }
             return itemNegocioDTOList;
         }
@@ -530,7 +530,7 @@ public class UsuarioServicioImpl implements UsuarioServicio {
         }
         List<ItemNegocioDTO> items = new ArrayList<>();
         for (Negocio negocio: listaNegocios){
-            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getUbicacion(),negocio.getDireccion()));
+            items.add(new ItemNegocioDTO(negocio.getId(),negocio.getNombre(),negocio.getListaImagenes(),negocio.getTipoNegocio(),negocio.getUbicacion(),negocio.getEstadoRegistro(),negocio.getDireccion()));
         }
         return  items;
     }
