@@ -37,6 +37,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
+bootJar {
+    archiveFileName = 'unilocal-uq-1.0-SNAPSHOT.jar'
+}
+
+
 test {
     useJUnitPlatform()
 }
